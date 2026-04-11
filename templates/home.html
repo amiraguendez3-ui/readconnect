@@ -1,0 +1,669 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ReadConnect</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* مسافة موحدة */
+:root{
+  --space: 40px;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 25px;
+    background-color: #f8f5f2;
+    margin-bottom: var(--space);
+}
+
+/* Logo */
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #5a3e36;
+}
+
+.logo i {
+    color: #5a3e36;
+    margin: 0 5px;
+}
+
+/* Links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    transform: scale(1.2);
+    color: #5a3e36;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    width: 200px;
+    background: white;
+    padding: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-menu li {
+    width: 100%;
+    margin: 5px 0;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f3f0ec;
+}
+
+/* Sign Up */
+.signup-btn {
+    text-decoration: none;
+    background-color: #5a3e36;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+/* Search */
+.search-box {
+    position: relative;
+    width: 320px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 50px 10px 15px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.search-box i {
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5a3e36;
+    font-size: 14px;
+}
+
+.search-box input:focus {
+    border-color: #5a3e36;
+    box-shadow: 0 0 5px rgba(90,62,54,0.2);
+}
+
+/* SLIDER */
+.month-section{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space);
+}
+
+.month-content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero{
+  height: 400px;
+  background: #36422E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--space);
+}
+
+.hero-content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.top-text{
+  font-size: 18px;
+  color: black;
+  margin-bottom: 10px;
+}
+
+.hero h1{
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Slider */
+.slider-container{
+  position: relative;
+  height: 200px;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider{
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slide{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 150px;
+  transform: translate(-50%, -50%);
+  transition: 0.5s;
+  border-radius: 8px;
+}
+
+/* New Books */
+.new-books {
+  padding: var(--space) 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.section-header p {
+  font-size: 13px;
+  color: #777;
+  font-style: italic;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 15px;
+}
+
+.book-card {
+  background: white;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+.book-card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.book-title {
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.book-author {
+  font-size: 11px;
+  color: gray;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .books-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+ @media (max-width: 768px) {
+  .books-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Banner */
+.banner{
+    margin: var(--space) 0;
+    height:120px;
+    border-radius:15px;
+    background-image: url("https://images.unsplash.com/photo-1512820790803-83ca734da794");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.4);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.banner-overlay h2{
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+/* Titles */
+.best-books-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.best-books-subtitle {
+    margin-bottom: var(--space);
+    text-align: center;
+    color: #555;
+    font-style: italic;
+}
+
+/* Sections */
+section {
+    margin-bottom: var(--space);
+}
+
+/* Categories */
+.categories{
+  padding: 0;
+}
+
+.categories-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom: 20px;
+}
+
+.categories-header h2{
+  font-size:26px;
+}
+
+.categories-header a{
+  text-decoration:none;
+  color:black;
+  font-size:14px;
+}
+
+.category-container{
+  display:flex;
+  gap:20px;
+  flex-wrap:nowrap;
+}
+
+/* Card */
+.category-card{
+  min-width:180px;
+  padding:25px;
+  border-radius:15px;
+  text-align:left;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.icon{
+  font-size:30px;
+  margin-bottom:15px;
+}
+
+.category-card h3{
+  font-size:16px;
+  margin:0;
+}
+
+.category-card p{
+  font-size:13px;
+  color:#555;
+  margin-top:5px;
+}
+
+/* Colors */
+.purple{ background:#f3e8ff; }
+.yellow{ background:#fff7d6; }
+.pink{ background:#ffe4e6; }
+.blue{ background:#e0f2fe; }
+.beige{ background:#f5f5f4; }
+
+/* Hover */
+.category-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+.hidden{
+  display:none;
+}
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Logo -->
+    <div class="logo">Book<i class="fa-solid fa-feather"></i>Nest</div>
+
+    <!-- Links -->
+  <ul class="nav-links">
+
+    <!-- HOME -->
+    <li><a href="/">Home</a></li>
+
+    <!-- MY BROWSE -->
+    <li class="dropdown">
+        <a href="#" onclick="toggleMenu('browseMenu')">MyBrowse ▼</a>
+        <ul class="dropdown-menu" id="browseMenu">
+            <li><a href="/genres/">Genre</a></li>
+            <li><a href="/new-arrivals/">New Arrivals</a></li>
+        </ul>
+    </li>
+
+    <!-- NOTIFICATIONS -->
+    <li class="dropdown">
+        <a href="#" onclick="toggleMenu('notifMenu')">Notifications ▼</a>
+        <ul class="dropdown-menu" id="notifMenu">
+            <li><a href="/notifications/">Someone liked your comment</a></li>
+            <li><a href="/notifications/">Someone replied to you</a></li>
+        </ul>
+    </li>
+
+</ul>
+<!-- Search -->
+<div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search books...">
+   
+</div>
+    <!-- Sign Up -->
+    <a href="{% url 'signup' %}">Sign Up</a>
+
+</div>
+
+<!-- SIDEBAR -->
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<div id="sidebar">
+   
+</div>
+<section class="hero">
+
+  <div class="hero-content">
+    <p class="top-text">This Month</p>
+
+    <h1>Most interactive books</h1>
+
+    <div class="slider-container">
+      <div class="slider" id="slider">
+        <img src="{% static 'images/book1.jpg' %}" class="slide">
+        <img src="{% static 'images/book2.jpg' %}" class="slide">
+        <img src="{% static 'images/book3.jpg' %}" class="slide">
+        <img src="{% static 'images/book4.jpg' %}" class="slide">
+        <img src="{% static 'images/book5.jpg' %}" class="slide">
+      </div>
+    </div>
+
+  </div>
+ </section>
+<div class="categories">  <!-- HEADER -->  
+<div class="categories-header">  
+    <h2>Featured Categories</h2>  
+  <a href="/categories/">All Categories →</a>  
+</div>  <div class="category-container" id="categories">  <div class="category-card purple" onclick="goToCategory('arts')">  
+    <div class="icon">📷</div>  
+    <h3>Arts & Photography</h3>  
+    <p>Shop Now</p>  
+</div>  <div class="category-card yellow" onclick="goToCategory('food')">  
+    <div class="icon">🍔</div>  
+    <h3>Food & Drink</h3>  
+    <p>Shop Now</p>  
+</div>  <div class="category-card pink" onclick="goToCategory('romance')">  
+    <div class="icon">💖</div>  
+    <h3>Romance</h3>  
+    <p>Shop Now</p>  
+</div>  <div class="category-card blue" onclick="goToCategory('health')">  
+    <div class="icon">🩺</div>  
+    <h3>Health</h3>  
+    <p>Shop Now</p>  
+</div>  <div class="category-card beige" onclick="goToCategory('biography')">  
+    <div class="icon">📜</div>  
+    <h3>Biography</h3>  
+    <p>Shop Now</p>  
+</div>  <!-- السادسة (مخفية) -->  <div class="category-card purple hidden" onclick="goToCategory('technology')">  
+    <div class="icon">💻</div>  
+    <h3>Technology</h3>  
+    <p>Shop Now</p>  
+</div>  </div>  
+
+<!-- ========== NEWLY ADDED BOOKS - مع إضافة onclick ========== -->
+<section class="new-books">
+
+  <div class="section-header">
+    <h2>Newly Added Books</h2>
+    <p>Discover the latest additions to our collection</p>
+  </div>
+
+  <div class="books-grid">
+    {% for book in new_books %}
+      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+        <img src="{{ book.image.url }}" alt="{{ book.title }}">
+        <h4 class="book-title">{{ book.title }}</h4>
+        <p class="book-author">by {{ book.author }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</section>
+
+<!-- Banner -->
+<div class="banner">
+    <div class="banner-overlay">
+        <h2>
+        "The more that you read, the more things you will know.<br>
+        The more that you learn, the more places you'll go."
+        </h2>
+    </div>
+</div>
+
+<!-- ========== BEST BOOKS - مع إضافة onclick ========== -->
+<section class="best-books">
+
+  <div class="section-header">
+    <h2>Best Books</h2>
+    <p>“Discover the best books loved by our readers – give them a try now!”</p>
+  </div>
+
+  <div class="books-grid">
+    {% for book in best_books %}
+      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+        {% if book.image %}
+          <img src="{{ book.image.url }}" alt="{{ book.title }}">
+        {% endif %}
+        <h4 class="book-title">{{ book.title }}</h4>
+        <p class="book-author">{{ book.author }}</p>
+        <p>⭐ {{ book.avg_rating|default:"0" }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</section>
+</div>  </div>  
+
+<!-- ========== TRENDING BOOKS - مع إضافة onclick ========== -->
+<section class="trending-books">
+
+  <div class="section-header">
+    <h2>Trending Books</h2>
+    <p>Most popular books right now</p>
+  </div>
+
+  <div class="books-grid">
+    {% for book in trending_books %}
+      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+        {% if book.image %}
+          <img src="{{ book.image.url }}">
+        {% endif %}
+        <h4 class="book-title">{{ book.title }}</h4>
+      </div>
+    {% endfor %}
+  </div>
+
+</section>
+
+<div class="top-users">
+    <h3>Top Users</h3>
+
+    <div class="users-list">
+        {% for user in top_users %}
+        <div class="user-card">
+
+            <div class="user-avatar">
+                {% if user.profile %}
+                    {% if user.profile.gender == 'male' %}
+                        <img src="{% static 'images/male.png' %}">
+                    {% else %}
+                        <img src="{% static 'images/female.png' %}">
+                    {% endif %}
+                {% else %}
+                    <img src="{% static 'images/user.png' %}">
+                {% endif %}
+            </div>
+
+            <p class="username">{{ user.username }}</p>
+ </div>
+        {% empty %}
+            <p>لا يوجد مستخدمين بعد</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function toggleMenu(menuId){
+
+    let menu = document.getElementById(menuId);
+
+    if(menu.classList.contains("active")){
+        menu.classList.remove("active");
+    } else {
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            m.classList.remove("active");
+        });
+        menu.classList.add("active");
+    }
+}
+
+function goToCategory(name){
+    window.location.href = "/category/" + name + "/";
+}
+</script>
+
+<script>
+let index = 0;
+const slides = document.querySelectorAll(".slide");
+
+function updateSlider(){
+
+  slides.forEach((slide) => {
+    slide.style.zIndex = 0;
+    slide.style.opacity = 0.4;
+    slide.style.transform = "translate(-50%, -50%) scale(0.7)";
+  });
+
+  slides[index].style.zIndex = 3;
+  slides[index].style.opacity = 1;
+  slides[index].style.transform = "translate(-50%, -50%) scale(1.2)";
+
+  let next = (index + 1) % slides.length;
+  slides[next].style.zIndex = 2;
+  slides[next].style.opacity = 0.8;
+  slides[next].style.transform = "translate(60%, -50%) scale(0.9)";
+
+  let prev = (index - 1 + slides.length) % slides.length;
+  slides[prev].style.zIndex = 2;
+  slides[prev].style.opacity = 0.8;
+  slides[prev].style.transform = "translate(-160%, -50%) scale(0.9)";
+}
+
+setInterval(() => {
+  index = (index + 1) % slides.length;
+  updateSlider();
+}, 2500);
+
+updateSlider();
+</script>
+
+</body>
+</html>

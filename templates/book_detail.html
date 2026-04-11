@@ -1,0 +1,396 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }} | Book Nest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #f5f5f0; color: #1a1a2e; }
+
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
+            background: white; padding: 30px 24px; box-shadow: 2px 0 20px rgba(0,0,0,0.04);
+            z-index: 100;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #5a3e36; margin-bottom: 50px; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: #5a3e36; font-size: 24px; }
+        .nav-menu { list-style: none; margin-bottom: 50px; }
+        .nav-item { margin-bottom: 12px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+            text-decoration: none; color: #4a4a4a; font-weight: 500;
+            border-radius: 12px; transition: all 0.2s ease; font-size: 15px;
+        }
+        .nav-link i { width: 22px; font-size: 18px; color: #8b8b8b; }
+        .nav-link:hover { background: #f0ebe6; color: #5a3e36; }
+        .nav-link:hover i { color: #5a3e36; }
+        .nav-link.active { background: #5a3e36; color: white; }
+        .nav-link.active i { color: white; }
+        .user-section { position: absolute; bottom: 30px; left: 24px; right: 24px; padding-top: 20px; border-top: 1px solid #eee; }
+        .user-card { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 48px; height: 48px; background: #5a3e36; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+        .user-info h4 { font-size: 15px; font-weight: 600; color: #2d2d2d; margin-bottom: 4px; }
+        .user-info p { font-size: 12px; color: #999; }
+
+        .main-content { margin-left: 260px; padding: 30px 40px; min-height: 100vh; }
+        .back-link { color: #5a3e36; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .back-link:hover { text-decoration: underline; }
+        .book-detail { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .book-main { display: flex; gap: 40px; flex-wrap: wrap; }
+        .book-cover-large {
+            width: 260px; height: 330px; background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .book-cover-large img { width: 100%; height: 100%; object-fit: cover; }
+        .book-cover-large .fallback-icon { font-size: 70px; color: #8b5e4b; }
+        .book-info { flex: 1; }
+        .book-title { font-size: 32px; font-weight: 700; color: #2d2d2d; margin-bottom: 8px; }
+        .book-author { font-size: 16px; color: #5a3e36; font-weight: 500; margin-bottom: 15px; }
+
+        .rating-section { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stars { color: #ffc107; font-size: 18px; }
+        .rating-value { font-size: 18px; font-weight: 600; color: #2d2d2d; }
+        .ratings-count { font-size: 13px; color: #888; }
+
+        .action-buttons { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .btn-add-list {
+            background: #5a3e36; color: white; border: none; padding: 12px 28px;
+            border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .btn-add-list:hover { background: #3d2a24; }
+        .btn-add-list.added { background: #2d5a3e; }
+        
+        .book-tags { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        .tag { background: #f0ebe6; padding: 6px 18px; border-radius: 30px; font-size: 13px; color: #5a3e36; font-weight: 500; }
+
+        .summary-section { margin-top: 25px; padding: 20px; background: #f8f5f2; border-radius: 16px; }
+        .summary-section h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #2d2d2d; }
+        .summary-section p { font-size: 14px; line-height: 1.6; color: #555; }
+
+        .rate-section { margin-top: 25px; padding: 20px; border-top: 1px solid #eee; }
+        .rate-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+        .rate-stars { display: flex; gap: 8px; }
+        .rate-star { font-size: 28px; color: #ddd; cursor: pointer; transition: 0.2s; }
+        .rate-star:hover, .rate-star.active { color: #ffc107; }
+
+        .comments-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .comments-section h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        .comment-form { display: flex; gap: 15px; margin-bottom: 25px; }
+        .comment-avatar {
+            width: 45px; height: 45px; background: #5a3e36; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;
+        }
+        .comment-input { flex: 1; }
+        .comment-input textarea {
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;
+            resize: none; font-family: inherit; font-size: 13px;
+        }
+        .comment-input textarea:focus { outline: none; border-color: #5a3e36; }
+        .comment-submit { background: #5a3e36; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 12px; cursor: pointer; margin-top: 8px; }
+
+        .comment-card { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .comment-content { flex: 1; }
+        .comment-user { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
+        .comment-time { font-size: 11px; color: #999; margin-bottom: 8px; }
+        .comment-text { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
+        .comment-actions { display: flex; gap: 15px; }
+        .comment-like { font-size: 12px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .comment-like:hover { color: #5a3e36; }
+        .comment-like.liked { color: #5a3e36; }
+
+        .recommended-section { margin-top: 40px; }
+        .recommended-section h3 { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+        .recommended-strip { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .recommended-strip::-webkit-scrollbar { height: 5px; }
+        .recommended-strip::-webkit-scrollbar-track { background: #e8e8e8; border-radius: 10px; }
+        .recommended-strip::-webkit-scrollbar-thumb { background: #5a3e36; border-radius: 10px; }
+        .rec-book-card {
+            min-width: 140px; width: 140px; background: white; border-radius: 16px;
+            overflow: hidden; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .rec-book-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+        .rec-book-cover {
+            height: 170px; background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .rec-book-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .rec-book-cover .fallback-icon { font-size: 45px; color: #8b5e4b; }
+        .rec-book-info { padding: 10px; text-align: center; }
+        .rec-book-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rec-book-rating { font-size: 11px; color: #ffc107; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 80px; padding: 20px 12px; }
+            .sidebar .logo span, .sidebar .nav-link span, .user-info { display: none; }
+            .main-content { margin-left: 80px; padding: 20px; }
+            .book-cover-large { width: 200px; height: 260px; }
+            .book-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo"><i class="fa-solid fa-feather"></i><span>Book Nest</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li class="nav-item"><a href="/my-list/" class="nav-link"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
+            <li class="nav-item"><a href="/categories/" class="nav-link"><i class="fa-solid fa-book-open"></i><span>Categories</span></a></li>
+        </ul>
+        <div class="user-section">
+            <div class="user-card">
+                <div class="user-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
+                <div class="user-info"><h4>{{ user.username|default:"Guest" }}</h4><p>Reader</p></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <a href="javascript:history.back()" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Categories</a>
+
+        <div class="book-detail">
+            <div class="book-main">
+                <div class="book-cover-large">
+                    {% if book.image %}
+                        <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                        <div class="fallback-icon">📖</div>
+                    {% endif %}
+                </div>
+
+                <div class="book-info">
+                    <h1 class="book-title">{{ book.title }}</h1>
+                    <p class="book-author">by {{ book.author }}</p>
+
+                    <div class="rating-section">
+                        <div class="stars">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="rating-value">{{ avg_rating|default:"0" }}</span>
+                        <span class="ratings-count">({{ ratings_count }} ratings)</span>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-add-list {% if is_favorite %}added{% endif %}" id="favoriteBtn" data-book-id="{{ book.id }}">
+                            <i class="fa-{% if is_favorite %}solid{% else %}regular{% endif %} fa-bookmark"></i> 
+                            <span id="favoriteText">{% if is_favorite %}Added to{% else %}Add to{% endif %} My List</span>
+                        </button>
+                    </div>
+
+                    <div class="book-tags">
+                        {% for tag in tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-section">
+                        <h3>📖 Summary</h3>
+                        <p>{{ book.description|default:"No description available for this book yet." }}</p>
+                    </div>
+                </div>
+            </div>
+ <!-- Rate This Book -->
+            <div class="rate-section">
+                <h3>⭐ Rate this book</h3>
+                <div class="rate-stars" id="rateStars" data-book-id="{{ book.id }}">
+                    <i class="fa-regular fa-star rate-star" data-rating="1"></i>
+                    <i class="fa-regular fa-star rate-star" data-rating="2"></i>
+                    <i class="fa-regular fa-star rate-star" data-rating="3"></i>
+                    <i class="fa-regular fa-star rate-star" data-rating="4"></i>
+                    <i class="fa-regular fa-star rate-star" data-rating="5"></i>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h3>💬 Community Reviews ({{ comments|length }})</h3>
+
+                {% if user.is_authenticated %}
+                <div class="comment-form">
+                    <div class="comment-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
+                    <div class="comment-input">
+                        <textarea id="commentText" rows="2" placeholder="Share your thoughts about this book..."></textarea>
+                        <button class="comment-submit" data-book-id="{{ book.id }}">Post Comment</button>
+                    </div>
+                </div>
+                {% else %}
+                <p style="color: #999; margin-bottom: 20px;"><a href="/login/" style="color: #5a3e36;">Login</a> to leave a comment</p>
+                {% endif %}
+
+                <div id="commentsList">
+                    {% for comment in comments %}
+                    <div class="comment-card" data-comment-id="{{ comment.id }}">
+                        <div class="comment-avatar" style="width: 40px; height: 40px; font-size: 14px;">
+                            {{ comment.user.username|slice:":1"|default:"U" }}
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-user">{{ comment.user.username }}</div>
+                            <div class="comment-time">{{ comment.created_at|timesince }} ago</div>
+                            <div class="comment-text">{{ comment.content }}</div>
+                            <div class="comment-actions">
+                                <span class="comment-like" data-comment-id="{{ comment.id }}">
+                                    <i class="fa-regular fa-heart"></i> <span class="comment-like-count">{{ comment.likes_count }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color: #999; text-align: center; padding: 20px;">No comments yet. Be the first to share your thoughts!</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- You May Also Like -->
+            <div class="recommended-section">
+                <h3>📚 You may also like</h3>
+                <div class="recommended-strip">
+                    {% for rec_book in recommended_books %}
+                    <div class="rec-book-card" data-book-slug="{{ rec_book.title|slugify }}">
+                        <div class="rec-book-cover">
+                            {% if rec_book.image %}
+                                <img src="{{ rec_book.image.url }}" alt="{{ rec_book.title }}">
+                            {% else %}
+                                <div class="fallback-icon">📖</div>
+                            {% endif %}
+                        </div>
+                        <div class="rec-book-info">
+                            <div class="rec-book-title">{{ rec_book.title|truncatechars:20 }}</div>
+                            <div class="rec-book-rating">⭐ New</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color: #999;">No recommendations available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+ <script>
+        // Get CSRF Token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Star Rating
+        const rateStars = document.getElementById('rateStars');
+        if (rateStars) {
+            const bookId = rateStars.dataset.bookId;
+            const stars = document.querySelectorAll('.rate-star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.dataset.rating;
+                    stars.forEach(s => {
+                        s.classList.remove('fa-solid');
+                        s.classList.add('fa-regular');
+                    });
+                    for(let i = 0; i < rating; i++) {
+                        stars[i].classList.remove('fa-regular');
+                        stars[i].classList.add('fa-solid');
+                    }
+                    fetch('/rate-book/' + bookId + '/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                        body: JSON.stringify({rating: rating})
+                    }).then(() => location.reload());
+                });
+            });
+        }
+
+        // Toggle Favorite (My List)
+        const favoriteBtn = document.getElementById('favoriteBtn');
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', function() {
+                const bookId = this.dataset.bookId;
+                fetch('/add-to-list/' + bookId + '/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
+                }).then(response => response.json()).then(data => {
+                    const btn = document.getElementById('favoriteBtn');
+                    const textSpan = document.getElementById('favoriteText');
+                    const icon = btn.querySelector('i');
+                    if (data.added) {
+                        btn.classList.add('added');
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                        textSpan.innerText = 'Added to My List';
+                    } else {
+                        btn.classList.remove('added');
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-regular');
+                        textSpan.innerText = 'Add to My List';
+                    }
+                });
+            });
+        }
+
+        // Add Comment
+        const commentSubmit = document.querySelector('.comment-submit');
+        if (commentSubmit) {
+            commentSubmit.addEventListener('click', function() {
+                const bookId = this.dataset.bookId;
+                const content = document.getElementById('commentText').value;
+                if (!content.trim()) return;
+                fetch('/add-comment/' + bookId + '/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({content: content})
+                }).then(response => response.json()).then(data => {
+                    if (data.success) { location.reload(); }
+                });
+            });
+        }
+ // Like Comment
+        const likeButtons = document.querySelectorAll('.comment-like');
+        likeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                fetch('/like-comment/' + commentId + '/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
+                }).then(response => response.json()).then(data => {
+                    const likeSpan = this.querySelector('.comment-like-count');
+                    if (likeSpan) likeSpan.innerText = data.likes_count;
+                    if (data.liked) {
+                        this.classList.add('liked');
+                        this.querySelector('i').classList.remove('fa-regular');
+                        this.querySelector('i').classList.add('fa-solid');
+                    } else {
+                        this.classList.remove('liked');
+                        this.querySelector('i').classList.remove('fa-solid');
+                        this.querySelector('i').classList.add('fa-regular');
+                    }
+                });
+            });
+        });
+
+        // Recommended Books Click
+        const recBooks = document.querySelectorAll('.rec-book-card');
+        recBooks.forEach(book => {
+            book.addEventListener('click', function() {
+                const slug = this.dataset.bookSlug;
+                window.location.href = '/book/' + slug + '/';
+            });
+        });
+    </script>
+
+<li class="nav-item"><a href="/my-list/" class="nav-link"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
+</body>
+</html>

@@ -1,0 +1,305 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My List | Book Nest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #f5f5f0; color: #1a1a2e; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
+            background: white; padding: 30px 24px; box-shadow: 2px 0 20px rgba(0,0,0,0.04);
+            z-index: 100;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #5a3e36; margin-bottom: 50px; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: #5a3e36; font-size: 24px; }
+        .nav-menu { list-style: none; margin-bottom: 50px; }
+        .nav-item { margin-bottom: 12px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+            text-decoration: none; color: #4a4a4a; font-weight: 500;
+            border-radius: 12px; transition: all 0.2s ease; font-size: 15px;
+        }
+        .nav-link i { width: 22px; font-size: 18px; color: #8b8b8b; }
+        .nav-link:hover { background: #f0ebe6; color: #5a3e36; }
+        .nav-link:hover i { color: #5a3e36; }
+        .nav-link.active { background: #5a3e36; color: white; }
+        .nav-link.active i { color: white; }
+        .user-section { position: absolute; bottom: 30px; left: 24px; right: 24px; padding-top: 20px; border-top: 1px solid #eee; }
+        .user-card { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 48px; height: 48px; background: #5a3e36; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+        .user-info h4 { font-size: 15px; font-weight: 600; color: #2d2d2d; margin-bottom: 4px; }
+        .user-info p { font-size: 12px; color: #999; }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 30px 40px; min-height: 100vh; }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 32px; font-weight: 700; color: #2d2d2d; }
+        .page-header p { color: #888; margin-top: 5px; }
+
+        .stats-number { font-size: 28px; font-weight: 700; color: #5a3e36; margin-bottom: 30px; }
+
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+        }
+
+        .book-cover {
+            height: 240px;
+            background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-cover .fallback-icon {
+            font-size: 60px;
+            color: #8b5e4b;
+            opacity: 0.7;
+        }
+
+        /* Remove button */
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e74c3c;
+            font-size: 14px;
+            transition: 0.2s;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .remove-btn:hover {
+            background: #e74c3c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .book-info {
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .book-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d2d2d;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-author {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .added-date {
+            font-size: 10px;
+            color: #bbb;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 24px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .empty-state a {
+            color: #5a3e36;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 80px; padding: 20px 12px; }
+            .sidebar .logo span, .sidebar .nav-link span, .user-info { display: none; }
+            .main-content { margin-left: 80px; padding: 20px; }
+            .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+            .book-cover { height: 200px; }
+        }
+
+        @media (max-width: 600px) {
+            .books-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .book-cover { height: 180px; }
+            .book-title { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo"><i class="fa-solid fa-feather"></i><span>Book Nest</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li class="nav-item"><a href="/my-list/" class="nav-link active"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
+            <li class="nav-item"><a href="/categories/" class="nav-link"><i class="fa-solid fa-book-open"></i><span>Categories</span></a></li>
+        </ul>
+        <div class="user-section">
+            <div class="user-card">
+                <div class="user-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
+                <div class="user-info">
+                    <h4>{{ user.username|default:"Guest" }}</h4>
+                    <p>Reader</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fa-regular fa-bookmark"></i> My List</h1>
+            <p>Books you've saved to read later</p>
+        </div>
+
+        <div class="stats-number" id="statsCount">{{ total_books }} book{{ total_books|pluralize:"s" }}</div>
+
+        {% if favorites %}
+        <div class="books-grid" id="booksGrid">
+            {% for favorite in favorites %}
+            <div class="book-card" data-book-id="{{ favorite.book.id }}">
+             <button class="remove-btn" onclick="removeFromList({{ favorite.book.id }}, event)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="book-cover" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
+                    {% if favorite.book.image %}
+                        <img src="{{ favorite.book.image.url }}" alt="{{ favorite.book.title }}">
+                    {% else %}
+                        <div class="fallback-icon">📖</div>
+                    {% endif %}
+                </div>
+                <div class="book-info" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
+                    <div class="book-title">{{ favorite.book.title|truncatechars:25 }}</div>
+                    <div class="book-author">{{ favorite.book.author }}</div>
+                    <div class="added-date">Added {{ favorite.added_date|timesince }} ago</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-regular fa-bookmark"></i>
+            <h3>Your list is empty</h3>
+            <p>Start adding books you want to read!</p>
+            <a href="/categories/">Browse Categories →</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function removeFromList(bookId, event) {
+            event.stopPropagation();
+            
+            fetch('/add-to-list/' + bookId + '/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.added) {
+                    // إزالة البطاقة من الصفحة
+                    const card = document.querySelector(.book-card[data-book-id="${bookId}"]);
+                    if (card) {
+                        card.remove();
+                    }
+                    // تحديث العدد
+                    const statsSpan = document.getElementById('statsCount');
+                    let currentText = statsSpan.innerText;
+                    let currentCount = parseInt(currentText);
+                    if (!isNaN(currentCount) && currentCount > 0) {
+                        let newCount = currentCount - 1;
+                        statsSpan.innerText = newCount + ' book' + (newCount !== 1 ? 's' : '');
+                    }
+                    // إذا لم يبق أي كتاب، إظهار الرسالة الفارغة
+                    if (document.querySelectorAll('.book-card').length === 0) {
+                        location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
