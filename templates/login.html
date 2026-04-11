@@ -125,6 +125,7 @@ input:checked + .slider:before{
   flex-direction:column;
 }
 
+
 input{
   padding:12px;
   border-radius:25px;
@@ -223,10 +224,20 @@ English ▼
  </div>  
   </div> 
 
-<div class="header" id="titleText">Log in</div>
+  <!-- ERRORS -->
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
 
-<div class="form-group">
-<label id="userLabel">Phone number, email or username</label>
+  <!-- FORM -->
+   
+   
+<div class="header" id="titleText">Log in</div>
+  <div class="form-group">
+     {% csrf_token %}
+<label id="userLabel">Username</label>
 <input type="text">
 </div>
 
@@ -238,42 +249,49 @@ English ▼
 
 <button class="login-btn" id="loginText">Log in</button>
 
-<p class="help">
-<span id="helpText">Don't have an account?</span>
-<a href="/signup/" id="helpLink">Sign up</a>
-</p>
 
-
-
-
+  <p class="help">
+    <span id="helpText">Don't have an account?</span>
+   <a href="/signup/" id="helpLink">Sign up</a>
+  </p>
 </div>
+ 
 
 <script>
-// PASSWORD (عكسنا المنطق كما طلبت)
+// PASSWORD
 const pass = document.getElementById("password");
 const eye = document.getElementById("togglePassword");
-eye.onclick = () => {
-  if(pass.type === "text"){
-    pass.type = "password";
-    eye.classList.remove("fa-eye");
-    eye.classList.add("fa-eye-slash");
-  }else{
-    pass.type = "text";
-    eye.classList.remove("fa-eye-slash");
-    eye.classList.add("fa-eye");
-  }
-};
+
+if(pass && eye){
+  eye.onclick = () => {
+    if(pass.type === "text"){
+      pass.type = "password";
+      eye.classList.remove("fa-eye");
+      eye.classList.add("fa-eye-slash");
+    }else{
+      pass.type = "text";
+      eye.classList.remove("fa-eye-slash");
+      eye.classList.add("fa-eye");
+    }
+  };
+}
 
 // DARK MODE
-document.getElementById("modeToggle").onchange = function(){
-  document.getElementById("card").classList.toggle("dark");
-};
+const modeToggle = document.getElementById("modeToggle");
+if(modeToggle){
+  modeToggle.onchange = function(){
+    const card = document.getElementById("card");
+    if(card){
+      card.classList.toggle("dark");
+    }
+  };
+}
 
 // LANGUAGES
 const translations = {
 English:{
   title:"Log in",
-  userLabel:"Phone number, email or username",
+  userLabel:"Username",
   passLabel:"Password",
   loginText:"Log in",
   helpText:"Don't have an account?",
@@ -281,7 +299,7 @@ English:{
 },
 Français:{
   title:"Se connecter",
-  userLabel:"Numéro, email ou nom d'utilisateur",
+  userLabel:"Nom d'utilisateur",
   passLabel:"Mot de passe",
   loginText:"Se connecter",
   helpText:"Pas de compte ?",
@@ -289,7 +307,7 @@ Français:{
 },
 العربية:{
   title:"تسجيل الدخول",
-  userLabel:"رقم الهاتف أو البريد أو اسم المستخدم",
+  userLabel:"اسم المستخدم",
   passLabel:"كلمة المرور",
   loginText:"تسجيل الدخول",
   helpText:"ليس لديك حساب؟",
@@ -300,28 +318,29 @@ Français:{
 const current = document.getElementById("currentLang");
 const options = document.getElementById("langOptions");
 
-current.onclick = () => {
-  options.style.display = options.style.display === "block" ? "none" : "block";
-};
-
-options.querySelectorAll("li").forEach(li=>{
-  li.onclick = ()=>{
-    const lang = li.dataset.lang;
-
-    current.childNodes[0].textContent = lang;
-
-    document.getElementById("titleText").textContent = translations[lang].title;
-    document.getElementById("userLabel").textContent = translations[lang].userLabel;
-    document.getElementById("passLabel").textContent = translations[lang].passLabel;
-    document.getElementById("loginText").textContent = translations[lang].loginText;
-    document.getElementById("helpText").textContent = translations[lang].helpText;
-    document.getElementById("helpLink").textContent = translations[lang].helpLink;
-
-    document.documentElement.dir = lang === "العربية" ? "rtl" : "ltr";
-
-    options.style.display = "none";
+if(current && options){
+  current.onclick = () => {
+    options.style.display = options.style.display === "block" ? "none" : "block";
   };
-});
+
+  options.querySelectorAll("li").forEach(li=>{
+    li.onclick = ()=>{
+      const lang = li.dataset.lang;
+
+      current.innerText = lang;
+      document.getElementById("titleText").textContent = translations[lang].title;
+      document.getElementById("userLabel").textContent = translations[lang].userLabel;
+      document.getElementById("passLabel").textContent = translations[lang].passLabel;
+      document.getElementById("loginText").textContent = translations[lang].loginText;
+      document.getElementById("helpText").textContent = translations[lang].helpText;
+      document.getElementById("helpLink").textContent = translations[lang].helpLink;
+
+      document.documentElement.dir = lang === "العربية" ? "rtl" : "ltr";
+
+      options.style.display = "none";
+    };
+  });
+}
 </script>
 
 </body>
