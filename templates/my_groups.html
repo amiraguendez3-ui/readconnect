@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Groups | BookNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --deep:#561d46; --mid:#ae6a97; --light:#eca8bb; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background:#f5f0f7; }
+
+        .main { max-width:800px; margin:0 auto; padding:30px 20px 60px; }
+
+        /* ── Header ── */
+        .page-head { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+        .back-btn {
+            width:38px; height:38px; border-radius:50%;
+            background:white; border:none; color:var(--deep);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; font-size:14px; text-decoration:none;
+            box-shadow:0 2px 8px rgba(86,29,70,0.1); transition:0.2s;
+        }
+        .back-btn:hover { background:var(--light); color:white; }
+        .page-head h1 { font-size:22px; font-weight:800; color:var(--deep); }
+        .page-head h1 i { color:var(--mid); margin-right:8px; }
+
+        /* ── Tabs ── */
+        .tabs { display:flex; gap:10px; margin-bottom:22px; }
+        .tab {
+            padding:9px 22px; border-radius:30px; font-size:13px; font-weight:600;
+            cursor:pointer; transition:0.2s; text-decoration:none;
+            border:1.5px solid #e5dded; background:white; color:#888;
+        }
+        .tab.active {
+            background:linear-gradient(135deg,var(--deep),var(--mid));
+            color:white; border-color:transparent;
+            box-shadow:0 4px 12px rgba(86,29,70,0.2);
+        }
+        .tab:hover:not(.active) { border-color:var(--light); color:var(--deep); }
+
+        /* ── Group Cards ── */
+        .groups-list { display:flex; flex-direction:column; gap:14px; }
+
+        .group-card {
+            background:white; border-radius:18px; padding:18px 20px;
+            display:flex; align-items:center; gap:16px;
+            box-shadow:0 4px 14px rgba(86,29,70,0.07);
+            transition:0.3s; border:1.5px solid transparent;
+            text-decoration:none;
+        }
+        .group-card:hover {
+            transform:translateY(-3px);
+            box-shadow:0 10px 24px rgba(86,29,70,0.13);
+            border-color:var(--light);
+        }
+
+        /* Book cover */
+        .book-thumb {
+            width:52px; height:70px; border-radius:10px; flex-shrink:0;
+            overflow:hidden; background:linear-gradient(135deg,var(--mid),var(--light));
+            box-shadow:0 4px 12px rgba(86,29,70,0.18);
+        }
+        .book-thumb img { width:100%; height:100%; object-fit:cover; }
+        .book-thumb .no-img {
+            width:100%; height:100%; display:flex; align-items:center;
+            justify-content:center; color:white; font-size:22px;
+        }
+
+        /* Info */
+        .group-info { flex:1; }
+        .group-book-title { font-size:15px; font-weight:700; color:var(--deep); margin-bottom:4px; }
+        .group-book-author { font-size:12px; color:#aaa; margin-bottom:8px; }
+
+        /* Members */
+        .members-row { display:flex; align-items:center; gap:8px; }
+        .members-avs { display:flex; }
+        .m-av {
+            width:24px; height:24px; border-radius:50%;
+            border:2px solid white; margin-left:-6px;
+            background:linear-gradient(135deg,var(--mid),var(--light));
+            display:flex; align-items:center; justify-content:center;
+            color:white; font-size:9px; font-weight:700; overflow:hidden;
+        }
+        .m-av:first-child { margin-left:0; }
+        .m-av img { width:100%; height:100%; object-fit:cover; }
+        .members-count { font-size:11px; color:#aaa; }
+ /* Badge */
+        .group-badge {
+            padding:5px 14px; border-radius:20px; font-size:11px; font-weight:600;
+            display:flex; align-items:center; gap:5px; flex-shrink:0;
+        }
+        .badge-reading { background:#fde8f0; color:#c45c7c; }
+        .badge-read    { background:#f0e8f5; color:#6e4a96; }
+
+        /* Chat button */
+        .chat-btn {
+            width:38px; height:38px; border-radius:50%;
+            background:linear-gradient(135deg,var(--deep),var(--mid));
+            display:flex; align-items:center; justify-content:center;
+            color:white; font-size:14px; flex-shrink:0;
+            box-shadow:0 4px 10px rgba(86,29,70,0.22); transition:0.2s;
+        }
+        .group-card:hover .chat-btn { transform:scale(1.1); }
+
+        /* Empty */
+        .empty {
+            background:white; border-radius:20px; padding:50px 30px;
+            text-align:center; box-shadow:0 4px 14px rgba(86,29,70,0.05);
+        }
+        .empty-ring {
+            width:70px; height:70px; border-radius:50%;
+            background:linear-gradient(135deg,#f5e8f2,#fde8f0);
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 16px;
+        }
+        .empty-ring i { font-size:28px; color:var(--light); }
+        .empty h3 { font-size:17px; font-weight:700; color:var(--deep); margin-bottom:6px; }
+        .empty p  { font-size:13px; color:#aaa; margin-bottom:18px; }
+        .empty a  {
+            background:linear-gradient(135deg,var(--deep),var(--mid));
+            color:white; padding:10px 24px; border-radius:30px;
+            text-decoration:none; font-size:13px; font-weight:600;
+            display:inline-block;
+        }
+    </style>
+</head>
+<body>
+
+{% include 'header.html' %}
+
+<main class="main">
+
+    <!-- Header -->
+    <div class="page-head">
+        <a href="{% url 'profile' %}" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1>
+            {% if group_type == 'reading' %}
+                <i class="fa-solid fa-book-open"></i> Currently Reading
+            {% else %}
+                <i class="fa-solid fa-check-double"></i> Already Read
+            {% endif %}
+        </h1>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <a href="?type=reading" class="tab {% if group_type == 'reading' %}active{% endif %}">
+            <i class="fa-solid fa-book-open"></i> Currently Reading ({{ reading_count }})
+        </a>
+        <a href="?type=read" class="tab {% if group_type == 'read' %}active{% endif %}">
+            <i class="fa-solid fa-check-double"></i> Already Read ({{ read_count }})
+        </a>
+    </div>
+
+    <!-- Groups List -->
+    {% if statuses %}
+    <div class="groups-list">
+        {% for status in statuses %}
+        <a href="/group-chat/{{ status.book.id }}/{{ group_type }}/" class="group-card">
+
+            <!-- Book cover -->
+            <div class="book-thumb">
+                {% if status.book.image %}
+                    <img src="{{ status.book.image.url }}" alt="{{ status.book.title }}">
+                {% else %}
+                    <div class="no-img"><i class="fa-solid fa-book"></i></div>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div class="group-info">
+                <div class="group-book-title">{{ status.book.title|truncatechars:35 }}</div>
+                <div class="group-book-author">{{ status.book.author }}</div>
+
+                <!-- Members -->
+                <div class="members-row">
+                    <div class="members-avs">
+                        {% for member in status.book.reading_statuses.all|slice:":4" %}
+                        {% if member.status == group_type %}
+                        <div class="m-av">{{ member.user.username|slice:":1"|upper }}</div>
+{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="members-count">
+                        {{ status.book.reading_statuses.all|length }} member{{ status.book.reading_statuses.all|length|pluralize }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Badge -->
+            <div class="group-badge {% if group_type == 'reading' %}badge-reading{% else %}badge-read{% endif %}">
+                {% if group_type == 'reading' %}
+                    <i class="fa-solid fa-book-open"></i> Reading
+                {% else %}
+                    <i class="fa-solid fa-check"></i> Read
+                {% endif %}
+            </div>
+
+            <!-- Chat icon -->
+            <div class="chat-btn">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+
+        </a>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty">
+        <div class="empty-ring">
+            <i class="fa-solid fa-users"></i>
+        </div>
+        <h3>No groups yet</h3>
+        <p>
+            {% if group_type == 'reading' %}
+                You haven't joined any "Currently Reading" group yet.
+            {% else %}
+                You haven't joined any "Already Read" group yet.
+            {% endif %}
+        </p>
+        <a href="{% url 'categories' %}">Browse Books →</a>
+    </div>
+    {% endif %}
+
+</main>
+</body>
+</html>

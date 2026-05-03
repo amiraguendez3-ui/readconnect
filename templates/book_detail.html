@@ -7,390 +7,842 @@
     <title>{{ book.title }} | Book Nest</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #f5f5f0; color: #1a1a2e; }
 
-        .sidebar {
-            position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
-            background: white; padding: 30px 24px; box-shadow: 2px 0 20px rgba(0,0,0,0.04);
-            z-index: 100;
-        }
-        .logo { font-size: 24px; font-weight: bold; color: #5a3e36; margin-bottom: 50px; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: #5a3e36; font-size: 24px; }
-        .nav-menu { list-style: none; margin-bottom: 50px; }
-        .nav-item { margin-bottom: 12px; }
-        .nav-link {
-            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
-            text-decoration: none; color: #4a4a4a; font-weight: 500;
-            border-radius: 12px; transition: all 0.2s ease; font-size: 15px;
-        }
-        .nav-link i { width: 22px; font-size: 18px; color: #8b8b8b; }
-        .nav-link:hover { background: #f0ebe6; color: #5a3e36; }
-        .nav-link:hover i { color: #5a3e36; }
-        .nav-link.active { background: #5a3e36; color: white; }
-        .nav-link.active i { color: white; }
-        .user-section { position: absolute; bottom: 30px; left: 24px; right: 24px; padding-top: 20px; border-top: 1px solid #eee; }
-        .user-card { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 48px; height: 48px; background: #5a3e36; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
-        .user-info h4 { font-size: 15px; font-weight: 600; color: #2d2d2d; margin-bottom: 4px; }
-        .user-info p { font-size: 12px; color: #999; }
+    /* ===== PALETTE =====
+       --deep:  #561d46
+       --mid:   #ae6a97
+       --light: #eca8bb
+       --cream: #f8f0ea
+       =================== */
 
-        .main-content { margin-left: 260px; padding: 30px 40px; min-height: 100vh; }
-        .back-link { color: #5a3e36; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-        .back-link:hover { text-decoration: underline; }
-        .book-detail { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .book-main { display: flex; gap: 40px; flex-wrap: wrap; }
-        .book-cover-large {
-            width: 260px; height: 330px; background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .book-cover-large img { width: 100%; height: 100%; object-fit: cover; }
-        .book-cover-large .fallback-icon { font-size: 70px; color: #8b5e4b; }
-        .book-info { flex: 1; }
-        .book-title { font-size: 32px; font-weight: 700; color: #2d2d2d; margin-bottom: 8px; }
-        .book-author { font-size: 16px; color: #5a3e36; font-weight: 500; margin-bottom: 15px; }
+    :root {
+        --deep:  #561d46;
+        --mid:   #ae6a97;
+        --light: #eca8bb;
+        --cream: #f8f0ea;
+    }
 
-        .rating-section { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stars { color: #ffc107; font-size: 18px; }
-        .rating-value { font-size: 18px; font-weight: 600; color: #2d2d2d; }
-        .ratings-count { font-size: 13px; color: #888; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .action-buttons { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        .btn-add-list {
-            background: #5a3e36; color: white; border: none; padding: 12px 28px;
-            border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
-        }
-        .btn-add-list:hover { background: #3d2a24; }
-        .btn-add-list.added { background: #2d5a3e; }
-        
-        .book-tags { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-        .tag { background: #f0ebe6; padding: 6px 18px; border-radius: 30px; font-size: 13px; color: #5a3e36; font-weight: 500; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f5f0f7;
+        color: #1a1a2e;
+    }
 
-        .summary-section { margin-top: 25px; padding: 20px; background: #f8f5f2; border-radius: 16px; }
-        .summary-section h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #2d2d2d; }
-        .summary-section p { font-size: 14px; line-height: 1.6; color: #555; }
+    /* ========== MAIN LAYOUT ========== */
+    .page-wrapper {
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 0 24px;
+    }
 
-        .rate-section { margin-top: 25px; padding: 20px; border-top: 1px solid #eee; }
-        .rate-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-        .rate-stars { display: flex; gap: 8px; }
-        .rate-star { font-size: 28px; color: #ddd; cursor: pointer; transition: 0.2s; }
-        .rate-star:hover, .rate-star.active { color: #ffc107; }
+    .back-link {
+        color: var(--mid);
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+    .back-link:hover { color: var(--deep); }
 
-        .comments-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-        .comments-section h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .comment-form { display: flex; gap: 15px; margin-bottom: 25px; }
-        .comment-avatar {
-            width: 45px; height: 45px; background: #5a3e36; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;
-        }
-        .comment-input { flex: 1; }
-        .comment-input textarea {
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;
-            resize: none; font-family: inherit; font-size: 13px;
-        }
-        .comment-input textarea:focus { outline: none; border-color: #5a3e36; }
-        .comment-submit { background: #5a3e36; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 12px; cursor: pointer; margin-top: 8px; }
+    /* ========== BOOK DETAIL CARD ========== */
+    .book-detail {
+        background: rgb(255, 255, 255);
+        border-radius: 24px;
+        padding: 36px;
+        box-shadow: 0 4px 24px rgba(86,29,70,0.07);
+        margin-bottom: 28px;
+    }
 
-        .comment-card { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-        .comment-content { flex: 1; }
-        .comment-user { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
-        .comment-time { font-size: 11px; color: #999; margin-bottom: 8px; }
-        .comment-text { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
-        .comment-actions { display: flex; gap: 15px; }
-        .comment-like { font-size: 12px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .comment-like:hover { color: #5a3e36; }
-        .comment-like.liked { color: #5a3e36; }
+    .book-main {
+        display: flex;
+        gap: 44px;
+        flex-wrap: wrap;
+    }
 
-        .recommended-section { margin-top: 40px; }
-        .recommended-section h3 { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
-        .recommended-strip { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
-        .recommended-strip::-webkit-scrollbar { height: 5px; }
-        .recommended-strip::-webkit-scrollbar-track { background: #e8e8e8; border-radius: 10px; }
-        .recommended-strip::-webkit-scrollbar-thumb { background: #5a3e36; border-radius: 10px; }
-        .rec-book-card {
-            min-width: 140px; width: 140px; background: white; border-radius: 16px;
-            overflow: hidden; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .rec-book-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
-        .rec-book-cover {
-            height: 170px; background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .rec-book-cover img { width: 100%; height: 100%; object-fit: cover; }
-        .rec-book-cover .fallback-icon { font-size: 45px; color: #8b5e4b; }
-        .rec-book-info { padding: 10px; text-align: center; }
-        .rec-book-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rec-book-rating { font-size: 11px; color: #ffc107; }
+    /* ---- Cover ---- */
+    .book-cover-large {
+        width: 220px;
+        min-width: 220px;
+        height: 300px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(86,29,70,0.22);
+        background: linear-gradient(135deg, var(--mid), var(--light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .book-cover-large img {
+        width: 100%; height: 100%; object-fit: cover;
+    }
+    .fallback-icon { font-size: 60px; color: white; }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 20px 12px; }
-            .sidebar .logo span, .sidebar .nav-link span, .user-info { display: none; }
-            .main-content { margin-left: 80px; padding: 20px; }
-            .book-cover-large { width: 200px; height: 260px; }
-            .book-title { font-size: 24px; }
-        }
+    /* ---- Info ---- */
+    .book-info { flex: 1; }
+
+    .book-title {
+        font-size: 30px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 6px;
+        line-height: 1.2;
+    }
+
+    .book-author {
+        font-size: 15px;
+        color: var(--mid);
+        font-weight: 500;
+        margin-bottom: 16px;
+    }
+
+    .book-description {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+
+    /* ---- Rating ---- */
+    .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+    .stars { color: #ffc107; font-size: 18px; letter-spacing: 2px; }
+    .rating-value { font-size: 17px; font-weight: 700; color: #1a1a2e; }
+    .ratings-count { font-size: 12px; color: #aaa; }
+
+    /* ---- Buttons ---- */
+    .action-buttons {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--deep), var(--mid));
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        box-shadow: 0 4px 14px rgba(86,29,70,0.25);
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-primary.added {
+        background: linear-gradient(135deg, #2d5a3e, #4a9a6a);
+    }
+
+    .btn-icon {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: 1.5px solid #eee;
+        background: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--mid);
+        transition: 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--light); color: var(--deep); }
+
+    /* ---- Tags ---- */
+    .book-tags {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .tag {
+        background: #f5e8f2;
+        padding: 5px 16px;
+        border-radius: 30px;
+        font-size: 12px;
+        color: var(--deep);
+        font-weight: 500;
+        border: 1px solid #eca8bb44;
+    }
+
+    /* ========== DIVIDER ========== */
+    .section-divider {
+        border: none;
+        border-top: 1px solid #f0e8f2;
+        margin: 28px 0;
+    }
+
+    /* ========== SECTION TITLE ========== */
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--deep);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-title i { color: var(--mid); font-size: 16px; }
+
+    /* ========== RATE SECTION ========== */
+    .rate-section { margin-bottom: 8px; }
+    .rate-stars { display: flex; gap: 8px; }
+    .rate-star {
+        font-size: 26px;
+        color: #ddd;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .rate-star:hover, .rate-star.active { color: #ffc107; }
+
+    /* ========== COMMENTS ========== */
+    .comment-form {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 28px;
+        align-items: flex-start;
+    }
+    .comment-avatar {
+        width: 42px; height: 42px;
+        background: linear-gradient(135deg, var(--deep), var(--mid));
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .comment-input { flex: 1; }
+    .comment-input textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1.5px solid #eee;
+        resize: none;
+        font-family: inherit;
+        font-size: 13px;
+        transition: 0.2s;
+        background: #fafafa;
+    }
+    .comment-input textarea:focus {
+        outline: none;
+        border-color: var(--light);
+        background: white;
+    }
+    .comment-submit {
+        background: var(--deep);
+        color: white;
+        border: none;
+        padding: 9px 22px;
+        border-radius: 22px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: 0.2s;
+    }
+    .comment-submit:hover { background: var(--mid); }
+
+    .comment-card {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f5e8f2;
+    }
+    .comment-content { flex: 1; }
+    .comment-user { font-weight: 600; font-size: 14px; margin-bottom: 3px; color: var(--deep); }
+    .comment-time { font-size: 11px; color: #bbb; margin-bottom: 6px; }
+    .comment-text { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+    .comment-actions { display: flex; gap: 14px; }
+    .comment-like {
+        font-size: 12px; color: #aaa; cursor: pointer;
+        display: flex; align-items: center; gap: 5px;
+        transition: 0.2s;
+    }
+    .comment-like:hover { color: var(--mid); }
+    .comment-like.liked { color: var(--deep); }
+
+    /* ========== DISCUSSION GROUPS ========== */
+    .groups-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 10px;
+    }
+
+    .group-card {
+        border-radius: 18px;
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+        border: 1.5px solid transparent;
+    }
+
+    .group-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(86,29,70,0.14);
+    }
+ /* Currently Reading — light pink */
+    .group-reading {
+        background: linear-gradient(135deg, #fde8f0 0%, #f5e0ee 100%);
+        border-color: #eca8bb55;
+    }
+
+    /* Already Read — light purple */
+    .group-read {
+        background: linear-gradient(135deg, #f0e8f5 0%, #e8dff2 100%);
+        border-color: #ae6a9755;
+    }
+
+    .group-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 14px;
+    }
+
+    .group-reading .group-badge {
+        background: #eca8bb33;
+        color: #c45c7c;
+    }
+
+    .group-read .group-badge {
+        background: #ae6a9733;
+        color: #561d46;
+    }
+
+    .group-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--deep);
+        margin-bottom: 6px;
+    }
+
+    .group-desc {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 16px;
+        line-height: 1.5;
+    }
+
+    /* Stacked avatars like Goodreads */
+    .group-members {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .members-avatars {
+        display: flex;
+    }
+
+    .member-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2.5px solid white;
+        overflow: hidden;
+        margin-left: -8px;
+        background: linear-gradient(135deg, var(--mid), var(--light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .member-avatar:first-child { margin-left: 0; }
+
+    .member-avatar img {
+        width: 100%; height: 100%; object-fit: cover;
+    }
+
+    .members-count {
+        font-size: 12px;
+        color: #888;
+        margin-left: 6px;
+    }
+
+    .members-count strong {
+        color: var(--deep);
+        font-weight: 700;
+    }
+
+    .group-join-btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+    }
+
+    .group-reading .group-join-btn {
+        background: var(--light);
+        color: white;
+    }
+    .group-reading .group-join-btn:hover { background: #c45c7c; }
+
+    .group-read .group-join-btn {
+        background: var(--mid);
+        color: white;
+    }
+    .group-read .group-join-btn:hover { background: var(--deep); }
+
+    .group-join-btn.joined {
+        background: #e8e8e8 !important;
+        color: #888 !important;
+    }
+
+    /* ========== RECOMMENDED ========== */
+    .recommended-strip {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--light) #f0e8f2;
+    }
+    .recommended-strip::-webkit-scrollbar { height: 4px; }
+    .recommended-strip::-webkit-scrollbar-thumb {
+        background: var(--light); border-radius: 10px;
+    }
+
+    .rec-book-card {
+        min-width: 130px;
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 12px rgba(86,29,70,0.07);
+        border: 1.5px solid transparent;
+    }
+    .rec-book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 24px rgba(86,29,70,0.14);
+        border-color: var(--light);
+    }
+    .rec-book-cover {
+        height: 160px;
+        background: linear-gradient(135deg, var(--mid), var(--light));
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+    }
+    .rec-book-cover img { width: 100%; height: 100%; object-fit: cover; }
+    .rec-book-info { padding: 10px; text-align: center; }
+    .rec-book-title {
+        font-size: 12px; font-weight: 600;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        color: var(--deep);
+    }
+    .rec-book-rating { font-size: 11px; color: #ffc107; margin-top: 3px; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+        .book-main { flex-direction: column; align-items: center; }
+        .book-cover-large { width: 180px; min-width: 180px; height: 240px; }
+        .book-info { text-align: center; }
+        .action-buttons, .rating-section, .book-tags { justify-content: center; }
+        .groups-grid { grid-template-columns: 1fr; }
+        .book-detail { padding: 22px 18px; }
+    }
+
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="logo"><i class="fa-solid fa-feather"></i><span>Book Nest</span></div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
-            <li class="nav-item"><a href="/my-list/" class="nav-link"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
-            <li class="nav-item"><a href="/categories/" class="nav-link"><i class="fa-solid fa-book-open"></i><span>Categories</span></a></li>
-        </ul>
-        <div class="user-section">
-            <div class="user-card">
-                <div class="user-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
-                <div class="user-info"><h4>{{ user.username|default:"Guest" }}</h4><p>Reader</p></div>
+{% include 'header.html' %}
+
+<div class="page-wrapper">
+
+
+
+    <!-- ========== BOOK MAIN CARD ========== -->
+    <div class="book-detail">
+        <div class="book-main">
+
+            <!-- Cover -->
+            <div class="book-cover-large">
+                {% if book.image %}
+                    <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                {% else %}
+                    <div class="fallback-icon"><i class="fa-solid fa-book"></i></div>
+                {% endif %}
             </div>
-        </div>
-    </aside>
 
-    <main class="main-content">
-        <a href="javascript:history.back()" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Categories</a>
+            <!-- Info -->
+            <div class="book-info">
+                <h1 class="book-title">{{ book.title }}</h1>
+                <p class="book-author">{{ book.author }}</p>
+                <p class="book-description">{{ book.description|default:""|truncatechars:160 }}</p>
 
-        <div class="book-detail">
-            <div class="book-main">
-                <div class="book-cover-large">
-                    {% if book.image %}
-                        <img src="{{ book.image.url }}" alt="{{ book.title }}">
-                    {% else %}
-                        <div class="fallback-icon">📖</div>
-                    {% endif %}
-                </div>
-
-                <div class="book-info">
-                    <h1 class="book-title">{{ book.title }}</h1>
-                    <p class="book-author">by {{ book.author }}</p>
-
-                    <div class="rating-section">
-                        <div class="stars">
-                            {% for i in "12345"|make_list %}
-                                {% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}
-                            {% endfor %}
-                        </div>
-                        <span class="rating-value">{{ avg_rating|default:"0" }}</span>
-                        <span class="ratings-count">({{ ratings_count }} ratings)</span>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="btn-add-list {% if is_favorite %}added{% endif %}" id="favoriteBtn" data-book-id="{{ book.id }}">
-                            <i class="fa-{% if is_favorite %}solid{% else %}regular{% endif %} fa-bookmark"></i> 
-                            <span id="favoriteText">{% if is_favorite %}Added to{% else %}Add to{% endif %} My List</span>
-                        </button>
-                    </div>
-
-                    <div class="book-tags">
-                        {% for tag in tags %}
-                        <span class="tag">{{ tag }}</span>
+                <div class="rating-section">
+                    <div class="stars">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}
                         {% endfor %}
                     </div>
-
-                    <div class="summary-section">
-                        <h3>📖 Summary</h3>
-                        <p>{{ book.description|default:"No description available for this book yet." }}</p>
-                    </div>
+                    <span class="rating-value">{{ avg_rating|default:"0" }}</span>
+                    <span class="ratings-count">({{ ratings_count }} ratings)</span>
                 </div>
-            </div>
- <!-- Rate This Book -->
-            <div class="rate-section">
-                <h3>⭐ Rate this book</h3>
-                <div class="rate-stars" id="rateStars" data-book-id="{{ book.id }}">
-                    <i class="fa-regular fa-star rate-star" data-rating="1"></i>
-                    <i class="fa-regular fa-star rate-star" data-rating="2"></i>
-                    <i class="fa-regular fa-star rate-star" data-rating="3"></i>
-                    <i class="fa-regular fa-star rate-star" data-rating="4"></i>
-                    <i class="fa-regular fa-star rate-star" data-rating="5"></i>
+
+                <div class="action-buttons">
+                    <button class="btn-primary {% if is_favorite %}added{% endif %}"
+                            id="favoriteBtn" data-book-id="{{ book.id }}">
+                        <i class="fa-{% if is_favorite %}solid{% else %}regular{% endif %} fa-bookmark"></i>
+                        <span id="favoriteText">{% if is_favorite %}Added to{% else %}Add to{% endif %} My List</span>
+                    </button>
                 </div>
-            </div>
 
-            <!-- Comments Section -->
-            <div class="comments-section">
-                <h3>💬 Community Reviews ({{ comments|length }})</h3>
-
-                {% if user.is_authenticated %}
-                <div class="comment-form">
-                    <div class="comment-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
-                    <div class="comment-input">
-                        <textarea id="commentText" rows="2" placeholder="Share your thoughts about this book..."></textarea>
-                        <button class="comment-submit" data-book-id="{{ book.id }}">Post Comment</button>
-                    </div>
-                </div>
-                {% else %}
-                <p style="color: #999; margin-bottom: 20px;"><a href="/login/" style="color: #5a3e36;">Login</a> to leave a comment</p>
-                {% endif %}
-
-                <div id="commentsList">
-                    {% for comment in comments %}
-                    <div class="comment-card" data-comment-id="{{ comment.id }}">
-                        <div class="comment-avatar" style="width: 40px; height: 40px; font-size: 14px;">
-                            {{ comment.user.username|slice:":1"|default:"U" }}
-                        </div>
-                        <div class="comment-content">
-                            <div class="comment-user">{{ comment.user.username }}</div>
-                            <div class="comment-time">{{ comment.created_at|timesince }} ago</div>
-                            <div class="comment-text">{{ comment.content }}</div>
-                            <div class="comment-actions">
-                                <span class="comment-like" data-comment-id="{{ comment.id }}">
-                                    <i class="fa-regular fa-heart"></i> <span class="comment-like-count">{{ comment.likes_count }}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p style="color: #999; text-align: center; padding: 20px;">No comments yet. Be the first to share your thoughts!</p>
+                <div class="book-tags">
+                    {% for tag in tags %}
+                        <span class="tag">{{ tag }}</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- You May Also Like -->
-            <div class="recommended-section">
-                <h3>📚 You may also like</h3>
-                <div class="recommended-strip">
-                    {% for rec_book in recommended_books %}
-                    <div class="rec-book-card" data-book-slug="{{ rec_book.title|slugify }}">
-                        <div class="rec-book-cover">
-                            {% if rec_book.image %}
-                                <img src="{{ rec_book.image.url }}" alt="{{ rec_book.title }}">
-                            {% else %}
-                                <div class="fallback-icon">📖</div>
-                            {% endif %}
-                        </div>
-                        <div class="rec-book-info">
-                            <div class="rec-book-title">{{ rec_book.title|truncatechars:20 }}</div>
-                            <div class="rec-book-rating">⭐ New</div>
-                        </div>
+        </div>
+
+        
+
+       
+
+        <hr class="section-divider">
+
+        <!-- ========== DISCUSSION GROUPS ========== -->
+        <div>
+            <p class="section-title"><i class="fa-solid fa-users"></i> Discussion Groups</p>
+
+            <div class="groups-grid">
+
+                <!-- Group: Currently Reading -->
+                <div class="group-card group-reading">
+                    <div class="group-badge">
+                    <i class="fa-solid fa-book-open"></i> Currently Reading
                     </div>
-                    {% empty %}
-                    <p style="color: #999;">No recommendations available.</p>
-                    {% endfor %}
+                    <div class="group-title">Readers in Progress</div>
+                    <div class="group-desc">Join readers who are reading this book right now — share your thoughts as you go!</div>
+
+                    <div class="group-members">
+                        <div class="members-avatars">
+                            {% for reader in currently_reading_users|slice:":4" %}
+                                <div class="member-avatar">
+                                    {% if reader.profile.avatar %}
+                                        <img src="{{ reader.profile.avatar.url }}">
+                                    {% else %}
+                                        {{ reader.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                            {% empty %}
+                                <div class="member-avatar">?</div>
+                            {% endfor %}
+                        </div>
+                        <span class="members-count">
+                            <strong>{{ currently_reading_count|default:"0" }}</strong> currently reading
+                        </span>
+                    </div>
+
+                    <button class="group-join-btn {% if user_is_reading %}joined{% endif %}"
+                            id="joinReadingBtn" data-book-id="{{ book.id }}" data-group="reading">
+                        {% if user_is_reading %}
+                            <i class="fa-solid fa-check"></i> Joined
+                        {% else %}
+                            <i class="fa-solid fa-plus"></i> Join Group
+                        {% endif %}
+                    </button>
                 </div>
+
+                <!-- Group: Already Read -->
+                <div class="group-card group-read">
+                    <div class="group-badge">
+                        <i class="fa-solid fa-check-double"></i> Already Read
+                    </div>
+                    <div class="group-title">Finished Readers</div>
+                    <div class="group-desc">Connect with readers who finished this book — discuss your impressions and favourite moments!</div>
+
+                    <div class="group-members">
+                        <div class="members-avatars">
+                            {% for reader in already_read_users|slice:":4" %}
+                                <div class="member-avatar">
+                                    {% if reader.profile.avatar %}
+                                        <img src="{{ reader.profile.avatar.url }}">
+                                    {% else %}
+                                        {{ reader.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                            {% empty %}
+                                <div class="member-avatar">?</div>
+                            {% endfor %}
+                        </div>
+                        <span class="members-count">
+                            <strong>{{ already_read_count|default:"0" }}</strong> have read it
+                        </span>
+                    </div>
+
+                    <button class="group-join-btn {% if user_has_read %}joined{% endif %}"
+                            id="joinReadBtn" data-book-id="{{ book.id }}" data-group="read">
+                        {% if user_has_read %}
+                            <i class="fa-solid fa-check"></i> Joined
+                        {% else %}
+                            <i class="fa-solid fa-plus"></i> Join Group
+                        {% endif %}
+                    </button>
+                </div>
+
             </div>
         </div>
-    </main>
- <script>
-        // Get CSRF Token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+
+        <hr class="section-divider">
+ <!-- ========== RATE ========== -->
+        <div class="rate-section">
+            <p class="section-title"><i class="fa-solid fa-star"></i> Rate this book</p>
+            <div class="rate-stars" id="rateStars" data-book-id="{{ book.id }}">
+                <i class="fa-regular fa-star rate-star" data-rating="1"></i>
+                <i class="fa-regular fa-star rate-star" data-rating="2"></i>
+                <i class="fa-regular fa-star rate-star" data-rating="3"></i>
+                <i class="fa-regular fa-star rate-star" data-rating="4"></i>
+                <i class="fa-regular fa-star rate-star" data-rating="5"></i>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- ========== COMMENTS ========== -->
+        <div class="comments-section">
+            <p class="section-title">
+                <i class="fa-solid fa-comments"></i>
+                Community Reviews ({{ comments|length }})
+            </p>
+
+            {% if user.is_authenticated %}
+            <div class="comment-form">
+                <div class="comment-avatar">{{ user.username|slice:":1"|upper|default:"U" }}</div>
+                <div class="comment-input">
+                    <textarea id="commentText" rows="2" placeholder="Share your thoughts about this book..."></textarea>
+                    <button class="comment-submit" data-book-id="{{ book.id }}">Post Comment</button>
+                </div>
+            </div>
+            {% else %}
+            <p style="color:#aaa; margin-bottom:20px; font-size:13px;">
+                <a href="/login/" style="color:var(--mid); font-weight:600;">Login</a> to leave a comment
+            </p>
+            {% endif %}
+
+            <div id="commentsList">
+                {% for comment in comments %}
+                <div class="comment-card" data-comment-id="{{ comment.id }}">
+                    <div class="comment-avatar" style="width:38px;height:38px;font-size:13px;">
+                        {{ comment.user.username|slice:":1"|upper|default:"U" }}
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-user">{{ comment.user.username }}</div>
+                        <div class="comment-time">{{ comment.created_at|timesince }} ago</div>
+                        <div class="comment-text">{{ comment.content }}</div>
+                        <div class="comment-actions">
+                            <span class="comment-like" data-comment-id="{{ comment.id }}">
+                                <i class="fa-regular fa-heart"></i>
+                                <span class="comment-like-count">{{ comment.likes_count }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#bbb; text-align:center; padding:24px; font-size:13px;">
+                    No comments yet. Be the first to share your thoughts!
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- ========== RECOMMENDED ========== -->
+        <div class="recommended-section">
+            <p class="section-title"><i class="fa-solid fa-wand-sparkles"></i> You may also like</p>
+            <div class="recommended-strip">
+                {% for rec_book in recommended_books %}
+                <div class="rec-book-card" data-book-slug="{{ rec_book.title|slugify }}">
+                    <div class="rec-book-cover">
+                        {% if rec_book.image %}
+                            <img src="{{ rec_book.image.url }}" alt="{{ rec_book.title }}">
+                        {% else %}
+                            <i class="fa-solid fa-book" style="color:white;font-size:36px;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="rec-book-info">
+                        <div class="rec-book-title">{{ rec_book.title|truncatechars:20 }}</div>
+                        <div class="rec-book-rating">⭐ New</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#bbb; font-size:13px;">No recommendations available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div><!-- end .book-detail -->
+</div><!-- end .page-wrapper -->
+
+<!-- ========== SCRIPTS (unchanged logic) ========== -->
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
+        return cookieValue;
+    }
 
-        // Star Rating
-        const rateStars = document.getElementById('rateStars');
-        if (rateStars) {
-            const bookId = rateStars.dataset.bookId;
-            const stars = document.querySelectorAll('.rate-star');
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const rating = this.dataset.rating;
-                    stars.forEach(s => {
-                        s.classList.remove('fa-solid');
-                        s.classList.add('fa-regular');
-                    });
-                    for(let i = 0; i < rating; i++) {
-                        stars[i].classList.remove('fa-regular');
-                        stars[i].classList.add('fa-solid');
-                    }
-                    fetch('/rate-book/' + bookId + '/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-                        body: JSON.stringify({rating: rating})
-                    }).then(() => location.reload());
-                });
-            });
-        }
-
-        // Toggle Favorite (My List)
-        const favoriteBtn = document.getElementById('favoriteBtn');
-        if (favoriteBtn) {
-            favoriteBtn.addEventListener('click', function() {
-                const bookId = this.dataset.bookId;
-                fetch('/add-to-list/' + bookId + '/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
-                }).then(response => response.json()).then(data => {
-                    const btn = document.getElementById('favoriteBtn');
-                    const textSpan = document.getElementById('favoriteText');
-                    const icon = btn.querySelector('i');
-                    if (data.added) {
-                        btn.classList.add('added');
-                        icon.classList.remove('fa-regular');
-                        icon.classList.add('fa-solid');
-                        textSpan.innerText = 'Added to My List';
-                    } else {
-                        btn.classList.remove('added');
-                        icon.classList.remove('fa-solid');
-                        icon.classList.add('fa-regular');
-                        textSpan.innerText = 'Add to My List';
-                    }
-                });
-            });
-        }
-
-        // Add Comment
-        const commentSubmit = document.querySelector('.comment-submit');
-        if (commentSubmit) {
-            commentSubmit.addEventListener('click', function() {
-                const bookId = this.dataset.bookId;
-                const content = document.getElementById('commentText').value;
-                if (!content.trim()) return;
-                fetch('/add-comment/' + bookId + '/', {
+    // Star Rating
+    const rateStars = document.getElementById('rateStars');
+    if (rateStars) {
+        const bookId = rateStars.dataset.bookId;
+        const stars = document.querySelectorAll('.rate-star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                stars.forEach(s => { s.classList.remove('fa-solid'); s.classList.add('fa-regular'); });
+                for(let i = 0; i < rating; i++) {
+                    stars[i].classList.remove('fa-regular');
+                    stars[i].classList.add('fa-solid');
+                }
+                fetch('/rate-book/' + bookId + '/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-                    body: JSON.stringify({content: content})
-                }).then(response => response.json()).then(data => {
-                    if (data.success) { location.reload(); }
-                });
-            });
-        }
- // Like Comment
-        const likeButtons = document.querySelectorAll('.comment-like');
-        likeButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const commentId = this.dataset.commentId;
-                fetch('/like-comment/' + commentId + '/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
-                }).then(response => response.json()).then(data => {
-                    const likeSpan = this.querySelector('.comment-like-count');
-                    if (likeSpan) likeSpan.innerText = data.likes_count;
-                    if (data.liked) {
-                        this.classList.add('liked');
-                        this.querySelector('i').classList.remove('fa-regular');
-                        this.querySelector('i').classList.add('fa-solid');
-                    } else {
-                        this.classList.remove('liked');
-                        this.querySelector('i').classList.remove('fa-solid');
-                        this.querySelector('i').classList.add('fa-regular');
-                    }
-                });
+                    body: JSON.stringify({rating: rating})
+                }).then(() => location.reload());
             });
         });
+    }
 
-        // Recommended Books Click
-        const recBooks = document.querySelectorAll('.rec-book-card');
-        recBooks.forEach(book => {
-            book.addEventListener('click', function() {
-                const slug = this.dataset.bookSlug;
-                window.location.href = '/book/' + slug + '/';
+    // Toggle Favorite
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function() {
+            const bookId = this.dataset.bookId;
+            fetch('/add-to-list/' + bookId + '/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
+            }).then(r => r.json()).then(data => {
+                const btn = document.getElementById('favoriteBtn');
+                const textSpan = document.getElementById('favoriteText');
+                const icon = btn.querySelector('i');
+                if (data.added) {
+                    btn.classList.add('added');
+                    icon.classList.remove('fa-regular'); icon.classList.add('fa-solid');
+                    textSpan.innerText = 'Added to My List';
+                } else {
+                    btn.classList.remove('added');
+                    icon.classList.remove('fa-solid'); icon.classList.add('fa-regular');
+                    textSpan.innerText = 'Add to My List';
+                }
             });
         });
-    </script>
+    }
 
-<li class="nav-item"><a href="/my-list/" class="nav-link"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
+    // Add Comment
+    const commentSubmit = document.querySelector('.comment-submit');
+    if (commentSubmit) {
+        commentSubmit.addEventListener('click', function() {
+            const bookId = this.dataset.bookId;
+            const content = document.getElementById('commentText').value;
+            if (!content.trim()) return;
+            fetch('/add-comment/' + bookId + '/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify({content: content})
+            }).then(r => r.json()).then(data => {
+                if (data.success) { location.reload(); }
+            });
+        });
+    }
+// Like Comment
+    document.querySelectorAll('.comment-like').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            fetch('/like-comment/' + commentId + '/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
+            }).then(r => r.json()).then(data => {
+                const likeSpan = this.querySelector('.comment-like-count');
+                if (likeSpan) likeSpan.innerText = data.likes_count;
+                if (data.liked) {
+                    this.classList.add('liked');
+                    this.querySelector('i').classList.remove('fa-regular');
+                    this.querySelector('i').classList.add('fa-solid');
+                } else {
+                    this.classList.remove('liked');
+                    this.querySelector('i').classList.remove('fa-solid');
+                    this.querySelector('i').classList.add('fa-regular');
+                }
+            });
+        });
+    });
+
+    // Recommended Books Click
+    document.querySelectorAll('.rec-book-card').forEach(book => {
+        book.addEventListener('click', function() {
+            window.location.href = '/book/' + this.dataset.bookSlug + '/';
+        });
+    });
+
+    // Join Discussion Group buttons
+    // (You need to add URL paths in urls.py: /join-group/<book_id>/<group_type>/)
+    document.querySelectorAll('.group-join-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.classList.contains('joined')) return;
+            const bookId = this.dataset.bookId;
+            const group = this.dataset.group;
+            fetch('/join-group/' + bookId + '/' + group + '/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    
+                    window.location.href = '/group-chat/{{ book.id }}/' + group + '/';
+     
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -1,0 +1,437 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | BookNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --deep:#561d46; --mid:#ae6a97; --light:#eca8bb; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background:#f5f0f7; }
+
+        /* ── COVER ── */
+        .cover { height:190px; background:linear-gradient(135deg,var(--deep) 0%,var(--mid) 70%,var(--light) 100%); }
+
+        /* ── CONTAINER ── */
+        .container { max-width:760px; margin:-65px auto 0; padding:0 20px 60px; position:relative; z-index:2; }
+
+        /* ── AVATAR CARD ── */
+        .avatar-card { background:white; border-radius:24px; padding:26px; text-align:center; box-shadow:0 8px 28px rgba(86,29,70,0.12); margin-bottom:16px; }
+
+        .avatar-ring {
+            width:90px; height:90px; border-radius:50%;
+            border:4px solid white;
+            background:linear-gradient(135deg,var(--deep),var(--mid));
+            margin:0 auto 12px;
+            display:flex; align-items:center; justify-content:center;
+            overflow:hidden; box-shadow:0 6px 20px rgba(86,29,70,0.25);
+            position:relative; cursor:pointer;
+        }
+        .avatar-ring img { width:100%; height:100%; object-fit:cover; }
+        .avatar-ring .letter { font-size:34px; font-weight:800; color:white; }
+        .cam-ov { position:absolute; inset:0; background:rgba(86,29,70,0.5); display:flex; align-items:center; justify-content:center; opacity:0; transition:0.2s; border-radius:50%; }
+        .avatar-ring:hover .cam-ov { opacity:1; }
+        .cam-ov i { color:white; font-size:20px; }
+
+        .uname  { font-size:20px; font-weight:800; color:var(--deep); margin-bottom:2px; }
+        .uemail { font-size:12px; color:#bbb; margin-bottom:16px; }
+
+        /* Stats */
+        .stats { display:flex; justify-content:center; border-top:1px solid #f0e8f2; border-bottom:1px solid #f0e8f2; margin-bottom:18px; }
+        .stat  { flex:1; text-align:center; padding:13px 0; max-width:120px; border-right:1px solid #f0e8f2; }
+        .stat:last-child { border-right:none; }
+        .stat-n { font-size:20px; font-weight:800; color:var(--deep); }
+        .stat-l { font-size:10px; color:#aaa; }
+
+        /* Buttons */
+        .actions { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+        .btn { padding:9px 16px; border-radius:30px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:7px; border:none; }
+        .btn-p  { background:linear-gradient(135deg,var(--deep),var(--mid)); color:white; box-shadow:0 4px 14px rgba(86,29,70,0.22); }
+        .btn-p:hover { opacity:0.88; transform:translateY(-2px); }
+        .btn-o  { background:white; color:var(--deep); border:1.5px solid #e5dded; }
+        .btn-o:hover { border-color:var(--light); }
+        .btn-d  { background:white; color:#e74c3c; border:1.5px solid #fde8e8; }
+        .btn-d:hover { background:#fde8e8; }
+
+        /* ── SECTION CARDS ── */
+        .section-card { background:white; border-radius:20px; padding:22px; box-shadow:0 4px 16px rgba(86,29,70,0.07); margin-bottom:14px; }
+        .sec-title { font-size:14px; font-weight:700; color:var(--deep); margin-bottom:14px; display:flex; align-items:center; gap:9px; }
+        .sec-title i { color:var(--mid); }
+
+        /* Groups mini */
+        .groups-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .g-mini { border-radius:14px; padding:14px; display:flex; align-items:center; gap:13px; }
+        .g-mini.reading { background:#fde8f0; }
+        .g-mini.read    { background:#f0e8f5; }
+        .g-icon { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+        .reading .g-icon { background:rgba(196,92,124,0.15); color:#c45c7c; }
+        .read    .g-icon { background:rgba(110,74,150,0.15); color:#6e4a96; }
+        .g-n { font-size:20px; font-weight:800; color:var(--deep); }
+        .g-l { font-size:11px; color:#aaa; }
+
+        /* Favorites strip */
+        .fav-strip { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+        .fav-strip::-webkit-scrollbar { display:none; }
+        .fav-book { min-width:84px; cursor:pointer; }
+        .fav-cover { height:116px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,var(--mid),var(--light)); margin-bottom:6px; box-shadow:0 4px 10px rgba(86,29,70,0.1); transition:0.2s; }
+        .fav-book:hover .fav-cover { transform:translateY(-4px); }
+        .fav-cover img { width:100%; height:100%; object-fit:cover; }
+        .fav-title { font-size:11px; font-weight:600; color:var(--deep); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .empty-msg { color:#ccc; font-size:13px; text-align:center; padding:20px; width:100%; }
+
+        /* ══════════════════════════
+           MODALS
+        ══════════════════════════ */
+        .modal-backdrop {
+            display:none; position:fixed; inset:0;
+            background:rgba(86,29,70,0.35); backdrop-filter:blur(4px);
+            z-index:999; align-items:center; justify-content:center; padding:20px;
+        }
+        .modal-backdrop.open { display:flex; }
+
+        .modal {
+            background:white; border-radius:24px; padding:32px 28px;
+            width:100%; max-width:420px;
+            box-shadow:0 20px 60px rgba(86,29,70,0.25);
+            animation:slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+        .modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+        .modal-title  { font-size:18px; font-weight:800; color:var(--deep); display:flex; align-items:center; gap:10px; }
+        .modal-title i { color:var(--mid); }
+        .modal-close  { background:none; border:none; font-size:18px; color:#bbb; cursor:pointer; transition:0.2s; }
+        .modal-close:hover { color:var(--deep); }
+
+        .form-group { margin-bottom:16px; }
+        .form-group label { font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:6px; }
+        .form-group input {
+            width:100%; padding:12px 16px;
+            border:1.5px solid #eee; border-radius:12px;
+            font-family:inherit; font-size:13px;
+            outline:none; transition:0.2s; background:#fafafa;
+        }
+        .form-group input:focus { border-color:var(--light); background:white; }
+        .pw-wrap { position:relative; }
+        .pw-eye { position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#ccc; cursor:pointer; font-size:13px; }
+        .pw-eye:hover { color:var(--mid); }
+
+        .gender-row { display:flex; gap:10px; }
+        .gender-btn { flex:1; padding:10px; border:1.5px solid #eee; border-radius:12px; cursor:pointer; text-align:center; font-size:12px; font-weight:500; color:#666; background:white; transition:0.2s; }
+        .gender-btn.active { border-color:var(--mid); background:#f5e8f2; color:var(--deep); }
+
+        .strength-bar { height:4px; border-radius:10px; background:#eee; margin-top:7px; overflow:hidden; }
+        .strength-fill { height:100%; border-radius:10px; width:0%; transition:0.3s; }
+
+        .btn-modal { width:100%; padding:13px; background:linear-gradient(135deg,var(--deep),var(--mid)); color:white; border:none; border-radius:13px; font-size:14px; font-weight:600; cursor:pointer; margin-top:6px; transition:0.2s; box-shadow:0 6px 18px rgba(86,29,70,0.22); }
+        .btn-modal:hover { opacity:0.88; transform:translateY(-2px); }
+        .alert-success { background:#e8f5e9; color:#2e7d32; padding:11px 14px; border-radius:11px; font-size:13px; margin-bottom:14px; }
+        .alert-error   { background:#fde8e8; color:#c0392b; padding:11px 14px; border-radius:11px; font-size:13px; margin-bottom:14px; }
+
+        /* Logout confirm modal */
+        .logout-btns { display:flex; gap:10px; margin-top:16px; }
+        .btn-cancel { flex:1; padding:12px; border:1.5px solid #eee; border-radius:13px; background:white; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s; }
+        .btn-cancel:hover { border-color:#ddd; }
+        .btn-logout-confirm { flex:1; padding:12px; background:#e74c3c; color:white; border:none; border-radius:13px; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s; }
+        .btn-logout-confirm:hover { background:#c0392b; }
+
+        @media(max-width:580px) {
+            .groups-row { grid-template-columns:1fr; }
+            .actions .btn { font-size:11px; padding:8px 13px; }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'header.html' %}
+<div class="cover"></div>
+
+<div class="container">
+
+    {% if messages %}{% for m in messages %}
+    <div class="alert-{% if 'success' in m.tags %}success{% else %}error{% endif %}" style="margin-bottom:14px;">{{ m }}</div>
+    {% endfor %}{% endif %}
+
+    <!-- ── AVATAR CARD ── -->
+    <div class="avatar-card">
+
+        <!-- Avatar upload -->
+        <form method="POST" enctype="multipart/form-data" id="avForm">
+            {% csrf_token %}
+            <input type="file" id="avInput" name="image" accept="image/*" style="display:none"
+                   onchange="document.getElementById('avForm').submit()">
+        </form>
+        <label for="avInput">
+            <div class="avatar-ring">
+                {% if profile.image and profile.image.name != 'default.png' %}
+                    <img src="{{ profile.image.url }}">
+                {% else %}
+                    <div class="letter">{{ user.username|slice:":1"|upper }}</div>
+                {% endif %}
+                <div class="cam-ov"><i class="fa-solid fa-camera"></i></div>
+            </div>
+        </label>
+
+        <div class="uname">{{ user.first_name }} {{ user.last_name }}<br><small style="font-size:13px;color:var(--mid);font-weight:500;">@{{ user.username }}</small></div>
+        <div class="uemail">{{ user.email|default:"No email" }}</div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat"><div class="stat-n">{{ total_favorites }}</div><div class="stat-l">My List</div></div>
+            <div class="stat"><div class="stat-n">{{ total_comments }}</div><div class="stat-l">Comments</div></div>
+            <div class="stat"><div class="stat-n">{{ total_ratings }}</div><div class="stat-l">Ratings</div></div>
+            <div class="stat"><div class="stat-n">{{ activity_score }}</div><div class="stat-l">Score</div></div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="actions">
+            <button class="btn btn-p" onclick="openModal('editModal')">
+                <i class="fa-solid fa-pen"></i> Edit Profile
+            </button>
+            <button class="btn btn-o" onclick="openModal('pwModal')">
+                <i class="fa-solid fa-lock"></i> Change Password
+            </button>
+            <button class="btn btn-d" onclick="openModal('logoutModal')">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+            <button class="btn btn-d" onclick="openModal('deleteModal')">
+                <i class="fa-solid fa-trash"></i> Delete Account
+            </button>
+        </div>
+    </div>
+
+    <!-- ── READING GROUPS ── -->
+    <div class="section-card">
+        <div class="sec-title"><i class="fa-solid fa-users"></i> My Reading Groups</div>
+        <div class="groups-row">
+            <a href="{% url 'my_groups' %}?type=reading" style="text-decoration:none;">
+            <div class="g-mini reading" style="cursor:pointer;transition:0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="g-icon"><i class="fa-solid fa-book-open"></i></div>
+                <div>
+                    <div class="g-n">{{ reading_count }}</div>
+                    <div class="g-l">Currently Reading</div>
+                    <div style="font-size:10px;color:var(--mid);margin-top:3px;">View all →</div>
+                </div>
+            </div>
+            </a>
+            <a href="{% url 'my_groups' %}?type=read" style="text-decoration:none;">
+            <div class="g-mini read" style="cursor:pointer;transition:0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="g-icon"><i class="fa-solid fa-check-double"></i></div>
+                <div>
+                    <div class="g-n">{{ read_count }}</div>
+                    <div class="g-l">Already Read</div>
+                    <div style="font-size:10px;color:var(--mid);margin-top:3px;">View all →</div>
+                </div>
+            </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── LATEST FAVORITES ── -->
+    <div class="section-card">
+        <div class="sec-title"><i class="fa-solid fa-bookmark"></i> Latest Favorites</div>
+        <div class="fav-strip">
+            {% for fav in latest_favorites %}
+            <div class="fav-book" onclick="location.href='/book/{{ fav.book.title|slugify }}/'">
+                <div class="fav-cover">{% if fav.book.image %}<img src="{{ fav.book.image.url }}">{% endif %}</div>
+                <div class="fav-title">{{ fav.book.title|truncatechars:13 }}</div>
+            </div>
+            {% empty %}<div class="empty-msg">No books added yet</div>{% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: Edit Profile
+══════════════════════════════════════ -->
+<div class="modal-backdrop" id="editModal" onclick="closeOnBackdrop(event,'editModal')">
+<div class="modal">
+    <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-pen"></i> Edit Profile</div>
+        <button class="modal-close" onclick="closeModal('editModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="{% url 'update_profile' %}">
+        {% csrf_token %}
+        <input type="hidden" name="gender" id="genderVal" value="{{ profile.gender }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="first_name" value="{{ user.first_name }}">
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="last_name" value="{{ user.last_name }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" value="{{ user.username }}" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user.email }}">
+        </div>
+        <div class="form-group">
+            <label>Gender</label>
+            <div class="gender-row">
+                <div class="gender-btn {% if profile.gender == 'male' %}active{% endif %}" id="gm" onclick="setGender('male')"><i class="fa-solid fa-mars"></i> Male</div>
+                <div class="gender-btn {% if profile.gender == 'female' %}active{% endif %}" id="gf" onclick="setGender('female')"><i class="fa-solid fa-venus"></i> Female</div>
+            </div>
+        </div>
+        <button type="submit" class="btn-modal">Save Changes</button>
+    </form>
+</div>
+</div>
+<!-- ══════════════════════════════════════
+     MODAL: Change Password
+══════════════════════════════════════ -->
+<div class="modal-backdrop" id="pwModal" onclick="closeOnBackdrop(event,'pwModal')">
+<div class="modal">
+    <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-lock"></i> Change Password</div>
+        <button class="modal-close" onclick="closeModal('pwModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="{% url 'change_password' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Current Password</label>
+            <div class="pw-wrap">
+                <input type="password" name="old_password" id="pw1" placeholder="••••••••" required>
+                <i class="fa-regular fa-eye pw-eye" onclick="togglePw('pw1',this)"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>New Password</label>
+            <div class="pw-wrap">
+                <input type="password" name="new_password1" id="pw2" placeholder="••••••••" required oninput="strength(this.value)">
+                <i class="fa-regular fa-eye pw-eye" onclick="togglePw('pw2',this)"></i>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="sf"></div></div>
+        </div>
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <div class="pw-wrap">
+                <input type="password" name="new_password2" id="pw3" placeholder="••••••••" required>
+                <i class="fa-regular fa-eye pw-eye" onclick="togglePw('pw3',this)"></i>
+            </div>
+        </div>
+        <button type="submit" class="btn-modal">Update Password</button>
+    </form>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL: Logout Confirm
+══════════════════════════════════════ -->
+<div class="modal-backdrop" id="logoutModal" onclick="closeOnBackdrop(event,'logoutModal')">
+<div class="modal">
+    <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</div>
+        <button class="modal-close" onclick="closeModal('logoutModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p style="font-size:14px;color:#666;margin-bottom:4px;">Are you sure you want to sign out?</p>
+    <p style="font-size:12px;color:#bbb;">You'll need to sign in again to access your account.</p>
+    <div class="logout-btns">
+        <button class="btn-cancel" onclick="closeModal('logoutModal')">Cancel</button>
+        <form method="POST" action="{% url 'logout' %}" style="flex:1">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout-confirm" style="width:100%">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </button>
+        </form>
+    </div>
+</div>
+</div>
+
+<script>
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBackdrop(e, id) { if (e.target.id === id) closeModal(id); }
+function setGender(v) {
+    document.getElementById('genderVal').value = v;
+    document.getElementById('gm').classList.toggle('active', v==='male');
+    document.getElementById('gf').classList.toggle('active', v==='female');
+}
+function togglePw(id,icon) {
+    const i = document.getElementById(id);
+    i.type = i.type==='password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+}
+function strength(v) {
+    let s=0;
+    if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+    const sf=document.getElementById('sf');
+    sf.style.width=(s*25)+'%';
+    sf.style.background=['#eee','#e74c3c','#e67e22','#f1c40f','#27ae60'][s];
+ }
+// Auto-open modal if there are messages (form was submitted)
+{% if messages %}
+document.addEventListener('DOMContentLoaded',()=>{
+    {% for m in messages %}
+        {% if 'error' in m.tags %}openModal('pwModal');
+        {% else %}openModal('editModal');{% endif %}
+    {% endfor %}
+});
+{% endif %}
+function checkUsername(val) {
+    const btn = document.getElementById('deleteConfirmBtn');
+    if (val === '{{ user.username }}') {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+    } else {
+        btn.style.opacity = '0.4';
+        btn.style.pointerEvents = 'none';
+    }
+}
+</script>
+
+<!-- ══ MODAL: Delete Account ══ -->
+<div class="modal-backdrop" id="deleteModal" onclick="closeOnBackdrop(event,'deleteModal')">
+<div class="modal">
+    <div class="modal-header">
+        <div class="modal-title" style="color:#e74c3c;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Delete Account
+        </div>
+        <button class="modal-close" onclick="closeModal('deleteModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div style="background:#fde8e8;border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+        <p style="font-size:13px;color:#c0392b;font-weight:600;margin-bottom:4px;">
+            <i class="fa-solid fa-circle-exclamation"></i> This action cannot be undone!
+        </p>
+        <p style="font-size:12px;color:#c0392b;line-height:1.5;">
+            All your favorites, comments, ratings and group memberships will be permanently deleted.
+        </p>
+    </div>
+
+    <p style="font-size:13px;color:#666;margin-bottom:14px;">
+        Type your username to confirm:
+        <strong style="color:var(--deep);">{{ user.username }}</strong>
+    </p>
+
+    <div class="form-group">
+        <input type="text" id="confirmUsername"
+               placeholder="Type your username here..."
+               oninput="checkUsername(this.value)">
+    </div>
+
+    <form method="POST" action="{% url 'delete_account' %}">
+        {% csrf_token %}
+        <button type="submit" id="deleteConfirmBtn" class="btn-modal"
+                style="background:linear-gradient(135deg,#c0392b,#e74c3c);opacity:0.4;pointer-events:none;">
+            <i class="fa-solid fa-trash"></i> Yes, Delete My Account
+        </button>
+    </form>
+
+    <button class="btn-cancel" onclick="closeModal('deleteModal')"
+            style="width:100%;margin-top:10px;">
+        Cancel
+    </button>
+</div>
+</div>
+
+</body>
+</html>

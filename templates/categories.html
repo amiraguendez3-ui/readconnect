@@ -1,485 +1,545 @@
-{% load static %}
+ {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories | Book Nest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        :root {
+            --deep: #561d46;
+            --mid: #ae6a97;
+            --light: #eca8bb;
+            --cream: #ffffff;
+            --bg-gradient-start: #fefaf5;
+            --bg-gradient-end: #fdf0f5;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f0;
-            color: #1a1a2e;
+            background: #f5f0f7;
+            color: #2c2c2c;
+            overflow-y: auto;
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
+        /* HEADER (identique home) */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(86,29,70,0.08);
+            position: sticky;
             top: 0;
-            width: 260px;
-            height: 100vh;
-            background: white;
-            padding: 30px 24px;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.04);
-            z-index: 100;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid rgba(86,29,70,0.1);
         }
-
-        .logo {
+        .logo a {
             font-size: 24px;
-            font-weight: bold;
-            color: #5a3e36;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--deep);
         }
-
         .logo i {
-            color: #5a3e36;
-            font-size: 24px;
+            color: var(--mid);
+            margin-right: 4px;
         }
-
-        .nav-menu {
+        .nav-links {
             list-style: none;
-            margin-bottom: 50px;
-        }
-
-        .nav-item {
-            margin-bottom: 12px;
-        }
-
-        .nav-link {
             display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
+            gap: 25px;
+        }
+        .nav-links a {
             text-decoration: none;
             color: #4a4a4a;
             font-weight: 500;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            font-size: 15px;
+            font-size: 14px;
+            transition: 0.2s;
         }
-
-        .nav-link i {
-            width: 22px;
-            font-size: 18px;
-            color: #8b8b8b;
+        .nav-links a:hover {
+            color: var(--deep);
         }
-
-        .nav-link:hover {
-            background: #f0ebe6;
-            color: #5a3e36;
-        }
-
-        .nav-link:hover i {
-            color: #5a3e36;
-        }
-
-        .nav-link.active {
-            background: #5a3e36;
-            color: white;
-        }
-
-        .nav-link.active i {
-            color: white;
-        }
-
-        .user-section {
-            position: absolute;
-            bottom: 30px;
-            left: 24px;
-            right: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        .user-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 48px;
-            height: 48px;
-            background: #5a3e36;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .user-info h4 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2d2d2d;
-            margin-bottom: 4px;
-        }
-
-        .user-info p {
-            font-size: 12px;
-            color: #999;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 30px 40px;
-            min-height: 100vh;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .page-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2d2d2d;
-        }
-
         .search-box {
-            background: white;
-            border-radius: 30px;
-            padding: 10px 22px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-            border: 1px solid #eaeaea;
-        }
-
-        .search-box i {
-            color: #bbb;
-            font-size: 15px;
+            position: relative;
+            width: 270px;
         }
         .search-box input {
-            border: none;
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 40px;
+            border: 1px solid #f0dce5;
             outline: none;
-            font-size: 14px;
-            width: 240px;
-            background: transparent;
-            font-family: inherit;
+            font-size: 13px;
+            background: white;
+            transition: 0.2s;
         }
-
-        .stats-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #5a3e36;
-            margin-bottom: 30px;
+        .search-box input:focus {
+            border-color: var(--mid);
+            box-shadow: 0 0 0 3px rgba(174,106,151,0.2);
         }
-
-        /* Category Shelf - كل تصنيف له رف */
-        .category-shelf {
-            margin-bottom: 45px;
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--mid);
         }
-
-        .shelf-header {
+        .auth-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
+            gap: 12px;
+        }
+        .auth-buttons a {
+            text-decoration: none;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .auth-buttons .login {
+            border: 1.5px solid var(--deep);
+            color: var(--deep);
+            background: transparent;
+        }
+        .auth-buttons .login:hover {
+            background: var(--deep);
+            color: white;
+        }
+        .auth-buttons .signup {
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            color: white;
+        }
+        .auth-buttons .signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(86,29,70,0.3);
         }
 
-        .shelf-title {
+        /* LAYOUT 2 colonnes */
+        .categories-layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 25px;
+            gap: 35px;
+            align-items: flex-start;
+        }
+/* Sidebar gauche: effet glassmorphisme rose/violet */
+        .categories-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: rgba(255, 248, 252, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 25px 20px;
+            box-shadow: 0 20px 35px rgba(86,29,70,0.12), inset 0 1px 0 rgba(255,255,255,0.7);
+            border: 1px solid rgba(236,168,187,0.5);
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .categories-sidebar h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--deep);
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--light);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
-        .shelf-title .category-icon {
-            font-size: 28px;
-        }
-
-        .shelf-title h2 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #2d2d2d;
-        }
-
-        .shelf-title .book-count {
-            background: #e8e8e8;
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #666;
-        }
-
-        .shelf-link {
-            color: #5a3e36;
+        .categories-sidebar h3 a {
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
+            color: var(--deep);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .categories-sidebar h3 a i {
+            font-size: 24px;
+            color: var(--mid);
         }
 
-        /* Horizontal Scroll للكتب */
+        /* Menu vertical avec couleurs pastel (chaque élément différent) */
+        .vertical-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .vertical-menu li a {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 28px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            background: #f5eef8;
+            color: #4a3b5c;
+            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        /* Cycle de couleurs pastel */
+        .vertical-menu li:nth-child(1) a { background: #f3e8ff; }
+        .vertical-menu li:nth-child(2) a { background: #ffe4e6; }
+        .vertical-menu li:nth-child(3) a { background: #e0f7fa; }
+        .vertical-menu li:nth-child(4) a { background: #fff0e0; }
+        .vertical-menu li:nth-child(5) a { background: #e8f5e9; }
+        .vertical-menu li:nth-child(6) a { background: #ffecb3; }
+        .vertical-menu li:nth-child(7) a { background: #ffe0f0; }
+        .vertical-menu li:nth-child(8) a { background: #d1c4e9; }
+        .vertical-menu li:nth-child(9) a { background: #b2dfdb; }
+        .vertical-menu li:nth-child(10) a { background: #fce4ec; }
+        .vertical-menu li:nth-child(11) a { background: #fff3e0; }
+        .vertical-menu li:nth-child(12) a { background: #e1f5fe; }
+        .vertical-menu li:nth-child(13) a { background: #f3e5f5; }
+        .vertical-menu li:nth-child(14) a { background: #e8eaf6; }
+        .vertical-menu li:nth-child(15) a { background: #fff8e1; }
+        .vertical-menu li a:hover {
+            transform: translateX(6px);
+            filter: brightness(0.95);
+            box-shadow: 0 6px 14px rgba(86,29,70,0.12);
+        }
+        .vertical-menu li a.active {
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            color: white;
+            box-shadow: 0 8px 18px rgba(86,29,70,0.25);
+            transform: translateX(4px);
+        }
+
+        /* Contenu principal (droite) */
+        .categories-content {
+            flex: 1;
+            min-height: 550px;
+        }
+        .category-shelf {
+            margin-bottom: 45px;
+            scroll-margin-top: 95px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 36px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border: 1px solid rgba(236,168,187,0.3);
+            transition: all 0.2s;
+        }
+        .category-shelf:hover {
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 20px 35px rgba(86,29,70,0.08);
+        }
+        .shelf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        .shelf-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .shelf-title .category-icon {
+            font-size: 34px;
+        }
+        .shelf-title h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--deep);
+        }
+        /* Full shelf supprimé */
+        .shelf-link {
+            display: none;
+        }
+
+        /* Horizontal scroll des livres */
         .books-strip {
             display: flex;
             gap: 22px;
             overflow-x: auto;
             padding-bottom: 15px;
+            scroll-behavior: smooth;
         }
-
         .books-strip::-webkit-scrollbar {
-            height: 5px;
+            height: 6px;
         }
-
         .books-strip::-webkit-scrollbar-track {
-            background: #e8e8e8;
+            background: #f0e4ec;
             border-radius: 10px;
         }
-
         .books-strip::-webkit-scrollbar-thumb {
-            background: #5a3e36;
+            background: var(--mid);
             border-radius: 10px;
         }
-
         .book-card {
-            min-width: 155px;
-            width: 155px;
+            min-width: 165px;
+            width: 165px;
             background: white;
-            border-radius: 16px;
+            border-radius: 28px;
             overflow: hidden;
             cursor: pointer;
             transition: all 0.25s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 12px 24px rgba(86,29,70,0.08);
         }
-
         .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(86,29,70,0.2);
         }
-
         .book-cover {
-            height: 190px;
-            background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
+            height: 210px;
+            background: linear-gradient(145deg, #e6cfc5, #d4bba8);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
-
         .book-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
-        .book-cover .fallback-icon {
-            font-size: 50px;
+        .fallback-icon {
+            font-size: 60px;
             color: #8b5e4b;
-            opacity: 0.7;
         }
-
         .book-info {
-            padding: 12px 10px;
+            padding: 14px 12px;
             text-align: center;
-            background: white;
         }
-
         .book-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #2d2d2d;
+            font-size: 14px;
+            font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 4px;
+            color: var(--deep);
+            margin-bottom: 5px;
         }
-
         .book-author {
             font-size: 11px;
-            color: #aaa;
+            color: #9b7e6e;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .book-strip {
             height: 3px;
-            background: linear-gradient(90deg, #5a3e36, #c9b6a4);
-            width: 60%;
-            margin: 0 auto 8px auto;
-            border-radius: 3px;
-            opacity: 0.5;
+            background: linear-gradient(90deg, var(--deep), var(--light));
+            width: 70%;
+            margin: 8px auto 0;
+            border-radius: 4px;
+            opacity: 0.6;
         }
-
         .empty-category {
             text-align: center;
             padding: 40px;
-            background: white;
-            border-radius: 18px;
-            color: #bbb;
+            background: rgba(255,245,250,0.8);
+            border-radius: 32px;
+            color: #b092a5;
+            font-style: italic;
+            font-size: 14px;
         }
+        .hidden-shelf {
+            display: none;
+        }
+
         @media (max-width: 900px) {
-            .sidebar {
-                width: 80px;
-                padding: 20px 12px;
-            }
-            .sidebar .logo span,
-            .sidebar .nav-link span,
-            .user-info {
-                display: none;
-            }
-            .main-content {
-                margin-left: 80px;
+            .categories-layout {
+                flex-direction: column;
                 padding: 20px;
+            }
+            .categories-sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+                margin-bottom: 25px;
+            }
+            .vertical-menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .vertical-menu li a {
+                padding: 6px 16px;
+                font-size: 12px;
             }
             .book-card {
                 min-width: 140px;
                 width: 140px;
             }
             .book-cover {
-                height: 170px;
+                height: 175px;
+            }
+            .shelf-title h2 {
+                font-size: 20px;
             }
         }
+
+        /* الألوان الثمانية الدائرية — تتكرر تلقائياً */
+      
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-feather"></i>
-            <span>Book Nest</span>
-        </div>
+    {% include 'header.html' %}
 
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="/" class="nav-link">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Home</span>
+    <div class="categories-layout">
+        <aside class="categories-sidebar">
+            <h3>
+                <a href="#" id="showAllCategoriesBtn">
+                    <i class="fa-regular fa-folder-open"></i> All Categories
                 </a>
-            </li>
-            <li class="nav-item">
-                <a href="/my-list/" class="nav-link">
-                    <i class="fa-solid fa-list"></i>
-                    <span>My List</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/categories/" class="nav-link active">
-                    <i class="fa-solid fa-book-open"></i>
-                    <span>Categories</span>
-                </a>
-            </li>
-        </ul>
-
-        <div class="user-section">
-            <div class="user-card">
-                <div class="user-avatar">S</div>
-                <div class="user-info">
-                    <h4>Stephan</h4>
-                    <p>Book lover</p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="page-header">
-                <h1>Categories</h1>
-                <p>Browse through our collection by genre</p>
-            </div>
-            <div class="search-box">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search in My library...">
-            </div>
-        </div>
-
-        <div class="stats-number">{{ total_books|default:"0" }} Total Books</div>
-
-        <!-- عرض كل التصنيفات من قاعدة البيانات -->
-        {% for category in categories_with_books %}
-        <div class="category-shelf" data-category="{{ category.title|lower }}">
-            <div class="shelf-header">
-                <div class="shelf-title">
-                    <span class="category-icon">{{ category.icon }}</span>
-                    <h2>{{ category.title }}</h2>
-                    <span class="book-count">{{ category.book_count }} book{{ category.book_count|pluralize:"s" }}</span>
-                </div>
-                <a href="/category/{{ category.name }}/" class="shelf-link">Full shelf →</a>
-            </div>
-
-            {% if category.books %}
-            <div class="books-strip">
-                {% for book in category.books %}
-                <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
-                    <div class="book-cover">
-                        {% if book.image %}
-                            <img src="{{ book.image.url }}" alt="{{ book.title }}">
-                        {% else %}
-                            <div class="fallback-icon">📖</div>
-                        {% endif %}
-                    </div>
-                    <div class="book-info">
-                        <div class="book-title">{{ book.title|truncatechars:22 }}</div>
-                        <div class="book-author">{{ book.author|truncatechars:18 }}</div>
-                    </div>
-                    <div class="book-strip"></div>
-                    </div>
+            </h3>
+            <ul class="vertical-menu" id="categoryMenu">
+                {% for category in categories_with_books %}
+                <li>
+                    <a href="#" data-category-id="{{ category.id }}" class="category-filter-link">
+                        {{ category.icon }} {{ category.title }}
+                    </a>
+                </li>
                 {% endfor %}
+            </ul>
+        </aside>
+
+        <div class="categories-content" id="categoriesContent">
+            {% for category in categories_with_books %}
+            <div class="category-shelf" id="shelf-{{ category.id }}" data-category-id="{{ category.id }}">
+                <div class="shelf-header">
+                    <div class="shelf-title">
+                        <span class="category-icon">{{ category.icon }}</span>
+                        <h2>{{ category.title }}</h2>
+                    </div>
+                </div>
+                {% if category.books %}
+                <div class="books-strip">
+                    {% for book in category.books %}
+                    <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+                        <div class="book-cover">
+                            {% if book.image %}
+                                <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                            {% else %}
+                                <div class="fallback-icon">📖</div>
+                            {% endif %}
+                        </div>
+                        <div class="book-info">
+                            <div class="book-title">{{ book.title|truncatechars:24 }}</div>
+                            <div class="book-author">{{ book.author|truncatechars:20 }}</div>
+                        </div>
+                        <div class="book-strip"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-category">📭 Aucun livre dans cette catégorie pour le moment.</div>
+                {% endif %}
             </div>
-            {% else %}
-            <div class="empty-category">
-                <p>📭 No books in this category yet.</p>
-            </div>
-            {% endif %}
+            {% empty %}
+            <div class="empty-category">📭 Aucune catégorie trouvée. Veuillez en ajouter dans la base de données.</div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="empty-category">
-            <p>📭 No categories found. Please add categories to the database.</p>
-        </div>
-        {% endfor %}
-    </main>
+    </div>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const query = e.target.value.toLowerCase();
-                const categories = document.querySelectorAll('.category-shelf');
-                
-                categories.forEach(category => {
-                    const title = category.querySelector('.shelf-title h2').textContent.toLowerCase();
-                    const books = category.querySelectorAll('.book-title');
-                    let hasMatch = title.includes(query);
-                    
-                    books.forEach(book => {
-                        if (book.textContent.toLowerCase().includes(query)) {
-                            hasMatch = true;
-                        }
-                    });
-                    
-                    if (hasMatch || query === '') {
-                        category.style.display = 'block';
+        (function() {
+            // Récupération des éléments
+            var showAllBtn = document.getElementById('showAllCategoriesBtn');
+            var filterLinks = document.querySelectorAll('.category-filter-link');
+            var allShelves = document.querySelectorAll('.category-shelf');
+            
+            // Fonction pour afficher toutes les catégories
+            function showAllCategories() {
+                for (var i = 0; i < allShelves.length; i++) {
+                    allShelves[i].classList.remove('hidden-shelf');
+                }
+                for (var j = 0; j < filterLinks.length; j++) {
+                    filterLinks[j].classList.remove('active');
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Fonction pour afficher une seule catégorie
+            function showSingleCategory(categoryId) {
+                for (var i = 0; i < allShelves.length; i++) {
+                    var shelf = allShelves[i];
+                    if (shelf.getAttribute('data-category-id') === categoryId) {
+                        shelf.classList.remove('hidden-shelf');
                     } else {
-                        category.style.display = 'none';
+                        shelf.classList.add('hidden-shelf');
+                    }
+                }
+                for (var j = 0; j < filterLinks.length; j++) {
+                    var link = filterLinks[j];
+                    if (link.getAttribute('data-category-id') === categoryId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                }
+                var activeShelf = document.querySelector('.category-shelf[data-category-id="' + categoryId + '"]');
+                if (activeShelf) {
+                    activeShelf.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+            
+            // Événement : clic sur "All Categories"
+            if (showAllBtn) {
+                showAllBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAllCategories();
+                });
+            }
+            
+            // Événement : clic sur une catégorie dans le menu
+            for (var k = 0; k < filterLinks.length; k++) {
+                filterLinks[k].addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var catId = this.getAttribute('data-category-id');
+                    showSingleCategory(catId);
+                });
+            }
+            
+            // Recherche (barre de recherche dans le header)
+            var searchInput = document.querySelector('.search-box input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    var query = this.value.trim().toLowerCase();
+                    showAllCategories();
+                    for (var i = 0; i < allShelves.length; i++) {
+                        var shelf = allShelves[i];
+                        var titleElem = shelf.querySelector('.shelf-title h2');
+                        var title = titleElem ? titleElem.textContent.toLowerCase() : '';
+                        var hasMatch = title.indexOf(query) !== -1;
+                        var books = shelf.querySelectorAll('.book-title');
+                        for (var b = 0; b < books.length; b++) {
+                            if (books[b].textContent.toLowerCase().indexOf(query) !== -1) {
+                                hasMatch = true;
+                                break;
+                            }
+                        }
+                        if (query !== '' && !hasMatch) {
+                            shelf.classList.add('hidden-shelf');
+                        }
                     }
                 });
-            });
-        }
+            }
+        })();
     </script>
-
 </body>
 </html>

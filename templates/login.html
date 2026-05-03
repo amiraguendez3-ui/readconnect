@@ -1,347 +1,106 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-body, html{
-  margin:0;
-  padding:0;
-  height:100%;
-  font-family:Arial, sans-serif;
-  background: url("{% static 'images/bg.jpg' %}") no-repeat center center;
-  background-size: cover;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-/* CARD */
-.card{  
-  width:350px;  
-  min-height:400px;  
-background: rgba(245,245,220,0.85); 
-  border-radius:15px;  
-  padding:25px;  
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);  
-  display:flex;  
-  flex-direction:column;  
-  position:relative;  
-  transition: background 0.3s;  
-}  
-  
-.card.dark{  
-  background: rgba(50,50,50,0.9);  
-  color:rgb(182, 179, 179);  
-}  
-
-/* TOP BAR */
-.top-bar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:15px;
-}
-
-.language{
-  position:relative;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.language ul{
-  display:none;
-  position:absolute;
-  top:25px;
-  left:0;
-  background:white;
-  list-style:none;
-  padding:5px;
-  border-radius:5px;
-}
-
-.language ul li{
-  padding:5px;
-  cursor:pointer;
-}
-
-.language ul li:hover{
-  background:#eee;
-}
-
-/* DARK MODE */
-.switch{
-  position:relative;
-  width:50px;
-  height:24px;
-}
-
-.switch input{display:none;}
-
-.slider{
-  position:absolute;
-  top:0; left:0; right:0; bottom:0;
-  background:#ccc;
-  border-radius:34px;
-}
-
-.slider:before{
-  content:"";
-  position:absolute;
-  height:18px;
-  width:18px;
-  left:3px;
-  bottom:3px;
-  background:white;
-  border-radius:50%;
-  transition:0.3s;
-}
-
-input:checked + .slider{
-  background:#8B5E3C;
-}
-
-input:checked + .slider:before{
-  transform: translateX(26px);
-}
-
-/* HEADER */
-.header{
-  text-align:center;
-  font-size:28px;
-  margin-bottom:20px;
-  color:#8B5E3C;
-}
-
-/* FORM */
-.form-group{
-  margin-bottom:15px;
-  display:flex;
-  flex-direction:column;
-}
-
-
-input{
-  padding:12px;
-  border-radius:25px;
-  border:none;
-  outline:none;
-}
-
-/* PASSWORD */
-.password-box{
-  position:relative;
-  width:100% ;
-}
-
-.password-box input{
-  width:100%;
-  padding-right:45px;
-  box-sizing: border-box;
-}
-
-html[dir="ltr"] .password-box i{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-}
-
-html[dir="rtl"] .password-box i{
-  position:absolute;
-  left:12px;
-  right: auto;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-}
-
-/* BUTTON */
-.login-btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:25px;
-  background:#8B5E3C;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-/* HELP */
-.help{
-  text-align:center;
-  margin-top:10px;
-}
-
-.help a{
-  color:#1877f2;
-  text-decoration:none;
-}
-
-/* SOCIAL */
-.social{
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  margin-top:15px;
-}
-
-.social i{
-  font-size:25px;
-  cursor:pointer;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | BookNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--deep:#561d46;--mid:#ae6a97;--soft:#eca8bb;--cream:#f8f0ea;}
+        body{font-family:'Inter',sans-serif;background:var(--cream);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .auth-wrap{display:flex;width:100%;max-width:900px;border-radius:28px;overflow:hidden;box-shadow:0 25px 80px rgba(86,29,70,0.18);}
+        .auth-left{flex:1;background:linear-gradient(150deg,#561d46 0%,#ae6a97 60%,#eca8bb 100%);padding:60px 40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+        .auth-left::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.07);}
+        .auth-left::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.05);}
+        .brand{font-family:'Playfair Display',serif;font-size:26px;color:white;font-weight:800;position:relative;z-index:1;}
+        .brand i{color:#eca8bb;margin-right:6px;}
+        .brand span{color:#eca8bb;}
+        .auth-left-text{position:relative;z-index:1;}
+        .auth-left-text h2{font-family:'Playfair Display',serif;font-size:30px;color:white;line-height:1.3;margin-bottom:12px;}
+        .auth-left-text p{font-size:14px;color:rgba(255,255,255,0.75);line-height:1.7;}
+        .auth-left-bottom{font-size:12px;color:rgba(255,255,255,0.4);position:relative;z-index:1;}
+        .auth-right{flex:1;background:white;padding:50px 45px;display:flex;flex-direction:column;justify-content:center;}
+        .auth-right h1{font-family:'Playfair Display',serif;font-size:28px;color:#2d1a2e;margin-bottom:6px;}
+        .auth-right p{font-size:13px;color:#9a7a93;margin-bottom:35px;}
+        .error-message{background:#fde8f0;color:#561d46;padding:12px;border-radius:12px;font-size:13px;margin-bottom:20px;border-left:3px solid #ae6a97;}
+        .form-group{margin-bottom:20px;}
+        .form-group label{display:block;font-size:13px;font-weight:600;color:#561d46;margin-bottom:7px;}
+        .input-wrap{position:relative;}
+        .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#ae6a97;font-size:14px;}
+        .form-group input{width:100%;padding:12px 14px 12px 42px;border:1.5px solid #f0dcea;border-radius:14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:0.2s;background:#faf5f9;color:#2d1a2e;}
+        .form-group input:focus{border-color:#ae6a97;background:white;box-shadow:0 0 0 3px rgba(174,106,151,0.1);}
+        .toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#ae6a97;font-size:14px;}
+        .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#561d46,#ae6a97);color:white;border:none;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;transition:0.3s;font-family:'Inter',sans-serif;box-shadow:0 6px 20px rgba(86,29,70,0.3);}
+        .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(86,29,70,0.35);}
+        .forgot{margin:-10px 0 20px;text-align:right;}
+        .forgot a{font-size:12px;color:#9a7a93;text-decoration:none;}
+        .forgot a:hover{color:#561d46;}
+        .alt-link{text-align:center;font-size:13px;color:#9a7a93;margin-top:10px;}
+        .alt-link a{color:#561d46;font-weight:600;text-decoration:none;}
+        .alt-link a:hover{text-decoration:underline;}
+        @media(max-width:700px){.auth-left{display:none;}.auth-right{padding:40px 28px;}.auth-wrap{max-width:440px;}}
+    </style>
 </head>
-
 <body>
+<div class="auth-wrap">
+    <div class="auth-left">
+        <div class="brand">Book<span><i class="fa-solid fa-feather"></i>Nest</span></div>
+        <div class="auth-left-text">
+            <h2>Welcome back, Reader!</h2>
+            <p>Sign in to continue your reading journey, discover new books, and connect with your community.</p>
+        </div>
+        <div class="auth-left-bottom">© 2025 BookNest</div>
+    </div>
+    <div class="auth-right">
+        <h1>Sign In</h1>
+        <p>Enter your credentials to continue</p>
 
-<div class="card" id="card">
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
 
-<div class="top-bar">
-
-<div class="language" id="currentLang">
-English ▼
-<ul id="langOptions">
-<li data-lang="English">English</li>
-<li data-lang="Français">Français</li>
-<li data-lang="العربية">العربية</li>
-</ul>
+        <form method="POST" action="/login/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrap">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" name="username" placeholder="Your username" required autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" id="password" placeholder="Your password" required>
+                    <button type="button" class="toggle-pw" onclick="togglePassword()">
+                        <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="forgot"><a href="#">Forgot password?</a></div>
+            <button type="submit" class="submit-btn"><i class="fa-solid fa-right-to-bracket" style="margin-right:8px"></i>Sign In</button>
+        </form>
+        <div class="alt-link">Don't have an account? <a href="/signup/">Create one free</a></div>
+    </div>
 </div>
-  <div class="dark-mode-wrapper" style="display:flex; align-items:center; gap:8px;">  
-  <span>Dark Mode</span>  
-  <label class="switch">  
-    <input type="checkbox" id="modeToggle">  
-    <span class="slider"></span>  
-  </label>  
- </div>  
-  </div> 
-
-  <!-- ERRORS -->
-  {% if messages %}
-    {% for message in messages %}
-      <p style="color:red;">{{ message }}</p>
-    {% endfor %}
-  {% endif %}
-
-  <!-- FORM -->
-   
-   
-<div class="header" id="titleText">Log in</div>
-  <div class="form-group">
-     {% csrf_token %}
-<label id="userLabel">Username</label>
-<input type="text">
-</div>
-
-<div class="form-group password-box">
-<label id="passLabel">Password</label>
-<input type="text" id="password">
-<i class="fa-solid fa-eye-slash" id="togglePassword"></i>
-</div>
-
-<button class="login-btn" id="loginText">Log in</button>
-
-
-  <p class="help">
-    <span id="helpText">Don't have an account?</span>
-   <a href="/signup/" id="helpLink">Sign up</a>
-  </p>
-</div>
- 
-
 <script>
-// PASSWORD
-const pass = document.getElementById("password");
-const eye = document.getElementById("togglePassword");
-
-if(pass && eye){
-  eye.onclick = () => {
-    if(pass.type === "text"){
-      pass.type = "password";
-      eye.classList.remove("fa-eye");
-      eye.classList.add("fa-eye-slash");
-    }else{
-      pass.type = "text";
-      eye.classList.remove("fa-eye-slash");
-      eye.classList.add("fa-eye");
+    function togglePassword() {
+        var passwordField = document.getElementById('password');
+        var eyeIcon = document.getElementById('eyeIcon');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
     }
-  };
-}
-
-// DARK MODE
-const modeToggle = document.getElementById("modeToggle");
-if(modeToggle){
-  modeToggle.onchange = function(){
-    const card = document.getElementById("card");
-    if(card){
-      card.classList.toggle("dark");
-    }
-  };
-}
-
-// LANGUAGES
-const translations = {
-English:{
-  title:"Log in",
-  userLabel:"Username",
-  passLabel:"Password",
-  loginText:"Log in",
-  helpText:"Don't have an account?",
-  helpLink:"Sign up"
-},
-Français:{
-  title:"Se connecter",
-  userLabel:"Nom d'utilisateur",
-  passLabel:"Mot de passe",
-  loginText:"Se connecter",
-  helpText:"Pas de compte ?",
-  helpLink:"S'inscrire"
-},
-العربية:{
-  title:"تسجيل الدخول",
-  userLabel:"اسم المستخدم",
-  passLabel:"كلمة المرور",
-  loginText:"تسجيل الدخول",
-  helpText:"ليس لديك حساب؟",
-  helpLink:"إنشاء حساب"
-}
-};
-
-const current = document.getElementById("currentLang");
-const options = document.getElementById("langOptions");
-
-if(current && options){
-  current.onclick = () => {
-    options.style.display = options.style.display === "block" ? "none" : "block";
-  };
-
-  options.querySelectorAll("li").forEach(li=>{
-    li.onclick = ()=>{
-      const lang = li.dataset.lang;
-
-      current.innerText = lang;
-      document.getElementById("titleText").textContent = translations[lang].title;
-      document.getElementById("userLabel").textContent = translations[lang].userLabel;
-      document.getElementById("passLabel").textContent = translations[lang].passLabel;
-      document.getElementById("loginText").textContent = translations[lang].loginText;
-      document.getElementById("helpText").textContent = translations[lang].helpText;
-      document.getElementById("helpLink").textContent = translations[lang].helpLink;
-
-      document.documentElement.dir = lang === "العربية" ? "rtl" : "ltr";
-
-      options.style.display = "none";
-    };
-  });
-}
 </script>
-
 </body>
 </html>

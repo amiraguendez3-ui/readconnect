@@ -1,0 +1,210 @@
+{% load static %}
+<div class="navbar">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <div class="logo">
+        <a href="/">Book<i class="fa-solid fa-feather"></i>Nest</a>
+    </div>
+
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li class="dropdown">
+            <a href="#" onclick="toggleMenu('browseMenu')">MyBrowse ▼</a>
+            <ul class="dropdown-menu" id="browseMenu">
+                <li><a href="/genres/">Genre</a></li>
+                <li><a href="/new-arrivals/">New Arrivals</a></li>
+            </ul>
+        </li>
+        <!-- Categories يظهر دائماً -->
+        <li><a href="/categories/">Categories</a></li>
+        <!-- My List و Notifications يظهران فقط للمستخدم المسجل -->
+        {% if user.is_authenticated %}
+            <li><a href="/notifications/">Notifications</a></li>
+            <li><a href="/my-list/">My List</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search books...">
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="user-section-header" onclick="location.href='/profile/'">
+        <div class="user-avatar-header">
+            {% if user.profile and user.profile.image %}
+                <img src="{{ user.profile.image.url }}" alt="{{ user.username }}">
+            {% else %}
+                <div class="avatar-placeholder">{{ user.username|slice:":1"|upper }}</div>
+            {% endif %}
+        </div>
+        <span class="username-header">{{ user.username }}</span>
+    </div>
+    {% else %}
+    <div class="auth-buttons">
+        <a href="{% url 'login' %}" class="login-btn-header">Login</a>
+        <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --deep: #561d46;
+        --mid: #ae6a97;
+        --light: #eca8bb;
+        --cream: #ffffff;
+    }
+    * { font-family: 'Poppins', sans-serif; }
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 30px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(86,29,70,0.08);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid rgba(86,29,70,0.1);
+    }
+    .logo a { font-size: 24px; font-weight: 700; text-decoration: none; color: var(--deep); }
+    .logo i { color: var(--mid); margin-right: 4px; }
+    .nav-links { list-style: none; display: flex; gap: 25px; margin: 0; padding: 0; }
+    .nav-links a { text-decoration: none; color: #4a4a4a; font-weight: 500; font-size: 14px; transition: 0.3s; }
+    .nav-links a:hover { color: var(--deep); }
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 35px;
+        left: 0;
+        width: 200px;
+        background: white;
+        padding: 10px 0;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(86,29,70,0.12);
+        z-index: 1001;
+        border: 1px solid rgba(86,29,70,0.08);
+    }
+    .dropdown-menu.active { display: block; }
+    .dropdown-menu li a { display: block; padding: 8px 20px; color: #4a4a4a; font-size: 13px; }
+    .dropdown-menu li a:hover { background: #f8f0f5; color: var(--deep); }
+    .search-box { position: relative; width: 270px; }
+    .search-box input {
+        width: 100%; padding: 10px 40px 10px 15px; border-radius: 30px;
+        border: 1px solid #e0d6dc; outline: none; font-size: 13px; background: white;
+    }
+    .search-box input:focus { border-color: var(--mid); box-shadow: 0 0 0 2px rgba(174,106,151,0.2); }
+    .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--mid); cursor: pointer; }
+    .search-results {
+        position: absolute; top: 50px; left: 0; width: 100%; background: white; border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(86,29,70,0.15); max-height: 350px; overflow-y: auto; display: none; z-index: 1002;
+    }
+    .search-results.show { display: block; }
+    .search-result-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0e8ee; }
+    .search-result-item:hover { background: #fdf9fb; }
+    .search-result-item strong { color: var(--deep); }
+    .auth-buttons { display: flex; gap: 12px; }
+    .login-btn-header {
+        text-decoration: none; background: transparent; border: 1.5px solid var(--deep);
+        color: var(--deep); padding: 8px 18px; border-radius: 30px; font-size: 13px; font-weight: 600;
+    }
+    .login-btn-header:hover { background: var(--deep); color: white; transform: translateY(-2px); }
+    .signup-btn {
+        text-decoration: none; background: linear-gradient(135deg, var(--deep), var(--mid));
+        color: white; padding: 8px 18px; border-radius: 30px; font-size: 13px; font-weight: 700;
+    }
+    .signup-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(86,29,70,0.3); }
+    .user-section-header { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .user-avatar-header {
+        width: 38px; height: 38px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--deep), var(--mid));
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid var(--light); transition: 0.3s;
+        overflow: hidden;
+    }
+    .user-avatar-header:hover { transform: scale(1.05); }
+    .user-avatar-header img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: bold; color: white;
+    }
+    .username-header { font-size: 13px; font-weight: 500; color: var(--deep); }
+    @media (max-width: 900px) {
+        .navbar { flex-direction: column; padding: 15px; }
+        .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .search-box { width: 100%; max-width: 300px; }
+        .auth-buttons { position: absolute; top: 15px; right: 15px; }
+        .user-section-header { position: absolute; top: 15px; right: 15px; }
+        .username-header { display: none; }
+    }
+    @media (max-width: 600px) {
+        .auth-buttons { position: static; margin-top: 5px; }
+        .user-section-header { position: static; margin-top: 5px; }
+        .username-header { display: block; font-size: 11px; }
+    }
+</style>
+
+<script>
+    function toggleMenu(menuId) {
+        let menu = document.getElementById(menuId);
+        if (menu.classList.contains("active")) menu.classList.remove("active");
+        else {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove("active"));
+            menu.classList.add("active");
+        }
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove("active"));
+        }
+    });
+
+    // Search
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchTimeout;
+    if (searchInput) {
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            if (query.length < 2) {
+                searchResults.classList.remove('show');
+             return;
+            }
+            try {
+                const response = await fetch('/search-books/?q=' + encodeURIComponent(query));
+                const data = await response.json();
+                if (data.books && data.books.length > 0) {
+                    searchResults.innerHTML = '';
+                    data.books.forEach(book => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = '<strong>' + book.title + '</strong><br><small>' + book.author + '</small>';
+                        item.onclick = () => window.location.href = '/book/' + book.slug + '/';
+                        searchResults.appendChild(item);
+                    });
+                    searchResults.classList.add('show');
+                } else {
+                    searchResults.innerHTML = '<div class="no-results">📭 No books found</div>';
+                    searchResults.classList.add('show');
+                }
+            } catch(e) {
+                searchResults.innerHTML = '<div class="no-results">⚠️ Search error</div>';
+                searchResults.classList.add('show');
+            }
+        }
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
+        });
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target))
+                searchResults.classList.remove('show');
+        });
+    }
+</script>

@@ -27,11 +27,11 @@ urlpatterns = [
     path('',include('books.urls')),
 
     path('signup/', views.signup, name='signup'),
-     path('login/', views.login_views, name='login'),
-     path('categories/', views.categories_view, name='categories'),
-     path('category/', views.category_detail, name='category_detail'),
-    path('explore/', views.explore, name='explore'),
+    path('login/', views.login_views, name='login'),
+    path('categories/', views.categories_view, name='categories'),
+    path('category/', views.category_detail, name='category_detail'),
     path('my-list/',views.my_list,name='my_list'),
-         
+      path('logout/',                                    views.logout,                 name='logout'),
+    
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

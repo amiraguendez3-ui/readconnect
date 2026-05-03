@@ -1,344 +1,179 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | BookNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{--deep:#561d46;--mid:#ae6a97;--soft:#eca8bb;--cream:#f8f0ea;}
+        body{font-family:'Inter',sans-serif;background:var(--cream);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .auth-wrap{display:flex;width:100%;max-width:950px;border-radius:28px;overflow:hidden;box-shadow:0 25px 80px rgba(86,29,70,0.18);}
+        .auth-left{width:340px;flex-shrink:0;background:linear-gradient(150deg,#561d46 0%,#ae6a97 60%,#eca8bb 100%);padding:60px 35px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+        .auth-left::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.07);}
+        .auth-left::after{content:'';position:absolute;bottom:-40px;left:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.05);}
+        .brand{font-family:'Playfair Display',serif;font-size:26px;color:white;font-weight:800;position:relative;z-index:1;}
+        .brand i{color:#eca8bb;margin-right:6px;}
+        .brand span{color:#eca8bb;}
+        .auth-left-text{position:relative;z-index:1;}
+        .auth-left-text h2{font-family:'Playfair Display',serif;font-size:26px;color:white;line-height:1.35;margin-bottom:12px;}
+        .auth-left-text p{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;}
+        .perks{list-style:none;margin-top:20px;}
+        .perks li{font-size:13px;color:rgba(255,255,255,0.8);padding:6px 0;display:flex;align-items:center;gap:8px;}
+        .perks li::before{content:'✓';color:#eca8bb;font-weight:700;}
+        .auth-left-bottom{font-size:12px;color:rgba(255,255,255,0.4);position:relative;z-index:1;}
+        .auth-right{flex:1;background:white;padding:45px 40px;display:flex;flex-direction:column;justify-content:center;}
+        .auth-right h1{font-family:'Playfair Display',serif;font-size:26px;color:#2d1a2e;margin-bottom:4px;}
+        .auth-right p{font-size:13px;color:#9a7a93;margin-bottom:28px;}
+        .error-message{background:#fde8f0;color:#561d46;padding:12px;border-radius:12px;font-size:13px;margin-bottom:20px;border-left:3px solid #ae6a97;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .form-group{margin-bottom:18px;}
+        .form-group label{display:block;font-size:12px;font-weight:600;color:#561d46;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.4px;}
+        .input-wrap{position:relative;}
+        .input-wrap i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#ae6a97;font-size:13px;}
+        .form-group input,.form-group select{width:100%;padding:11px 13px 11px 38px;border:1.5px solid #f0dcea;border-radius:12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:0.2s;background:#faf5f9;color:#2d1a2e;}
+        .form-group select{padding-left:38px;cursor:pointer;}
+        .form-group input:focus,.form-group select:focus{border-color:#ae6a97;background:white;box-shadow:0 0 0 3px rgba(174,106,151,0.1);}
+        .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#ae6a97;font-size:13px;}
+        .gender-row{display:flex;gap:10px;}
+        .gender-opt{flex:1;position:relative;}
+        .gender-opt input[type=radio]{display:none;}
+        .gender-opt label{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:12px;border:1.5px solid #f0dcea;font-size:13px;font-weight:500;cursor:pointer;transition:0.2s;color:#9a7a93;background:#faf5f9;}
+        .gender-opt input:checked+label{border-color:#ae6a97;background:#f5e8f4;color:#561d46;}
+        .password-strength{height:3px;border-radius:3px;background:#eee;margin-top:6px;overflow:hidden;}
+        .strength-bar{height:100%;border-radius:3px;width:0;transition:0.3s;}
+        .terms{font-size:12px;color:#9a7a93;margin-bottom:20px;}
+        .terms a{color:#561d46;font-weight:600;text-decoration:none;}
+        .submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,#561d46,#ae6a97);color:white;border:none;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;transition:0.3s;font-family:'Inter',sans-serif;box-shadow:0 6px 20px rgba(86,29,70,0.28);}
+        .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(86,29,70,0.35);}
+        .alt-link{text-align:center;font-size:13px;color:#9a7a93;margin-top:18px;}
+        .alt-link a{color:#561d46;font-weight:600;text-decoration:none;}
+        @media(max-width:750px){.auth-left{display:none;}.auth-right{padding:35px 24px;}.form-row{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+<div class="auth-wrap">
+    <div class="auth-left">
+        <div class="brand">Book<span><i class="fa-solid fa-feather"></i>Nest</span></div>
+        <div class="auth-left-text">
+            <h2>Join Our Reading Community</h2>
+            <p>Create your free account and start exploring thousands of books today.</p>
+            <ul class="perks">
+                <li>Save books to your personal list</li>
+                <li>Rate and review any book</li>
+                <li>Connect with fellow readers</li>
+                <li>Get personalised recommendations</li>
+            </ul>
+        </div>
+        <div class="auth-left-bottom">© 2025 BookNest</div>
+    </div>
+    <div class="auth-right">
+        <h1>Create Account</h1>
+        <p>Fill in your details to get started — it's free!</p>
 
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>BookStore Login</title>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  <style>  
-body{  
-  margin:0;  
-  padding:0;  
-  height:100vh;  
-  background:url("{% static 'images/bg.jpg' %}") center/cover no-repeat;  
-  
-  display:flex;  
-  justify-content:center;  
-  align-items:center;  
-}  
-  
-/* البطاقة */  
-.card{  
-  width:350px;  
-  min-height:400px;  
-background: rgba(245,245,220,0.85); 
-  border-radius:15px;  
-  padding:25px;  
-  box-shadow:0 8px 20px rgba(0,0,0,0.3);  
-  display:flex;  
-  flex-direction:column;  
-  position:relative;  
-  transition: background 0.3s;  
-}  
-  
-.card.dark{  
-  background: rgba(50,50,50,0.9);  
-  color:rgb(182, 179, 179);  
-}  
-  
-  
-  
-/* Top bar: Language & Dark Mode */  
-.top-bar{  
-  display:flex;  
-  justify-content:space-between;  
-  align-items:center;  
-  margin-bottom:15px;  
-}  
-.language{  
-  position:relative;  
-  cursor:pointer;  
-  font-weight:bold;  
-}  
-.language ul{  
-  display:none;  
-  position:absolute;  
-  top:25px;  
-  left:50%;  
-  transform:translateX(-50%);  
-  background:rgba(255,255,255,0.95);  
-  list-style:none;  
-  padding:5px 0;  
-  border-radius:5px;  
-  min-width:100px;  
-}  
-.language ul li{  
-  padding:5px 10px;  
-  cursor:pointer;  
-}  
-.language ul li:hover{  
-  background:#f0e6d0;  
-}  
-  
-/* Dark mode switch */  
-.switch {  
-  position: relative;  
-  display: inline-block;  
-  width: 50px;  
-  height: 24px;  
-  cursor:pointer;  
-}  
-.switch input { display:none; }  
-.slider {  
-  position: absolute;  
-  top:0;  
-  left:0;  
-  right:0;  
-  bottom:0;  
-  background:#ccc;  
-  border-radius:34px;  
-  transition:0.4s;  
-}  
-.slider:before {  
-  position: absolute;  
-  content:"";  
-  height:18px;  
-  width:18px;  
-  left:3px;  
-  bottom:3px;  
-  background:white;  
-  transition:0.4s;  
-  border-radius:50%;  
-}  
-input:checked + .slider {  
-  background:#8B5E3C;  
-}  
-input:checked + .slider:before {  
-  transform: translateX(26px);  
-}  
-  
-/* Bookstore header */  
-.header{  
-  display:flex;  
-  flex-direction:column;  
-  align-items:center;  
-  font-family:'Pacifico', cursive;  
-  font-size:28px;  
-  color:#8B5E3C;  
-  margin-bottom:20px;  
-}  
-.header i{  
-  font-size:28px;  
-  margin-bottom:5px;  
-}  
-  
-/* Form */  
-.form-group{  
-  display:flex;  
-  flex-direction:column;  
-  margin-bottom:15px;  
-}  
-.form-group label{  
-  margin-bottom:5px;  
-}  
-input{  
-  padding:12px;  
-  border-radius:25px;  
-  border:none;  
-  outline:none;  
-  width:100%;  
-  box-sizing:border-box; /* مهم لمنع خروج الإطار */  
-}  
-  
-/* Password box */  
-.password-box{  
-    position:relative;  
-    display:block; /* 👈 بدل flex */  
-}  
-.password-box i{  
-    position:absolute;  
-    top:50%;  
-    transform:translateY(-50%);  
-    cursor:pointer;  
-}  
-.password-box input{  
-    width: 100%;  
-    padding-right: 45px; /* 👈 مساحة للعين */  
-    padding-left: 10px;  
-    box-sizing: border-box;  
-}  
-/* LTR (English / French) */  
-html[dir="ltr"] .password-box i{  
-    right:12px;  
-}  
-  
-/* RTL (Arabic) */  
-html[dir="rtl"] .password-box i{  
-    left:12px;  
-}  
-  
-/* Login button */  
-.login-btn{  
-  padding:12px;  
-  border:none;  
-  border-radius:25px;  
-  background:#8B5E3C;  
-  color:white;  
-  font-weight:bold;  
-  cursor:pointer;  
-  margin-top:10px;  
-}  
-  
-/* Help text */  
-.help{  
-  margin-top:10px;  
-  text-align:center;  
-}  
-.help a{  
-  color:#1877f2;  
-  font-weight:bold;  
-  text-decoration:none;  
-  cursor:pointer;  
-}  
-.help a:hover{  
-  text-decoration:underline;  
-}  
-  
-/* OR text */  
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
 
-  
-/* Social logos */  
-.social{  
-  display:flex;  
-  justify-content:center;  
-  gap:25px;  
-  margin-top:10px;  
-}  
-.social-icon{  
-  font-size:28px;  
-  cursor:pointer;  
-  transition:0.3s;  
-}  
-.social-icon:hover{  
-  transform:scale(1.2);  
-}  
-.google{color:#DB4437;}  
-.facebook{color:#1877f2;}  
-.twitter{color:#1DA1F2;}  
+        <form method="POST" action="/signup/">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <div class="input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="first_name" placeholder="First name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <div class="input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="last_name" placeholder="Last name">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Username *</label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" name="username" placeholder="Choose a username" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <div class="input-wrap">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <div class="gender-row">
+                   <div class="gender-opt">
+                        <input type="radio" name="gender" id="male" value="male" checked>
+                        <label for="male">👨 Male</label>
+                    </div>
+                    <div class="gender-opt">
+                        <input type="radio" name="gender" id="female" value="female">
+                        <label for="female">👩 Female</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Password *</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" id="password" placeholder="Min 8 characters" required oninput="checkStrength(this.value)">
+                        <button type="button" class="toggle-pw" onclick="togglePassword('password', 'eyeIcon1')"><i class="fa-regular fa-eye" id="eyeIcon1"></i></button>
+                    </div>
+                    <div class="password-strength"><div class="strength-bar" id="strengthBar"></div></div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password *</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="confirm_password" id="confirmPassword" placeholder="Repeat password" required>
+                        <button type="button" class="toggle-pw" onclick="togglePassword('confirmPassword', 'eyeIcon2')"><i class="fa-regular fa-eye" id="eyeIcon2"></i></button>
+                    </div>
+                </div>
+            </div>
+            <p class="terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+            <button type="submit" class="submit-btn"><i class="fa-solid fa-user-plus" style="margin-right:8px"></i>Create Account</button>
+        </form>
+        <div class="alt-link">Already have an account? <a href="/login/">Sign in</a></div>
+    </div>
+</div>
+<script>
+    function togglePassword(fieldId, iconId) {
+        var field = document.getElementById(fieldId);
+        var icon = document.getElementById(iconId);
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
 
-  
-
-
-</style> 
- </head>  
-<body> 
-     <div class="card" id="loginCard"><!-- Top bar -->
-
-  <div class="top-bar">  
-    <div class="language" id="currentLang">  
-      English <i class="fa-solid fa-chevron-down"></i>  
-      <ul id="langOptions">  
-        <li data-lang="English">English</li>  
-        <li data-lang="Français">Français</li>  
-        <li data-lang="العربية">العربية</li>  
-      </ul>  
-    </div>  
-    <div class="dark-mode-wrapper" style="display:flex; align-items:center; gap:8px;">  
-  <span>Dark Mode</span>  
-  <label class="switch">  
-    <input type="checkbox" id="modeToggle">  
-    <span class="slider"></span>  
-  </label>  
- </div>  
-  </div>  
-    <!-- Bookstore header -->
-         <div class="header"id="titleText">  
-    Sign Up  
-  </div>    <!-- Form fields -->    <div class="form-group">  
-    <label id="userLabel">Phone number, email or username</label>  
-    <input type="text" id="username" placeholder="">  
-  </div>    <div class="form-group password-box">  
-    <label id="passLabel">Password</label>  
-    <input type="text" id="password" placeholder="">  
-    <i class="fa-solid fa-eye" id="togglePassword"></i>  
-  </div>  <button class="login-btn" id="loginText">Sign Up</button>
-
- <p class="help">    
-  <span id="haveAccountText">Already have an account?</span>    
-  <a href="/login" id="loginLink">Log in</a>    
-</p>   
-   <!-- Social logos -->     
- 
-  
-
-
-<script>  
-// Password toggle  const togglePassword = document.getElementById("togglePassword");
-const password = document.getElementById("password");
-
-togglePassword.onclick = function(){
-const isText = password.getAttribute("type") === "text";
-
-password.setAttribute("type", isText ? "password" : "text");
-
-this.classList.toggle("fa-eye-slash"); // يظهر الخط
-this.classList.toggle("fa-eye");
-};
-
-// Dark mode toggle
-const modeToggle = document.getElementById("modeToggle");
-const card = document.getElementById("loginCard");
-modeToggle.onchange = () => {
-card.classList.toggle("dark");
-};
-
-// Language change
-const current = document.getElementById("currentLang");
-const options = document.getElementById("langOptions");
-
-const translations = {
-English: {
-title:"Sign Up",
-userLabel:"Phone number, email or username",
-passLabel:"Password",
-loginText:"Sign Up",
-haveAccountText:"Already have an account?",
-loginLink:"Log in",
-orText:"OR"
-},
-Français:{
-title:"Inscription",
-userLabel:"Numéro, email ou nom d'utilisateur",
-passLabel:"Mot de passe",
-loginText:"S'inscrire",
-haveAccountText:"Vous avez déjà un compte ?",
-loginLink:"Se connecter",
-orText:"OU"
-},
-العربية:{
-title:"إنشاء حساب",
-userLabel:"رقم الهاتف أو البريد أو اسم المستخدم",
-passLabel:"كلمة المرور",
-loginText:"تسجيل",
-haveAccountText:"هل لديك حساب؟",
-loginLink:"تسجيل الدخول",
-orText:"أو"
-}
-};
-current.onclick = () => {
-options.style.display = options.style.display === "block" ? "none" : "block";
-};options.querySelectorAll("li").forEach(li => {
-li.onclick = () => {
-const lang = li.dataset.lang;
-current.childNodes[0].textContent = lang;
-document.getElementById("titleText").textContent = translations[lang].title;
-document.getElementById("userLabel").textContent = translations[lang].userLabel;
-document.getElementById("passLabel").textContent = translations[lang].passLabel;
-document.getElementById("loginText").textContent = translations[lang].loginText;
-document.getElementById("haveAccountText").textContent = translations[lang].haveAccountText;
-document.getElementById("loginLink").textContent = translations[lang].loginLink;
-
-
-if(lang === "العربية"){  
-  document.documentElement.dir = "rtl";  
-} else {  
-  document.documentElement.dir = "ltr";  
-}  
-
-options.style.display = "none";
-
-};
-});
+    function checkStrength(v) {
+        let s = 0;
+        if (v.length >= 8) s++;
+        if (/[A-Z]/.test(v)) s++;
+        if (/[0-9]/.test(v)) s++;
+        if (/[^A-Za-z0-9]/.test(v)) s++;
+        const bar = document.getElementById('strengthBar');
+        const colors = ['', '#e74c3c', '#f39c12', '#3498db', '#27ae60'];
+        bar.style.width = (s * 25) + '%';
+        bar.style.background = colors[s];
+    }
 </script>
-
-</body>  
+</body>
 </html>

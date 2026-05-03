@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | BookNest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --deep:#561d46; --mid:#ae6a97; --light:#eca8bb; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background:#f5f0f7; }
+        .main { max-width:720px; margin:0 auto; padding:30px 20px 60px; }
+
+        .page-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
+        .page-head h1 { font-size:24px; font-weight:800; color:var(--deep); display:flex; align-items:center; gap:10px; }
+        .page-head h1 i { color:var(--mid); }
+        .badge { background:linear-gradient(135deg,var(--deep),var(--mid)); color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+        .head-actions { display:flex; gap:8px; }
+        .btn-sm { padding:8px 16px; border-radius:30px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; border:none; }
+        .btn-outline { background:white; color:var(--deep); border:1.5px solid #e5dded; }
+        .btn-outline:hover { border-color:var(--light); }
+        .btn-red { background:white; color:#e74c3c; border:1.5px solid #fde8e8; }
+        .btn-red:hover { background:#fde8e8; }
+
+        .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+        .tab { padding:7px 16px; border-radius:30px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; border:1.5px solid #e5dded; background:white; color:#888; }
+        .tab.active { background:linear-gradient(135deg,var(--deep),var(--mid)); color:white; border-color:transparent; box-shadow:0 4px 12px rgba(86,29,70,0.2); }
+        .tab:hover:not(.active) { border-color:var(--light); color:var(--deep); }
+
+        .notif-list { display:flex; flex-direction:column; gap:10px; }
+        .notif-item { background:white; border-radius:16px; padding:15px 18px; display:flex; align-items:center; gap:15px; box-shadow:0 3px 12px rgba(86,29,70,0.06); transition:all 0.3s; border-left:4px solid transparent; }
+        .notif-item.unread { border-left-color:var(--mid); background:#fdf8fd; }
+        .notif-item:hover { transform:translateX(3px); }
+        .notif-item.hidden { display:none; }
+
+        .notif-icon { width:44px; height:44px; border-radius:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:17px; }
+        .icon-like     { background:#fde8f0; color:#c45c7c; }
+        .icon-reply    { background:#f0e8f5; color:#6e4a96; }
+        .icon-group    { background:#e8f4fd; color:#2d7ae6; }
+        .icon-new_book { background:#e8fdf0; color:#27ae60; }
+        .icon-system   { background:#f5f0e8; color:#c07830; }
+
+        .notif-body { flex:1; }
+        .notif-text { font-size:13.5px; color:#333; line-height:1.5; }
+        .notif-text strong { color:var(--deep); }
+        .notif-time { font-size:11px; color:#bbb; margin-top:4px; display:flex; align-items:center; gap:4px; }
+
+        .unread-dot { width:9px; height:9px; border-radius:50%; background:var(--mid); flex-shrink:0; }
+        .notif-delete { background:none; border:none; color:#ddd; cursor:pointer; font-size:14px; transition:0.2s; padding:6px; border-radius:50%; flex-shrink:0; }
+        .notif-delete:hover { color:#e74c3c; background:#fde8e8; }
+
+        .empty { background:white; border-radius:20px; padding:55px 40px; text-align:center; box-shadow:0 4px 14px rgba(86,29,70,0.05); }
+        .empty-ring { width:76px; height:76px; border-radius:50%; background:linear-gradient(135deg,#f5e8f2,#fde8f0); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+        .empty-ring i { font-size:30px; color:var(--light); }
+        .empty h3 { font-size:17px; font-weight:700; color:var(--deep); margin-bottom:7px; }
+        .empty p  { font-size:13px; color:#aaa; }
+    </style>
+</head>
+<body>
+{% include 'header.html' %}
+<main class="main">
+
+    <div class="page-head">
+        <h1>
+            <i class="fa-solid fa-bell"></i> Notifications
+            {% if unread_count %}<span class="badge">{{ unread_count }} new</span>{% endif %}
+        </h1>
+        {% if notifications %}
+        <div class="head-actions">
+            <form method="POST" action="{% url 'mark_all_read' %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm btn-outline"><i class="fa-solid fa-check-double"></i> Mark all read</button>
+            </form>
+            <form method="POST" action="{% url 'clear_all_notifs' %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn-sm btn-red"><i class="fa-solid fa-trash"></i> Clear all</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="filter-tabs">
+        <div class="tab active" onclick="filter('all',this)"><i class="fa-solid fa-border-all"></i> All</div>
+        <div class="tab" onclick="filter('like',this)"><i class="fa-solid fa-heart"></i> Likes</div>
+        <div class="tab" onclick="filter('reply',this)"><i class="fa-solid fa-reply"></i> Replies</div>
+        <div class="tab" onclick="filter('group',this)"><i class="fa-solid fa-users"></i> Groups</div>
+        <div class="tab" onclick="filter('new_book',this)"><i class="fa-solid fa-book"></i> New Books</div>
+    </div>
+
+    <div class="notif-list" id="notifList">
+        {% for notif in notifications %}
+        <div class="notif-item {% if not notif.is_read %}unread{% endif %}"
+             id="notif-{{ notif.id }}" data-type="{{ notif.notif_type|default:'system' }}">
+
+            <div class="notif-icon icon-{{ notif.notif_type|default:'system' }}">
+                {% if notif.notif_type == 'like' %}<i class="fa-solid fa-heart"></i>
+                {% elif notif.notif_type == 'reply' %}<i class="fa-solid fa-reply"></i>
+                {% elif notif.notif_type == 'group' %}<i class="fa-solid fa-users"></i>
+                {% elif notif.notif_type == 'new_book' %}<i class="fa-solid fa-book"></i>
+                {% else %}<i class="fa-solid fa-bell"></i>{% endif %}
+            </div>
+
+            <div class="notif-body">
+                <div class="notif-text">{{ notif.massage }}</div>
+                <div class="notif-time"><i class="fa-regular fa-clock"></i> {{ notif.date|timesince }} ago</div>
+            </div>
+
+            {% if not notif.is_read %}<div class="unread-dot"></div>{% endif %}
+
+            <button class="notif-delete" onclick="deleteNotif('{{ notif.id }}')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty">
+        <div class="empty-ring"><i class="fa-regular fa-bell-slash"></i></div>
+        <h3>No notifications yet</h3>
+        <p>Likes, replies, group activity and new books will appear here.</p>
+    </div>
+    {% endif %}
+
+</main>
+<script>
+function getCookie(n){let v=null;document.cookie.split(';').forEach(c=>{c=c.trim();if(c.startsWith(n+'='))v=decodeURIComponent(c.slice(n.length+1));});return v;}
+function filter(type,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.notif-item').forEach(i=>{i.classList.toggle('hidden',type!=='all'&&i.dataset.type!==type);});}
+function deleteNotif(id){fetch('/notifications/mark-read/'+id+'/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}).then(()=>{const
+  el=document.getElementById('notif-'+id);if(el){el.style.transition='0.3s';el.style.opacity='0';el.style.transform='translateX(20px)';setTimeout(()=>{el.remove();if(!document.querySelector('.notif-item:not(.hidden)'))location.reload();},320);}});}
+</script>
+</body>
+</html>

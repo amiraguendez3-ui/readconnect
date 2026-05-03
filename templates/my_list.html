@@ -7,299 +7,243 @@
     <title>My List | Book Nest</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        :root {
+            --deep:  #561d46;
+            --mid:   #ae6a97;
+            --light: #eca8bb;
+            --cream: #f8f0ea;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #f5f5f0; color: #1a1a2e; }
+        body { font-family: 'Poppins', sans-serif; background: #f5f0f7; color: #1a1a2e; }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed; left: 0; top: 0; width: 260px; height: 100vh;
-            background: white; padding: 30px 24px; box-shadow: 2px 0 20px rgba(0,0,0,0.04);
-            z-index: 100;
+        /* ========== MAIN ========== */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 40px 60px;
         }
-        .logo { font-size: 24px; font-weight: bold; color: #5a3e36; margin-bottom: 50px; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: #5a3e36; font-size: 24px; }
-        .nav-menu { list-style: none; margin-bottom: 50px; }
-        .nav-item { margin-bottom: 12px; }
-        .nav-link {
-            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
-            text-decoration: none; color: #4a4a4a; font-weight: 500;
-            border-radius: 12px; transition: all 0.2s ease; font-size: 15px;
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 14px;
         }
-        .nav-link i { width: 22px; font-size: 18px; color: #8b8b8b; }
-        .nav-link:hover { background: #f0ebe6; color: #5a3e36; }
-        .nav-link:hover i { color: #5a3e36; }
-        .nav-link.active { background: #5a3e36; color: white; }
-        .nav-link.active i { color: white; }
-        .user-section { position: absolute; bottom: 30px; left: 24px; right: 24px; padding-top: 20px; border-top: 1px solid #eee; }
-        .user-card { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 48px; height: 48px; background: #5a3e36; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
-        .user-info h4 { font-size: 15px; font-weight: 600; color: #2d2d2d; margin-bottom: 4px; }
-        .user-info p { font-size: 12px; color: #999; }
 
-        /* Main Content */
-        .main-content { margin-left: 260px; padding: 30px 40px; min-height: 100vh; }
-        .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 32px; font-weight: 700; color: #2d2d2d; }
-        .page-header p { color: #888; margin-top: 5px; }
+        .page-header-left h1 {
+            font-size: 30px; font-weight: 800;
+            color: var(--deep);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .page-header-left h1 i { color: var(--mid); }
+        .page-header-left p { color: #aaa; margin-top: 5px; font-size: 13px; }
 
-        .stats-number { font-size: 28px; font-weight: 700; color: #5a3e36; margin-bottom: 30px; }
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 14px rgba(86,29,70,0.2);
+        }
 
-        /* Books Grid */
+        /* ========== BOOKS GRID ========== */
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 22px;
         }
 
         .book-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            box-shadow: 0 4px 14px rgba(86,29,70,0.07);
             position: relative;
+            border: 1.5px solid transparent;
+        }
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(86,29,70,0.14);
+            border-color: var(--light);
         }
 
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+        .remove-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,255,255,0.95);
+            border: none; width: 32px; height: 32px;
+            border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--mid); font-size: 13px;
+            transition: 0.2s; z-index: 10;
+            box-shadow: 0 2px 8px rgba(86,29,70,0.12);
         }
+        .remove-btn:hover { background: #e74c3c; color: white; transform: scale(1.1); }
 
         .book-cover {
-            height: 240px;
-            background: linear-gradient(135deg, #c9b6a4 0%, #b8a28e 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
+            height: 235px;
+            background: linear-gradient(135deg, var(--mid), var(--light));
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer;
         }
+        .book-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .book-cover .fallback-icon { font-size: 52px; color: white; opacity: 0.8; }
 
-        .book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .book-cover .fallback-icon {
-            font-size: 60px;
-            color: #8b5e4b;
-            opacity: 0.7;
-        }
-
-        /* Remove button */
-        .remove-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.95);
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #e74c3c;
-            font-size: 14px;
-            transition: 0.2s;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .remove-btn:hover {
-            background: #e74c3c;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .book-info {
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-        }
-
+        .book-info { padding: 14px 14px 16px; cursor: pointer; }
         .book-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2d2d2d;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 14px; font-weight: 600; color: var(--deep);
+            margin-bottom: 4px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
-        .book-author {
-            font-size: 12px;
-            color: #999;
-        }
-
+        .book-author { font-size: 12px; color: var(--mid); }
         .added-date {
-            font-size: 10px;
-            color: #bbb;
-            margin-top: 8px;
+            font-size: 10px; color: #ccc; margin-top: 7px;
+            display: flex; align-items: center; gap: 4px;
         }
-
+ /* ========== EMPTY STATE ========== */
         .empty-state {
-            text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 24px;
-            color: #999;
+            text-align: center; padding: 70px 40px;
+            background: white; border-radius: 24px; color: #aaa;
+            box-shadow: 0 4px 14px rgba(86,29,70,0.05);
         }
-
-        .empty-state i {
-            font-size: 60px;
-            margin-bottom: 20px;
-            color: #ddd;
+        .empty-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #f5e8f2, #fde8f0);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
         }
-
-        .empty-state h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: #666;
-        }
-
+        .empty-icon i { font-size: 34px; color: var(--light); }
+        .empty-state h3 { font-size: 20px; color: var(--deep); margin-bottom: 8px; font-weight: 700; }
+        .empty-state p  { font-size: 13px; margin-bottom: 20px; }
         .empty-state a {
-            color: #5a3e36;
-            text-decoration: none;
-            font-weight: 500;
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            color: white; padding: 11px 28px; border-radius: 30px;
+            text-decoration: none; font-size: 13px; font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 4px 14px rgba(86,29,70,0.22); transition: 0.2s;
         }
+        .empty-state a:hover { opacity: 0.88; transform: translateY(-2px); }
 
-        .empty-state a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; padding: 20px 12px; }
-            .sidebar .logo span, .sidebar .nav-link span, .user-info { display: none; }
-            .main-content { margin-left: 80px; padding: 20px; }
-            .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .main-content { padding: 20px 18px 40px; }
+            .books-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
             .book-cover { height: 200px; }
         }
-
-        @media (max-width: 600px) {
-            .books-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .book-cover { height: 180px; }
-            .book-title { font-size: 13px; }
+        @media (max-width: 420px) {
+            .books-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .book-cover { height: 170px; }
         }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="logo"><i class="fa-solid fa-feather"></i><span>Book Nest</span></div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
-            <li class="nav-item"><a href="/my-list/" class="nav-link active"><i class="fa-solid fa-list"></i><span>My List</span></a></li>
-            <li class="nav-item"><a href="/categories/" class="nav-link"><i class="fa-solid fa-book-open"></i><span>Categories</span></a></li>
-        </ul>
-        <div class="user-section">
-            <div class="user-card">
-                <div class="user-avatar">{{ user.username|slice:":1"|default:"U" }}</div>
-                <div class="user-info">
-                    <h4>{{ user.username|default:"Guest" }}</h4>
-                    <p>Reader</p>
-                </div>
-            </div>
-        </div>
-    </aside>
+{% include 'header.html' %}
 
-    <main class="main-content">
-        <div class="page-header">
-            <h1><i class="fa-regular fa-bookmark"></i> My List</h1>
+<main class="main-content">
+
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1><i class="fa-solid fa-bookmark"></i> My List</h1>
             <p>Books you've saved to read later</p>
         </div>
+        <div class="stats-badge" id="statsCount">
+            <i class="fa-solid fa-book"></i>
+            {{ total_books }} book{{ total_books|pluralize:"s" }}
+        </div>
+    </div>
 
-        <div class="stats-number" id="statsCount">{{ total_books }} book{{ total_books|pluralize:"s" }}</div>
-
-        {% if favorites %}
-        <div class="books-grid" id="booksGrid">
-            {% for favorite in favorites %}
-            <div class="book-card" data-book-id="{{ favorite.book.id }}">
-             <button class="remove-btn" onclick="removeFromList({{ favorite.book.id }}, event)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="book-cover" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
-                    {% if favorite.book.image %}
-                        <img src="{{ favorite.book.image.url }}" alt="{{ favorite.book.title }}">
-                    {% else %}
-                        <div class="fallback-icon">📖</div>
-                    {% endif %}
-                </div>
-                <div class="book-info" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
-                    <div class="book-title">{{ favorite.book.title|truncatechars:25 }}</div>
-                    <div class="book-author">{{ favorite.book.author }}</div>
-                    <div class="added-date">Added {{ favorite.added_date|timesince }} ago</div>
+    {% if favorites %}
+    <div class="books-grid" id="booksGrid">
+        {% for favorite in favorites %}
+        <div class="book-card" data-book-id="{{ favorite.book.id }}">
+            <button class="remove-btn" onclick="removeFromList('{{ favorite.book.id }}', event)" title="Remove">
+                <i class="fa-solid fa-xmark"></i>
+                
+            </button>
+            <div class="book-cover" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
+                {% if favorite.book.image %}
+                    <img src="{{ favorite.book.image.url }}" alt="{{ favorite.book.title }}">
+                {% else %}
+                    <div class="fallback-icon"><i class="fa-solid fa-book"></i></div>
+                {% endif %}
+            </div>
+            <div class="book-info" onclick="location.href='/book/{{ favorite.book.title|slugify }}/'">
+                <div class="book-title">{{ favorite.book.title|truncatechars:25 }}</div>
+                <div class="book-author">{{ favorite.book.author }}</div>
+                <div class="added-date">
+                    <i class="fa-regular fa-clock"></i>
+                    Added {{ favorite.added_date|timesince }} ago
                 </div>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <i class="fa-regular fa-bookmark"></i>
-            <h3>Your list is empty</h3>
-            <p>Start adding books you want to read!</p>
-            <a href="/categories/">Browse Categories →</a>
-        </div>
-        {% endif %}
-    </main>
+        {% endfor %}
+    </div>
 
-    <script>
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fa-regular fa-bookmark"></i></div>
+        <h3>Your list is empty</h3>
+        <p>Start saving books you want to read!</p>
+        <a href="/categories/">Browse Categories →</a>
+    </div>
+    {% endif %}
+
+</main>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
+        return cookieValue;
+    }
 
-        function removeFromList(bookId, event) {
-            event.stopPropagation();
-            
-            fetch('/add-to-list/' + bookId + '/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+    function removeFromList(bookId, event) {
+        event.stopPropagation();
+        fetch('/add-to-list/' + bookId + '/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.added) {
+                const card = document.querySelector('.book-card[data-book-id="${bookId}"]');
+                if (card) card.remove();
+                const statsSpan = document.getElementById('statsCount');
+                let currentCount = parseInt(statsSpan.innerText);
+                if (!isNaN(currentCount) && currentCount > 0) {
+                    let newCount = currentCount - 1;
+                    statsSpan.innerHTML = '<i class="fa-solid fa-book"></i> ' + newCount + ' book' + (newCount !== 1 ? 's' : '');
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.added) {
-                    // إزالة البطاقة من الصفحة
-                    const card = document.querySelector(.book-card[data-book-id="${bookId}"]);
-                    if (card) {
-                        card.remove();
-                    }
-                    // تحديث العدد
-                    const statsSpan = document.getElementById('statsCount');
-                    let currentText = statsSpan.innerText;
-                    let currentCount = parseInt(currentText);
-                    if (!isNaN(currentCount) && currentCount > 0) {
-                        let newCount = currentCount - 1;
-                        statsSpan.innerText = newCount + ' book' + (newCount !== 1 ? 's' : '');
-                    }
-                    // إذا لم يبق أي كتاب، إظهار الرسالة الفارغة
-                    if (document.querySelectorAll('.book-card').length === 0) {
-                        location.reload();
-                    }
+                if (document.querySelectorAll('.book-card').length === 0) {
+                    location.reload();
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-    </script>
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 
 </body>
 </html>
