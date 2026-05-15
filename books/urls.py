@@ -20,6 +20,7 @@ urlpatterns = [
     path('add-to-list/<int:book_id>/',      views.add_to_favorite, name='add_to_favorite'),
     path('add-comment/<int:book_id>/',      views.add_comment,    name='add_comment'),
     path('like-comment/<int:comment_id>/',  views.like_comment,   name='like_comment'),
+    path('reply-comment/<int:comment_id>/', views.reply_comment, name='reply_comment'),
     path('my-list/',                        views.my_list,        name='my_list'),
 
     # ── Discussion Groups ─────────────────────────────
@@ -52,7 +53,13 @@ urlpatterns = [
   path('group-chat/<int:book_id>/<str:group_type>/', views.group_chat,            name='group_chat'),
   path('group-chat/send/',                           views.send_group_message,     name='send_group_message'),
   path('group-chat/messages/',                       views.get_new_group_messages, name='get_new_group_messages'),
-  path('logout/',                                    views.logout,                 name='logout'),
+  path('logout/',                                    views.logout_view,                 name='logout'),
   path('my-groups/', views.my_groups, name='my_groups'),
+
+  path(
+    'notifications/delete/<int:notif_id>/',
+    views.delete_notification,
+    name='delete_notification'
+  ),
   
 ]

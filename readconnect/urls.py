@@ -31,7 +31,7 @@ urlpatterns = [
     path('categories/', views.categories_view, name='categories'),
     path('category/', views.category_detail, name='category_detail'),
     path('my-list/',views.my_list,name='my_list'),
-      path('logout/',                                    views.logout,                 name='logout'),
-    
+    path('logout/',                                    views.logout,                 name='logout'),
+    path('my-groups/', views.my_groups, name='my_groups'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

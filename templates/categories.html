@@ -8,538 +8,348 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+         
         :root {
             --deep: #561d46;
-            --mid: #ae6a97;
-            --light: #eca8bb;
-            --cream: #ffffff;
-            --bg-gradient-start: #fefaf5;
-            --bg-gradient-end: #fdf0f5;
+            --mid:  #ae6a97;
+            --light:#eca8bb;
         }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+        body { background:#f5f0f7; color:#2c2c2c; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: #f5f0f7;
-            color: #2c2c2c;
-            overflow-y: auto;
-        }
-
-        /* HEADER (identique home) */
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 30px;
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 20px rgba(86,29,70,0.08);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            flex-wrap: wrap;
-            gap: 15px;
-            border-bottom: 1px solid rgba(86,29,70,0.1);
-        }
-        .logo a {
-            font-size: 24px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--deep);
-        }
-        .logo i {
-            color: var(--mid);
-            margin-right: 4px;
-        }
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 25px;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: #4a4a4a;
-            font-weight: 500;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .nav-links a:hover {
-            color: var(--deep);
-        }
-        .search-box {
-            position: relative;
-            width: 270px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border-radius: 40px;
-            border: 1px solid #f0dce5;
-            outline: none;
-            font-size: 13px;
-            background: white;
-            transition: 0.2s;
-        }
-        .search-box input:focus {
-            border-color: var(--mid);
-            box-shadow: 0 0 0 3px rgba(174,106,151,0.2);
-        }
-        .search-box i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--mid);
-        }
-        .auth-buttons {
-            display: flex;
-            gap: 12px;
-        }
-        .auth-buttons a {
-            text-decoration: none;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-        .auth-buttons .login {
-            border: 1.5px solid var(--deep);
-            color: var(--deep);
-            background: transparent;
-        }
-        .auth-buttons .login:hover {
-            background: var(--deep);
-            color: white;
-        }
-        .auth-buttons .signup {
-            background: linear-gradient(135deg, var(--deep), var(--mid));
-            color: white;
-        }
-        .auth-buttons .signup:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(86,29,70,0.3);
-        }
-
-        /* LAYOUT 2 colonnes */
+        /* ── LAYOUT ── */
         .categories-layout {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 25px;
-            gap: 35px;
-            align-items: flex-start;
-        }
-/* Sidebar gauche: effet glassmorphisme rose/violet */
-        .categories-sidebar {
-            width: 280px;
-            flex-shrink: 0;
-            background: rgba(255, 248, 252, 0.85);
-            backdrop-filter: blur(12px);
-            border-radius: 40px;
-            padding: 25px 20px;
-            box-shadow: 0 20px 35px rgba(86,29,70,0.12), inset 0 1px 0 rgba(255,255,255,0.7);
-            border: 1px solid rgba(236,168,187,0.5);
-            position: sticky;
-            top: 90px;
-            max-height: calc(100vh - 110px);
-            overflow-y: auto;
+            display:flex; max-width:1400px; margin:0 auto;
+            padding:40px 25px; gap:35px; align-items:flex-start;
         }
 
+        /* ── SIDEBAR ── */
+        .categories-sidebar {
+            width:280px; flex-shrink:0;
+            background:rgba(255,248,252,0.9);
+            backdrop-filter:blur(12px);
+            border-radius:40px; padding:25px 20px;
+            box-shadow:0 20px 35px rgba(86,29,70,0.12),inset 0 1px 0 rgba(255,255,255,0.7);
+            border:1px solid rgba(236,168,187,0.5);
+            position:sticky; top:90px;
+            max-height:calc(100vh - 110px); overflow-y:auto;
+        }
         .categories-sidebar h3 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--deep);
-            margin-bottom: 22px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size:20px; font-weight:700; color:var(--deep);
+            margin-bottom:20px; padding-bottom:12px;
+            border-bottom:2px solid var(--light);
+            display:flex; align-items:center; gap:8px;
         }
         .categories-sidebar h3 a {
-            text-decoration: none;
-            color: var(--deep);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-decoration:none; color:var(--deep);
+            display:flex; align-items:center; gap:8px;
         }
-        .categories-sidebar h3 a i {
-            font-size: 24px;
-            color: var(--mid);
-        }
+        .categories-sidebar h3 i { color:var(--mid); }
 
-        /* Menu vertical avec couleurs pastel (chaque élément différent) */
-        .vertical-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        /* ── SIDEBAR MENU ── */
+        .vertical-menu { list-style:none; display:flex; flex-direction:column; gap:10px; }
+
         .vertical-menu li a {
-            display: block;
-            padding: 10px 16px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 28px;
-            transition: all 0.25s ease;
-            cursor: pointer;
-            background: #f5eef8;
-            color: #4a3b5c;
-            border: 1px solid rgba(0,0,0,0.02);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            display:flex; align-items:center; gap:10px;
+            padding:10px 14px;
+            text-decoration:none; font-size:13px; font-weight:500;
+            border-radius:28px;
+            transition:all 0.25s ease;
+            color:#3a2d4a;
+            /* bg set by JS */
         }
-        /* Cycle de couleurs pastel */
-        .vertical-menu li:nth-child(1) a { background: #f3e8ff; }
-        .vertical-menu li:nth-child(2) a { background: #ffe4e6; }
-        .vertical-menu li:nth-child(3) a { background: #e0f7fa; }
-        .vertical-menu li:nth-child(4) a { background: #fff0e0; }
-        .vertical-menu li:nth-child(5) a { background: #e8f5e9; }
-        .vertical-menu li:nth-child(6) a { background: #ffecb3; }
-        .vertical-menu li:nth-child(7) a { background: #ffe0f0; }
-        .vertical-menu li:nth-child(8) a { background: #d1c4e9; }
-        .vertical-menu li:nth-child(9) a { background: #b2dfdb; }
-        .vertical-menu li:nth-child(10) a { background: #fce4ec; }
-        .vertical-menu li:nth-child(11) a { background: #fff3e0; }
-        .vertical-menu li:nth-child(12) a { background: #e1f5fe; }
-        .vertical-menu li:nth-child(13) a { background: #f3e5f5; }
-        .vertical-menu li:nth-child(14) a { background: #e8eaf6; }
-        .vertical-menu li:nth-child(15) a { background: #fff8e1; }
         .vertical-menu li a:hover {
-            transform: translateX(6px);
-            filter: brightness(0.95);
-            box-shadow: 0 6px 14px rgba(86,29,70,0.12);
+            transform:translateX(6px);
+            filter:brightness(0.93);
+            box-shadow:0 6px 16px rgba(86,29,70,0.14);
         }
         .vertical-menu li a.active {
-            background: linear-gradient(135deg, var(--deep), var(--mid));
-            color: white;
-            box-shadow: 0 8px 18px rgba(86,29,70,0.25);
-            transform: translateX(4px);
+            background:linear-gradient(135deg,var(--deep),var(--mid)) !important;
+            color:white !important;
+            box-shadow:0 8px 18px rgba(86,29,70,0.28);
+            transform:translateX(4px);
+        }
+        .vertical-menu li a.active .menu-icon-box {
+            background:rgba(255,255,255,0.25) !important;
+        }
+        .vertical-menu li a.active .menu-icon-box svg * {
+            stroke:white !important;
         }
 
-        /* Contenu principal (droite) */
-        .categories-content {
-            flex: 1;
-            min-height: 550px;
+        /* SVG icon box inside sidebar */
+        .menu-icon-box {
+            width:32px; height:32px; border-radius:8px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            /* bg set by JS */
         }
+        .menu-icon-box svg { width:17px; height:17px; }
+
+        /* ── CONTENT AREA ── */
+        .categories-content { flex:1; min-height:550px; }
+
         .category-shelf {
-            margin-bottom: 45px;
-            scroll-margin-top: 95px;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(4px);
-            border-radius: 36px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            border: 1px solid rgba(236,168,187,0.3);
-            transition: all 0.2s;
+            margin-bottom:40px; scroll-margin-top:95px;
+            background:rgba(255,255,255,0.75);
+            backdrop-filter:blur(4px);
+            border-radius:36px; padding:25px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.04);
+            border:1px solid rgba(236,168,187,0.3);
+            transition:all 0.2s;
         }
         .category-shelf:hover {
-            background: rgba(255,255,255,0.85);
-            box-shadow: 0 20px 35px rgba(86,29,70,0.08);
+            background:rgba(255,255,255,0.9);
+            box-shadow:0 20px 35px rgba(86,29,70,0.09);
         }
+        /* ── SHELF HEADER ── */
         .shelf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--light);
-            padding-bottom: 10px;
+            display:flex; align-items:center; gap:14px;
+            margin-bottom:20px; padding-bottom:12px;
+            border-bottom:2px solid var(--light);
         }
-        .shelf-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .shelf-icon-box {
+            width:50px; height:50px; border-radius:13px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            /* bg set by JS */
         }
-        .shelf-title .category-icon {
-            font-size: 34px;
-        }
-        .shelf-title h2 {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--deep);
-        }
-        /* Full shelf supprimé */
-        .shelf-link {
-            display: none;
-        }
+        .shelf-icon-box svg { width:26px; height:26px; }
+        .shelf-header h2 { font-size:24px; font-weight:700; color:var(--deep); }
 
-        /* Horizontal scroll des livres */
+        /* ── BOOKS ── */
         .books-strip {
-            display: flex;
-            gap: 22px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            scroll-behavior: smooth;
+            display:flex; gap:20px; overflow-x:auto;
+            padding-bottom:14px; scroll-behavior:smooth;
         }
-        .books-strip::-webkit-scrollbar {
-            height: 6px;
-        }
-        .books-strip::-webkit-scrollbar-track {
-            background: #f0e4ec;
-            border-radius: 10px;
-        }
-        .books-strip::-webkit-scrollbar-thumb {
-            background: var(--mid);
-            border-radius: 10px;
-        }
+        .books-strip::-webkit-scrollbar { height:5px; }
+        .books-strip::-webkit-scrollbar-track { background:#f0e4ec; border-radius:10px; }
+        .books-strip::-webkit-scrollbar-thumb { background:var(--mid); border-radius:10px; }
+
         .book-card {
-            min-width: 165px;
-            width: 165px;
-            background: white;
-            border-radius: 28px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 12px 24px rgba(86,29,70,0.08);
+            min-width:160px; width:160px; background:white;
+            border-radius:26px; overflow:hidden; cursor:pointer;
+            transition:all 0.25s; box-shadow:0 10px 22px rgba(86,29,70,0.09);
         }
-        .book-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 35px rgba(86,29,70,0.2);
-        }
+        .book-card:hover { transform:translateY(-8px); box-shadow:0 20px 35px rgba(86,29,70,0.2); }
         .book-cover {
-            height: 210px;
-            background: linear-gradient(145deg, #e6cfc5, #d4bba8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            height:205px; background:linear-gradient(145deg,#e6cfc5,#d4bba8);
+            display:flex; align-items:center; justify-content:center; overflow:hidden;
         }
-        .book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .fallback-icon {
-            font-size: 60px;
-            color: #8b5e4b;
-        }
-        .book-info {
-            padding: 14px 12px;
-            text-align: center;
-        }
+        .book-cover img { width:100%; height:100%; object-fit:cover; }
+        .fallback-icon { font-size:56px; }
+        .book-info { padding:13px 11px; text-align:center; }
         .book-title {
-            font-size: 14px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--deep);
-            margin-bottom: 5px;
+            font-size:13px; font-weight:700; color:var(--deep);
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;
         }
-        .book-author {
-            font-size: 11px;
-            color: #9b7e6e;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .book-author { font-size:11px; color:#9b7e6e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .book-strip {
-            height: 3px;
-            background: linear-gradient(90deg, var(--deep), var(--light));
-            width: 70%;
-            margin: 8px auto 0;
-            border-radius: 4px;
-            opacity: 0.6;
+            height:3px; background:linear-gradient(90deg,var(--deep),var(--light));
+            width:65%; margin:7px auto 0; border-radius:4px; opacity:0.55;
         }
+
         .empty-category {
-            text-align: center;
-            padding: 40px;
-            background: rgba(255,245,250,0.8);
-            border-radius: 32px;
-            color: #b092a5;
-            font-style: italic;
-            font-size: 14px;
+            text-align:center; padding:40px;
+            background:rgba(255,245,250,0.8); border-radius:30px;
+            color:#b092a5; font-style:italic; font-size:14px;
         }
-        .hidden-shelf {
-            display: none;
-        }
+        .hidden-shelf { display:none; }
 
-        @media (max-width: 900px) {
-            .categories-layout {
-                flex-direction: column;
-                padding: 20px;
-            }
-            .categories-sidebar {
-                width: 100%;
-                position: static;
-                max-height: none;
-                margin-bottom: 25px;
-            }
-            .vertical-menu {
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .vertical-menu li a {
-                padding: 6px 16px;
-                font-size: 12px;
-            }
-            .book-card {
-                min-width: 140px;
-                width: 140px;
-            }
-            .book-cover {
-                height: 175px;
-            }
-            .shelf-title h2 {
-                font-size: 20px;
-            }
+        @media(max-width:900px){
+            .categories-layout { flex-direction:column; padding:20px; }
+            .categories-sidebar { width:100%; position:static; max-height:none; }
+            .vertical-menu { flex-direction:row; flex-wrap:wrap; gap:8px; }
+            .book-card { min-width:140px; width:140px; }
+            .book-cover { height:175px; }
         }
-
-        /* الألوان الثمانية الدائرية — تتكرر تلقائياً */
-      
+        
     </style>
 </head>
+
+
 <body>
 
-    {% include 'header.html' %}
+{% include 'header.html' %}
 
-    <div class="categories-layout">
-        <aside class="categories-sidebar">
-            <h3>
-                <a href="#" id="showAllCategoriesBtn">
-                    <i class="fa-regular fa-folder-open"></i> All Categories
-                </a>
-            </h3>
-            <ul class="vertical-menu" id="categoryMenu">
-                {% for category in categories_with_books %}
-                <li>
-                    <a href="#" data-category-id="{{ category.id }}" class="category-filter-link">
-                        {{ category.icon }} {{ category.title }}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </aside>
+<div class="categories-layout">
 
-        <div class="categories-content" id="categoriesContent">
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="categories-sidebar">
+        <h3>
+            <a href="#" id="showAllBtn">
+                <i class="fa-regular fa-folder-open"></i> All Categories
+            </a>
+        </h3>
+        <ul class="vertical-menu" id="categoryMenu">
             {% for category in categories_with_books %}
-            <div class="category-shelf" id="shelf-{{ category.id }}" data-category-id="{{ category.id }}">
-                <div class="shelf-header">
-                    <div class="shelf-title">
-                        <span class="category-icon">{{ category.icon }}</span>
-                        <h2>{{ category.title }}</h2>
-                    </div>
-                </div>
-                {% if category.books %}
-                <div class="books-strip">
-                    {% for book in category.books %}
-                    <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
-                        <div class="book-cover">
-                            {% if book.image %}
-                                <img src="{{ book.image.url }}" alt="{{ book.title }}">
-                            {% else %}
-                                <div class="fallback-icon">📖</div>
-                            {% endif %}
-                        </div>
-                        <div class="book-info">
-                            <div class="book-title">{{ book.title|truncatechars:24 }}</div>
-                            <div class="book-author">{{ book.author|truncatechars:20 }}</div>
-                        </div>
-                        <div class="book-strip"></div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="empty-category">📭 Aucun livre dans cette catégorie pour le moment.</div>
-                {% endif %}
-            </div>
-            {% empty %}
-            <div class="empty-category">📭 Aucune catégorie trouvée. Veuillez en ajouter dans la base de données.</div>
+            <li>
+                <a href="#"
+                   data-category-id="{{ category.id }}"
+                   data-index="{{ forloop.counter0 }}"
+                   class="category-filter-link">
+                    <span class="menu-icon-box">
+                        {{ category.svg_icon|safe }}
+                    </span>
+                    {{ category.title }}
+                </a>
+            </li>
             {% endfor %}
+        </ul>
+    </aside>
+
+    <!-- ══ SHELVES ══ -->
+    <div class="categories-content">
+        {% for category in categories_with_books %}
+        <div class="category-shelf"
+             id="shelf-{{ category.id }}"
+             data-category-id="{{ category.id }}"
+             data-index="{{ forloop.counter0 }}">
+    <div class="shelf-header">
+                <span class="shelf-icon-box">
+                    {{ category.svg_icon|safe }}
+                </span>
+                <h2>{{ category.title }}</h2>
+            </div>
+
+            {% if category.books %}
+            <div class="books-strip">
+                {% for book in category.books %}
+                <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+                    <div class="book-cover">
+                        {% if book.image %}
+                            <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                        {% else %}
+                            <div class="fallback-icon">📖</div>
+                        {% endif %}
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">{{ book.title|truncatechars:24 }}</div>
+                        <div class="book-author">{{ book.author|truncatechars:20 }}</div>
+                    </div>
+                    <div class="book-strip"></div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-category">📭 No books in this category yet.</div>
+            {% endif %}
+
         </div>
+        {% empty %}
+        <div class="empty-category">📭 No categories found.</div>
+        {% endfor %}
     </div>
 
-    <script>
-        (function() {
-            // Récupération des éléments
-            var showAllBtn = document.getElementById('showAllCategoriesBtn');
-            var filterLinks = document.querySelectorAll('.category-filter-link');
-            var allShelves = document.querySelectorAll('.category-shelf');
-            
-            // Fonction pour afficher toutes les catégories
-            function showAllCategories() {
-                for (var i = 0; i < allShelves.length; i++) {
-                    allShelves[i].classList.remove('hidden-shelf');
-                }
-                for (var j = 0; j < filterLinks.length; j++) {
-                    filterLinks[j].classList.remove('active');
-                }
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+</div>
+
+<script>
+(function () {
+
+    /*
+     * 8-colour palette — cycles INFINITELY via index % 8
+     * bg  = full item background
+     * ico = icon-box background
+     */
+    var PALETTE = [
+        { bg:'#f3e8ff', ico:'#e0c8f0' },   /* lavender  */
+        { bg:'#ffe4e6', ico:'#f5bfc8' },   /* blush     */
+        { bg:'#d4f5f0', ico:'#a0ddd8' },   /* mint      */
+        { bg:'#fff3cd', ico:'#f5d88a' },   /* butter    */
+        { bg:'#e8f5e9', ico:'#b0d8b8' },   /* sage      */
+        { bg:'#fde8d8', ico:'#f5c4a0' },   /* peach     */
+        { bg:'#e8eeff', ico:'#b0c4f0' },   /* periwinkle*/
+        { bg:'#fce4f4', ico:'#f0b0d8' },   /* rose      */
+    ];
+
+    function applyColor(el, idx) {
+        var c = PALETTE[idx % PALETTE.length];
+        el.style.background = c.bg;
+        var box = el.querySelector('.menu-icon-box, .shelf-icon-box');
+        if (box) box.style.background = c.ico;
+    }
+
+    /* Colour sidebar links */
+    document.querySelectorAll('.category-filter-link').forEach(function (link) {
+        applyColor(link, parseInt(link.getAttribute('data-index'), 10));
+    });
+
+    /* Colour shelf icon boxes only (not the whole shelf card) */
+    document.querySelectorAll('.category-shelf').forEach(function (shelf) {
+        var idx = parseInt(shelf.getAttribute('data-index'), 10);
+        var box = shelf.querySelector('.shelf-icon-box');
+        if (box) box.style.background = PALETTE[idx % PALETTE.length].ico;
+    });
+
+    /* ── FILTER LOGIC ── */
+    var showAllBtn  = document.getElementById('showAllBtn');
+    var filterLinks = document.querySelectorAll('.category-filter-link');
+    var allShelves  = document.querySelectorAll('.category-shelf');
+
+    function resetLinkColor(link) {
+        var idx = parseInt(link.getAttribute('data-index'), 10);
+        var c   = PALETTE[idx % PALETTE.length];
+        link.style.background = c.bg;
+        var box = link.querySelector('.menu-icon-box');
+        if (box) box.style.background = c.ico;
+    }
+
+    function showAll() {
+        allShelves.forEach(function (s) { s.classList.remove('hidden-shelf'); });
+        filterLinks.forEach(function (l) { l.classList.remove('active'); resetLinkColor(l); });
+        window.scrollTo({ top:0, behavior:'smooth' });
+    }
+
+    function filterTo(catId) {
+        allShelves.forEach(function (s) {
+            s.getAttribute('data-category-id') === catId
+          ? s.classList.remove('hidden-shelf')
+                : s.classList.add('hidden-shelf');
+        });
+        filterLinks.forEach(function (l) {
+            if (l.getAttribute('data-category-id') === catId) {
+                l.classList.add('active');
+                l.style.background = '';       /* let CSS gradient take over */
+            } else {
+                l.classList.remove('active');
+                resetLinkColor(l);
             }
-            
-            // Fonction pour afficher une seule catégorie
-            function showSingleCategory(categoryId) {
-                for (var i = 0; i < allShelves.length; i++) {
-                    var shelf = allShelves[i];
-                    if (shelf.getAttribute('data-category-id') === categoryId) {
-                        shelf.classList.remove('hidden-shelf');
-                    } else {
-                        shelf.classList.add('hidden-shelf');
-                    }
+        });
+        var target = document.querySelector('.category-shelf[data-category-id="' + catId + '"]');
+        if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    if (showAllBtn) showAllBtn.addEventListener('click', function (e) { e.preventDefault(); showAll(); });
+
+    filterLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            filterTo(this.getAttribute('data-category-id'));
+        });
+    });
+
+    /* URL param ?cat=ID → auto-filter */
+    var param = new URLSearchParams(window.location.search).get('cat');
+    if (param) setTimeout(function () { filterTo(param); }, 80);
+
+    /* Search */
+    var searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            var q = this.value.trim().toLowerCase();
+            showAll();
+            if (!q) return;
+            allShelves.forEach(function (shelf) {
+                var h2   = shelf.querySelector('h2');
+                var match = h2 && h2.textContent.toLowerCase().includes(q);
+                if (!match) {
+                    shelf.querySelectorAll('.book-title').forEach(function (bt) {
+                        if (bt.textContent.toLowerCase().includes(q)) match = true;
+                    });
                 }
-                for (var j = 0; j < filterLinks.length; j++) {
-                    var link = filterLinks[j];
-                    if (link.getAttribute('data-category-id') === categoryId) {
-                        link.classList.add('active');
-                    } else {
-                        link.classList.remove('active');
-                    }
-                }
-                var activeShelf = document.querySelector('.category-shelf[data-category-id="' + categoryId + '"]');
-                if (activeShelf) {
-                    activeShelf.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-            
-            // Événement : clic sur "All Categories"
-            if (showAllBtn) {
-                showAllBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showAllCategories();
-                });
-            }
-            
-            // Événement : clic sur une catégorie dans le menu
-            for (var k = 0; k < filterLinks.length; k++) {
-                filterLinks[k].addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var catId = this.getAttribute('data-category-id');
-                    showSingleCategory(catId);
-                });
-            }
-            
-            // Recherche (barre de recherche dans le header)
-            var searchInput = document.querySelector('.search-box input');
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    var query = this.value.trim().toLowerCase();
-                    showAllCategories();
-                    for (var i = 0; i < allShelves.length; i++) {
-                        var shelf = allShelves[i];
-                        var titleElem = shelf.querySelector('.shelf-title h2');
-                        var title = titleElem ? titleElem.textContent.toLowerCase() : '';
-                        var hasMatch = title.indexOf(query) !== -1;
-                        var books = shelf.querySelectorAll('.book-title');
-                        for (var b = 0; b < books.length; b++) {
-                            if (books[b].textContent.toLowerCase().indexOf(query) !== -1) {
-                                hasMatch = true;
-                                break;
-                            }
-                        }
-                        if (query !== '' && !hasMatch) {
-                            shelf.classList.add('hidden-shelf');
-                        }
-                    }
-                });
-            }
-        })();
-    </script>
+                if (!match) shelf.classList.add('hidden-shelf');
+            });
+        });
+    }
+
+})();
+</script>
 </body>
 </html>

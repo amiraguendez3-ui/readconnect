@@ -1,258 +1,105 @@
-{% load static %}
+ {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ReadConnect</title>
-
+<title>Book Nest | Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-
-/* ===== PALETTE =====
-   --deep:   #561d46  (deep purple/plum)
-   --mid:    #ae6a97  (mauve)
-   --light:  #eca8bb  (pink)
-   --cream:  #ffffff  (white)
-   =================== */
-
 :root {
-  --deep:   #561d46;
-  --mid:    #ae6a97;
-  --light:  #eca8bb;
-  --cream:  #ffffff;
-  --space:  20px;
+  --deep:  #561d46;
+  --mid:   #ae6a97;
+  --light: #eca8bb;
+  --cream: #ffffff;
+  --space: 20px;
 }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background: var(--cream); color: #333; }
 
-/* ========== BASE ========== */
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: var(--cream);
-  color: #333;
-}
-
-/* ========== HERO ========== */
+/* ===== HERO ===== */
 .hero {
   height: 240px;
   background: linear-gradient(135deg, var(--deep) 0%, var(--mid) 60%, var(--light) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: var(--space);
   border-radius: 0 0 28px 28px;
   box-shadow: 0 6px 30px rgba(86,29,70,0.2);
+  margin-bottom: var(--space);
 }
+.hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; }
+.top-text { font-size: 11px; color: var(--light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.hero h1 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-.hero-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-}
-
-.top-text {
-  font-size: 11px;
-  color: var(--light);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.hero h1 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* ========== SLIDER ========== */
-.slider-container {
-  position: relative;
-  height: 130px;
-  width: 250px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.slider {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
+/* ===== SLIDER ===== */
+.slider-container { position: relative; height: 130px; width: 280px; display: flex; justify-content: center; align-items: center; }
+.slider { position: relative; width: 100%; height: 100%; }
 .slide {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 70px;
-  height: 95px;
+  top: 50%; left: 50%;
+  width: 70px; height: 95px;
   transform: translate(-50%, -50%);
-  transition: 0.5s;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   object-fit: cover;
   box-shadow: 0 8px 24px rgba(86,29,70,0.35);
+  opacity: 0;
+  z-index: 0;
 }
 
-/* ========== CATEGORIES ========== */
-.categories {
-  padding: 20px 20px 0 20px;
-  margin-bottom: 25px;
-}
+/* ===== CATEGORIES ===== */
+.categories { padding: 20px 20px 0; margin-bottom: 25px; }
+.categories-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
+.categories-header h2 { font-size: 20px; font-weight: 700; color: var(--deep); }
+.categories-header a { text-decoration: none; color: var(--mid); font-size: 12px; font-weight: 500; transition: 0.2s; }
+.categories-header a:hover { color: var(--deep); }
 
-.categories-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 0 5px;
-}
+.category-container { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 5px 5px 15px 5px; }
 
-.categories-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-  color: var(--deep);
-}
-
-.categories-header a {
-  text-decoration: none;
-  color: var(--mid);
-  font-size: 12px;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.categories-header a:hover {
-  color: var(--deep);
-}
-
-.category-container {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 5px 5px 15px 5px;
-}
-
-/* ========== CATEGORY CARD ========== */
+/* Category card — same design as before */
 .category-card {
-  min-width: 148px;
+  width: 180px;
+  height: 95px;
   padding: 14px 14px;
   border-radius: 14px;
   text-align: left;
   transition: 0.3s;
   cursor: pointer;
   border: 1.5px solid transparent;
-  margin-bottom: 5px;
-  scroll-margin-top: 100px;
   text-decoration: none;
-  display: block;
-}
-
-.category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(86,29,70,0.15);
-  border-color: var(--light);
-}
-
-/* SVG icon container — matches the style in the reference image */
-.cat-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  justify-content: space-between;
 }
+.category-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(86,29,70,0.15); border-color: var(--light); }
 
-.cat-icon-wrap svg {
-  width: 24px;
-  height: 24px;
-}
+/* SVG icon box — matches reference image */
+.cat-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.cat-icon-wrap svg { width: 24px; height: 24px; }
 
-.category-card h3 {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0 0 2px 0;
-  color: var(--deep);
-}
+.category-card h3 { font-size: 13px; font-weight: 600; margin: 0 0 2px; color: var(--deep); }
 
-.category-card p {
-  font-size: 11px;
-  color: var(--mid);
-  margin: 0;
-  font-weight: 500;
-}
+/* Color variants */
+.purple { background: #f5e8f2; } .purple .cat-icon-wrap { background: #e8c8e8; }
+.yellow { background: #fdf3e7; } .yellow .cat-icon-wrap { background: #f5ddb0; }
+.pink   { background: #fde8f0; } .pink   .cat-icon-wrap { background: #f5c0d0; }
+.blue   { background: #e8f0fd; } .blue   .cat-icon-wrap { background: #b0c8f0; }
+.beige  { background: #f5f0ee; } .beige  .cat-icon-wrap { background: #e0d0c0; }
+.green  { background: #e8f5ee; } .green  .cat-icon-wrap { background: #b0d8c0; }
+.orange { background: #fdf0e8; } .orange .cat-icon-wrap { background: #f5c8a0; }
+.cyan   { background: #e8f5f5; } .cyan   .cat-icon-wrap { background: #a0d8d8; }
 
-/* Category color variants */
-.purple { background: #f5e8f2; }
-.yellow { background: #fdf3e7; }
-.pink   { background: #fde8f0; }
-.blue   { background: #e8f0fd; }
-.beige  { background: #f5f0ee; }
-.green  { background: #e8f5ee; }
-.orange { background: #fdf0e8; }
-.cyan   { background: #e8f5f5; }
+/* ===== SECTION HEADER ===== */
+.section-header { text-align: center; margin-bottom: 22px; padding: 0 20px; }
+.section-header h2 { font-size: 24px; font-weight: 700; color: var(--deep); position: relative; display: inline-block; }
+.section-header h2::after { content: ''; display: block; width: 50px; height: 3px; background: linear-gradient(90deg, var(--deep), var(--light)); border-radius: 10px; margin: 6px auto 0; }
+.section-header p { font-size: 12px; color: var(--mid); font-style: italic; margin-top: 8px; }
 
-/* Icon background tints */
-.purple .cat-icon-wrap { background: #e8c8e8; }
-.yellow .cat-icon-wrap { background: #f5ddb0; }
-.pink   .cat-icon-wrap { background: #f5c0d0; }
-.blue   .cat-icon-wrap { background: #b0c8f0; }
-.beige  .cat-icon-wrap { background: #e0d0c0; }
-.green  .cat-icon-wrap { background: #b0d8c0; }
-.orange .cat-icon-wrap { background: #f5c8a0; }
-.cyan   .cat-icon-wrap { background: #a0d8d8; }
- /* ========== SECTION HEADER ========== */
-.section-header {
-  text-align: center;
-  margin-bottom: 22px;
-  padding: 0 20px;
-}
+/* ===== BOOKS GRID ===== */
+.new-books, .best-books, .trending-books { padding: 20px 0 10px; margin-bottom: 20px; }
+.books-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 14px; padding: 0 28px; }
 
-.section-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--deep);
-  position: relative;
-  display: inline-block;
-}
-
-.section-header h2::after {
-  content: '';
-  display: block;
-  width: 50px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--deep), var(--light));
-  border-radius: 10px;
-  margin: 6px auto 0;
-}
-
-.section-header p {
-  font-size: 12px;
-  color: var(--mid);
-  font-style: italic;
-  margin-top: 8px;
-}
-
-/* ========== NEW BOOKS ========== */
-.new-books {
-  padding: 20px 0 10px;
-}
-/* ========== BOOKS GRID ========== */
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 14px;
-  padding: 0 28px;
-}
-
-/* ========== BOOK CARD ========== */
 .book-card {
   background: white;
   border-radius: 14px;
@@ -263,34 +110,20 @@ body {
   cursor: pointer;
   border: 1.5px solid transparent;
 }
+.book-card:hover { transform: translateY(-6px); box-shadow: 0 10px 28px rgba(86,29,70,0.18); border-color: var(--light); }
+.book-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+.book-title { font-size: 12px; font-weight: 600; margin-top: 8px; color: var(--deep); }
+.book-author { font-size: 10px; color: var(--mid); margin-top: 2px; }
 
-.book-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 28px rgba(86,29,70,0.18);
-  border-color: var(--light);
-}
+/* Star rating */
+.book-rating { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px; }
+.stars { display: flex; gap: 0; }
+.star { font-size: 13px; color: #e0d0d0; transition: color 0.2s; }
+.star.filled { color: #f4a015; }
+.star.half  { color: #f4a015; }
+.rating-num { font-size: 10px; color: var(--mid); font-weight: 700; margin-left: 2px; }
 
-.book-card img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.book-title {
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 8px;
-  color: var(--deep);
-}
-
-.book-author {
-  font-size: 10px;
-  color: var(--mid);
-  margin-top: 2px;
-}
-
-/* ========== BANNER ========== */
+/* ===== BANNER ===== */
 .banner {
   margin: 28px 28px;
   height: 100px;
@@ -302,152 +135,74 @@ body {
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(86,29,70,0.15);
 }
+.banner-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(86,29,70,0.7), rgba(174,106,151,0.5)); display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+.banner-overlay h2 { color: white; font-size: 12px; font-weight: 600; line-height: 1.6; }
 
-.banner-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, rgba(86,29,70,0.7) 0%, rgba(174,106,151,0.5) 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-}
+/* ===== TOP USERS ===== */
+.top-users { padding: 28px 20px 36px; text-align: center; background: white; margin: 10px 28px 28px; border-radius: 18px; box-shadow: 0 4px 16px rgba(86,29,70,0.08); }
+.top-users h3 { font-size: 20px; font-weight: 700; margin-bottom: 18px; color: var(--deep); }
+.users-list { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+.user-avatar { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; margin: 0 auto 6px; border: 2.5px solid var(--light); box-shadow: 0 3px 10px rgba(86,29,70,0.15); transition: 0.3s; }
+.user-avatar:hover { border-color: var(--deep); transform: scale(1.08); }
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.username { font-size: 12px; font-weight: 500; color: var(--deep); }
 
-.banner-overlay h2 {
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.3px;
-}
-
-/* ========== BEST BOOKS / TRENDING ========== */
-.best-books, .trending-books {
-  margin-bottom: 34px;
-}
-
-/* ========== TOP USERS ========== */
-.top-users {
-  padding: 28px 20px 36px;
-  text-align: center;
-  background: white;
-  margin: 10px 28px 28px;
-  border-radius: 18px;
-  box-shadow: 0 4px 16px rgba(86,29,70,0.08);
-}
-
-.top-users h3 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 18px;
-  color: var(--deep);
-}
-
-.users-list {
-  display: flex;
-  gap: 22px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.user-card {
-  text-align: center;
-}
-
-.user-avatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-bottom: 6px;
-  border: 2.5px solid var(--light);
-  box-shadow: 0 3px 10px rgba(86,29,70,0.15);
-  transition: 0.3s;
-}
-
-.user-avatar:hover {
-  border-color: var(--deep);
-  transform: scale(1.08);
-}
-
-.user-avatar img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-
-.username {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--deep);
-}
-
-/* ========== HIDDEN ========== */
-.hidden { display: none; }
-
-/* ========== RESPONSIVE ========== */
-@media (max-width: 1200px) {
-  .books-grid { grid-template-columns: repeat(4, 1fr); }
-}
-
+@media (max-width: 1200px) { .books-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 768px) {
   .books-grid { grid-template-columns: repeat(2, 1fr); }
-  .hero { height: 200px; }
+  .hero { height: 220px; }
   .hero h1 { font-size: 18px; }
   .category-card { min-width: 130px; padding: 12px; }
   .banner { margin: 20px 16px; }
   .top-users { margin: 10px 16px 20px; }
 }
-
 </style>
-
 </head>
-
 <body>
 
-<!-- ========== HEADER INCLUS ========== -->
 {% include 'header.html' %}
 
-<!-- ========== HERO SECTION ========== -->
+<!-- ===== HERO — Most Interactive Books ===== -->
 <section class="hero">
   <div class="hero-content">
     <p class="top-text">This Month</p>
-    <h1>Most interactive books</h1>
+    <h1>Most Interactive Books</h1>
     <div class="slider-container">
       <div class="slider" id="slider">
-        <img src="{% static 'images/book1.jpg' %}" class="slide">
-        <img src="{% static 'images/book2.jpg' %}" class="slide">
-        <img src="{% static 'images/book3.jpg' %}" class="slide">
-        <img src="{% static 'images/book4.jpg' %}" class="slide">
-        <img src="{% static 'images/book5.jpg' %}" class="slide">
+        {% for book in trending_books|slice:":5" %}
+          {% if book.image %}
+         <img src="{{ book.image.url }}" class="slide" alt="{{ book.title }}">
+          {% endif %}
+        {% empty %}
+          <!-- Fallback static images if no books with images -->
+          <img src="{% static 'images/book1.jpg' %}" class="slide">
+          <img src="{% static 'images/book2.jpg' %}" class="slide">
+          <img src="{% static 'images/book3.jpg' %}" class="slide">
+        {% endfor %}
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========== FEATURED CATEGORIES ========== -->
+<!-- ===== FEATURED CATEGORIES ===== -->
 <div class="categories">
   <div class="categories-header">
     <h2>Featured Categories</h2>
     <a href="/categories/">All Categories →</a>
   </div>
-  <div class="category-container" id="categories">
-
+  <div class="category-container">
     {% for cat in featured_categories %}
-    <a class="category-card {{ cat.color_class }}" href="/categories/#cat-{{ cat.id }}">
+    <a class="category-card {{ cat.color_class }}" href="/categories/?cat={{ cat.id }}">
       <div class="cat-icon-wrap">
         {{ cat.svg_icon|safe }}
       </div>
       <h3>{{ cat.name }}</h3>
-     
     </a>
     {% endfor %}
-
   </div>
 </div>
 
-<!-- ========== NEWLY ADDED BOOKS ========== -->
+<!-- ===== NEWLY ADDED BOOKS ===== -->
 <section class="new-books">
   <div class="section-header">
     <h2>Newly Added Books</h2>
@@ -455,43 +210,47 @@ body {
   </div>
   <div class="books-grid">
     {% for book in new_books %}
-      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
-        <img src="{{ book.image.url }}" alt="{{ book.title }}">
-        <h4 class="book-title">{{ book.title }}</h4>
-        <p class="book-author">by {{ book.author }}</p>
-      </div>
+    <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+      {% if book.image %}<img src="{{ book.image.url }}" alt="{{ book.title }}">{% endif %}
+      <h4 class="book-title">{{ book.title|truncatechars:22 }}</h4>
+      <p class="book-author">{{ book.author|truncatechars:18 }}</p>
+    </div>
     {% endfor %}
   </div>
 </section>
 
-<!-- Banner -->
+<!-- ===== BANNER ===== -->
 <div class="banner">
   <div class="banner-overlay">
     <h2>"The more that you read, the more things you will know.<br>The more that you learn, the more places you'll go."</h2>
   </div>
 </div>
 
-<!-- ========== BEST BOOKS ========== -->
+<!-- ===== BEST BOOKS (with ratings) ===== -->
 <section class="best-books">
   <div class="section-header">
     <h2>Best Books</h2>
-    <p>Discover the best books loved by our readers – give them a try now!</p>
+    <p>Discover the best books loved by our readers</p>
   </div>
   <div class="books-grid">
     {% for book in best_books %}
-      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
-        {% if book.image %}
-          <img src="{{ book.image.url }}" alt="{{ book.title }}">
-        {% endif %}
-        <h4 class="book-title">{{ book.title }}</h4>
-        <p class="book-author">{{ book.author }}</p>
-        <p>⭐ {{ book.avg_rating|default:"0" }}</p>
+    <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+      {% if book.image %}<img src="{{ book.image.url }}" alt="{{ book.title }}">{% endif %}
+      <h4 class="book-title">{{ book.title|truncatechars:22 }}</h4>
+      <p class="book-author">{{ book.author|truncatechars:18 }}</p>
+      <div class="book-rating">
+        <div class="stars" data-rating="{{ book.avg_note|default:'0' }}">
+          <span class="star">★</span><span class="star">★</span>
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <span class="rating-num">{{ book.avg_note|floatformat:1|default:"0.0" }}</span>
       </div>
+    </div>
     {% endfor %}
   </div>
 </section>
 
-<!-- ========== TRENDING BOOKS ========== -->
+<!-- ===== TRENDING BOOKS ===== -->
 <section class="trending-books">
   <div class="section-header">
     <h2>Trending Books</h2>
@@ -499,17 +258,16 @@ body {
   </div>
   <div class="books-grid">
     {% for book in trending_books %}
-      <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
-        {% if book.image %}
-          <img src="{{ book.image.url }}">
-        {% endif %}
-        <h4 class="book-title">{{ book.title }}</h4>
-      </div>
+    <div class="book-card" onclick="location.href='/book/{{ book.title|slugify }}/'">
+      {% if book.image %}<img src="{{ book.image.url }}" alt="{{ book.title }}">{% endif %}
+      <h4 class="book-title">{{ book.title|truncatechars:22 }}</h4>
+      <p class="book-author">{{ book.author|truncatechars:18 }}</p>
+    </div>
     {% endfor %}
   </div>
 </section>
 
-<!-- ========== TOP USERS ========== -->
+<!-- ===== TOP USERS ===== -->
 <div class="top-users">
   <h3>Top Users</h3>
   <div class="users-list">
@@ -529,55 +287,80 @@ body {
       <p class="username">{{ user.username }}</p>
     </div>
     {% empty %}
-      <p>لا يوجد مستخدمين بعد</p>
+      <p>No users yet.</p>
     {% endfor %}
   </div>
 </div>
  <script>
-function toggleMenu(menuId){
-let menu = document.getElementById(menuId);
-    if(menu.classList.contains("active")){
-        menu.classList.remove("active");
+// ===== Dropdown menu toggle =====
+function toggleMenu(menuId) {
+  var menu = document.getElementById(menuId);
+  if (!menu) return;
+  if (menu.classList.contains('active')) {
+    menu.classList.remove('active');
+  } else {
+    document.querySelectorAll('.dropdown-menu').forEach(function(m) { m.classList.remove('active'); });
+    menu.classList.add('active');
+  }
+}
+
+// ===== Star rating rendering =====
+document.querySelectorAll('.stars[data-rating]').forEach(function(wrap) {
+  var rating = parseFloat(wrap.getAttribute('data-rating')) || 0;
+  var stars = wrap.querySelectorAll('.star');
+  stars.forEach(function(star, i) {
+    var val = i + 1;
+    if (rating >= val) {
+      star.style.color = '#f4a015';
+    } else if (rating >= val - 0.5) {
+      star.style.color = '#f4a015';
+      star.style.opacity = '0.5';
     } else {
-        document.querySelectorAll('.dropdown-menu').forEach(m => {
-            m.classList.remove("active");
-        });
-        menu.classList.add("active");
+      star.style.color = '#e0d0d0';
     }
-}
-
-// Slider
-let index = 0;
-const slides = document.querySelectorAll(".slide");
-
-function updateSlider(){
-  slides.forEach((slide) => {
-    slide.style.zIndex = 0;
-    slide.style.opacity = 0.4;
-    slide.style.transform = "translate(-50%, -50%) scale(0.7)";
   });
+});
 
-  slides[index].style.zIndex = 3;
-  slides[index].style.opacity = 1;
-  slides[index].style.transform = "translate(-50%, -50%) scale(1.2)";
+// ===== Interactive Slider =====
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  if (slides.length === 0) return;
 
-  let next = (index + 1) % slides.length;
-  slides[next].style.zIndex = 2;
-  slides[next].style.opacity = 0.8;
-  slides[next].style.transform = "translate(60%, -50%) scale(0.9)";
+  var index = 0;
 
-  let prev = (index - 1 + slides.length) % slides.length;
-  slides[prev].style.zIndex = 2;
-  slides[prev].style.opacity = 0.8;
-  slides[prev].style.transform = "translate(-160%, -50%) scale(0.9)";
-}
+  function updateSlider() {
+    slides.forEach(function(slide) {
+      slide.style.zIndex   = 0;
+      slide.style.opacity  = 0;
+      slide.style.transform = 'translate(-50%, -50%) scale(0.65)';
+    });
 
-setInterval(() => {
-  index = (index + 1) % slides.length;
+    // Center (active)
+    slides[index].style.zIndex   = 3;
+    slides[index].style.opacity  = 1;
+    slides[index].style.transform = 'translate(-50%, -50%) scale(1.2)';
+
+    if (slides.length > 1) {
+      var next = (index + 1) % slides.length;
+      slides[next].style.zIndex   = 2;
+      slides[next].style.opacity  = 0.75;
+      slides[next].style.transform = 'translate(60%, -50%) scale(0.88)';
+    }
+
+    if (slides.length > 2) {
+      var prev = (index - 1 + slides.length) % slides.length;
+      slides[prev].style.zIndex   = 2;
+      slides[prev].style.opacity  = 0.75;
+      slides[prev].style.transform = 'translate(-160%, -50%) scale(0.88)';
+    }
+  }
+
   updateSlider();
-}, 2500);
-
-updateSlider();
+  setInterval(function() {
+    index = (index + 1) % slides.length;
+    updateSlider();
+  }, 2500);
+})();
 </script>
 
 </body>

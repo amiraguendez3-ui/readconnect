@@ -1,31 +1,33 @@
-from django.shortcuts import render, get_object_or_404, redirect 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import logout
-from django.http import JsonResponse 
-from django.contrib.auth.decorators import login_required 
-from django.db.models import Avg, Count 
-from django.contrib.auth import update_session_auth_hash 
-from django.contrib import messages 
-from django.contrib.auth.forms import PasswordChangeForm 
-from django.contrib.admin.views.decorators import staff_member_required 
-from django.contrib.auth.models import User 
-from django.utils import timezone 
-from django.db.models.functions import Coalesce 
-from django.db.models import Value, FloatField, F 
-from datetime import timedelta 
+from django.contrib.auth import logout as auth_logout
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.db.models import Avg, Count
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.db.models.functions import Coalesce
+from django.db.models import Value, FloatField, F
+from datetime import timedelta
 from django.views.decorators.http import require_POST
-import json 
-from .models import Category, Book 
-from django.http import JsonResponse 
-from django.template.defaultfilters import slugify 
-from django.db import models 
- 
-from .models import Book, Category, Comment, Evaluation, Favorite, Like, Notification, ReadingStatus 
-from django.contrib.auth import authenticate, login as auth_login, logout 
-from django.contrib.auth.models import User 
-from django.shortcuts import render, redirect 
-from .models import Profile 
-from .models import GroupMessage 
+import json
+from .models import Category, Book
+from django.http import JsonResponse
+from django.template.defaultfilters import slugify
+from django.db import models
+
+from .models import Book, Category, Comment, CommentReply, Evaluation, Favorite, Like, Notification, ReadingStatus
+from django.contrib.auth import authenticate, login as auth_login, logout
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from .models import Profile
+from .models import GroupMessage
+from .models import Notification
+
 
  # ================================================================
 # التعديلات المطلوبة في views.py
@@ -136,7 +138,14 @@ def get_category_svg(name):
 
 # -------- 2) عدّل دالة home() بإضافة featured_categories --------
 
+# ================================================================
+# دالة مساعدة للـ SVG icons
+# ================================================================
+
+
+
 COLOR_CLASSES = ['purple', 'yellow', 'pink', 'blue', 'beige', 'green', 'orange', 'cyan']
+
 def home(request):
     new_books = Book.objects.order_by('-created_at')[:8]
     best_books = Book.objects.annotate(
@@ -153,351 +162,324 @@ def home(request):
         total_interactions=Count('comments') + Count('likes') + Count('evaluations') + Count('favorites')
     ).order_by('-total_interactions')[:8]
 
-    # ---- الجديد: featured_categories من قاعدة البيانات مع SVG icon ----
     all_categories = Category.objects.all()
     featured_categories = []
-    for i, cat in enumerate(all_categories[:6]):   # أول 6 categories في الـ home
+    for i, cat in enumerate(all_categories[:6]):
         featured_categories.append({
             'id': cat.id,
             'name': cat.name,
             'color_class': COLOR_CLASSES[i % 8],
             'svg_icon': get_category_svg(cat.name),
         })
-
     return render(request, 'home.html', {
         'new_books': new_books,
         'best_books': best_books,
         'trending_books': trending_books,
         'top_users': top_users,
-        'featured_categories': featured_categories,   # <-- جديد
+        'featured_categories': featured_categories,
     })
- 
- 
-# ========== تسجيل / دخول ========== 
- 
- 
-def login_views(request): 
-    if request.user.is_authenticated: 
-        return redirect('/') 
-     
-    error = None 
-    if request.method == 'POST': 
-        username = request.POST.get('username') 
-        password = request.POST.get('password') 
-         
-        user = authenticate(request, username=username, password=password) 
-        if user is not None: 
-            auth_login(request, user) 
-            return redirect('/') 
-        else: 
-            error = 'Invalid username or password. Please try again.' 
-     
-    return render(request, 'login.html', {'error': error}) 
- 
-def signup(request): 
-    if request.user.is_authenticated: 
-        return redirect('/') 
-     
-    error = None 
-    success = None 
-     
-    if request.method == 'POST': 
-        first_name = request.POST.get('first_name') 
-        last_name = request.POST.get('last_name') 
-        email = request.POST.get('email') 
-        username = request.POST.get('username') 
-        password = request.POST.get('password') 
-        confirm_password = request.POST.get('confirm_password') 
-        gender = request.POST.get('gender') 
-         
-        # Validation 
-        if password != confirm_password: 
-            error = 'Passwords do not match.' 
-        elif User.objects.filter(username=username).exists(): 
-            error = 'Username already exists. Please choose another.' 
-        elif User.objects.filter(email=email).exists(): 
-            error = 'Email already registered.' 
-        elif len(password) < 6: 
+
+
+# ========== تسجيل / دخول ==========
+def login_views(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('/')
+        else:
+            error = 'Invalid username or password. Please try again.'
+    return render(request, 'login.html', {'error': error})
+
+
+def signup(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    error = None
+    success = None
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name  = request.POST.get('last_name')
+        email      = request.POST.get('email')
+        username   = request.POST.get('username')
+        password   = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        gender = request.POST.get('gender')
+        if password != confirm_password:
+            error = 'Passwords do not match.'
+        elif User.objects.filter(username=username).exists():
+            error = 'Username already exists. Please choose another.'
+        elif User.objects.filter(email=email).exists():
+            error = 'Email already registered.'
+        elif len(password) < 6:
             error = 'Password must be at least 6 characters.'
-        else: 
-            # Create user 
-            user = User.objects.create_user( 
-                username=username, 
-                email=email, 
-                password=password, 
-                first_name=first_name, 
-                last_name=last_name 
-            ) 
-             
-            # Create profile 
-            Profile.objects.create(user=user, gender=gender) 
-             
-            # Auto login 
-            auth_login(request, user) 
-            return redirect('/') 
-     
-    return render(request, 'signup.html', {'error': error, 'success': success}) 
- 
-# ========== التصنيفات ========== 
-def categories_view(request): 
-    
-    categories = Category.objects.all() 
- 
-    categories_with_books = [] 
-    total_books = Book.objects.count() 
-     
-    for cat in categories: 
-        books = cat.book_set.all()[:6]  # أول 6 كتب 
-        categories_with_books.append({ 
-            'id': cat.id, 
-            'name': cat.name, 
-            'title': cat.name.capitalize(), 
-            'icon': '📚',  # أو يمكن جلب أيقونة من قاعدة البيانات إن وُجدت 
-            'books': books, 
-            'book_count': cat.book_set.count(),  # سنخفي هذا الرقم في القالب 
-        }) 
-     
-     
- 
-    # الأيقونات تعتمد على اسم التصنيف الموجود في قاعدة البيانات 
-    icons_map = { 
-        # عربي 
-        'روايات': '📖', 'رواية': '📖', 
-        'علوم': '🧪', 'علم': '🧪', 
-        'تاريخ': '🏛️', 
-        'تطوير الذات': '💡', 'تطوير': '💡', 
-        'أعمال': '📊', 'اعمال': '📊', 
-        'دين': '☪️', 'اسلام': '☪️', 
-        'فلسفة': '🤔', 
-        'شعر': '✒️', 
-        'أطفال': '🧸', 'اطفال': '🧸', 
-        'طبخ': '🍔', 
-        'صحة': '🩺', 
-        'رياضة': '⚽️', 
-        'سفر': '🗺️', 
-        'سياسة': '🏛️', 
-        'اقتصاد': '💰', 
-        'تكنولوجيا': '💻', 
-        'فن': '🎨', 
-        'موسيقى': '🎵', 
-        'سيرة ذاتية': '📝', 
-        'خيال علمي': '🚀', 
-        'رعب': '👻', 
-        'جريمة': '🔪', 
-        'مغامرة': '🧭', 
-        'رومانسية': '💖', 'رومانس': '💖', 
-        # إنجليزي 
-        'fiction': '📖', 
-        'science': '🧪', 
-        'history': '🏛️', 
-        'selfhelp': '💡', 'self-help': '💡', 'self help': '💡', 
-        'business': '📊', 
-        'religion': '☪️', 
-        'philosophy': '🤔', 
-        'poetry': '✒️', 
-        'children': '🧸', 
-        'food': '🍔', 
-        'health': '🩺', 
-        'sports': '⚽️', 
-        'travel': '🗺️', 
-        'politics': '🏛️', 
-        'economics': '💰', 
-        'technology': '💻', 
-        'arts': '🎨', 
-        'music': '🎵', 
-        'biography': '📝', 
-        'scifi': '🚀', 'sci-fi': '🚀', 
-        'horror': '👻', 
-        'thriller': '🔪', 
-        'adventure': '🧭', 
-        'romance': '💖', 
-    } 
-     
- 
-    categories_with_books = [] 
-    total_books = 0 
- 
-    for category in categories: 
-        books = category.book_set.all()[:6] 
-        book_count = category.book_set.count() 
-        total_books += book_count 
-        name_lower = category.name.lower().strip() 
-        categories_with_books.append({ 
-            'id': category.id, 
-            'name': category.name, 
-            'title': category.name.capitalize(), 
-            'icon': icons_map.get(name_lower, '📚'), 
-            'books': books, 
-            'book_count': book_count, 
-        }) 
-    return render(request, 'categories.html', { 
-        'categories_with_books': categories_with_books, 
-        'total_books': total_books, 
-        'user': request.user,  # لاسم المستخدم 
-    }) 
- 
- 
- 
-def category_books(request, category_id): 
-    category = get_object_or_404(Category, id=category_id) 
-    books = Book.objects.filter(category=category) 
-    categories = Category.objects.all() 
-    return render(request, 'category_books.html', { 
-        'category': category, 
-        'books': books, 
-        'categories': categories,
-}) 
- 
-def category_detail(request, name): 
-    return render(request, "category_detail.html", {"name": name}) 
- 
- 
-# ========== تفاصيل الكتاب ========== 
-def book_detail(request, slug): 
-    book = get_object_or_404(Book, title__iexact=slug.replace('-', ' ')) 
-    avg_rating = Evaluation.objects.filter(book=book).aggregate(avg=Avg('note'))['avg'] or 0 
-    ratings_count = Evaluation.objects.filter(book=book).count() 
-    comments = book.comments.all().annotate(likes_count=Count('likes')).order_by('-created_at') 
-    tags = [book.category.name] if book.category else [] 
-    recommended_books = Book.objects.filter(category=book.category).exclude(id=book.id)[:6] 
-    is_favorite = False 
-    if request.user.is_authenticated: 
-        is_favorite = Favorite.objects.filter(user=request.user, book=book).exists() 
- 
-    # ── Discussion Groups ── 
-    currently_reading_qs = ReadingStatus.objects.filter(book=book, status='reading').select_related('user') 
-    already_read_qs      = ReadingStatus.objects.filter(book=book, status='read').select_related('user') 
-    user_status = None 
-    if request.user.is_authenticated: 
-        try: 
-            user_status = ReadingStatus.objects.get(user=request.user, book=book).status 
-        except ReadingStatus.DoesNotExist: 
-            pass 
- 
-    return render(request, 'book_detail.html', { 
-        'book': book, 
-        'avg_rating': round(avg_rating, 1), 
-        'ratings_count': ratings_count, 
-        'comments': comments, 
-        'tags': tags, 
-        'recommended_books': recommended_books, 
-        'is_favorite': is_favorite, 
-        'currently_reading_users': [r.user for r in currently_reading_qs], 
-        'currently_reading_count': currently_reading_qs.count(), 
-        'already_read_users':      [r.user for r in already_read_qs], 
-        'already_read_count':      already_read_qs.count(), 
-        'user_is_reading':         user_status == 'reading', 
-        'user_has_read':           user_status == 'read', 
-    }) 
- 
- 
-# ========== API التفاعلات ========== 
-@login_required 
-def rate_book(request, book_id): 
-    if request.method == 'POST': 
-        data = json.loads(request.body) 
-        book = get_object_or_404(Book, id=book_id) 
-        Evaluation.objects.update_or_create( 
-            user=request.user, book=book, 
-            defaults={'note': data.get('rating')} 
-        ) 
-        new_avg = Evaluation.objects.filter(book=book).aggregate(avg=Avg('note'))['avg'] or 0 
-        return JsonResponse({'success': True, 'avg_rating': round(new_avg, 1)}) 
-    return JsonResponse({'success': False}) 
- 
- 
-@login_required 
-def add_to_favorite(request, book_id): 
-    if request.method == 'POST': 
-        book = get_object_or_404(Book, id=book_id) 
-        favorite, created = Favorite.objects.get_or_create(user=request.user, book=book) 
-        if not created: 
-            favorite.delete() 
-            return JsonResponse({'success': True, 'added': False, 'message': 'Removed from My List'}) 
-        return JsonResponse({'success': True, 'added': True, 'message': 'Added to My List'}) 
-    return JsonResponse({'success': False}) 
- 
- 
-@login_required 
-def add_comment(request, book_id): 
-    if request.method == 'POST': 
-        data = json.loads(request.body) 
-        content = data.get('content', '').strip() 
-        if not content: 
-            return JsonResponse({'success': False, 'error': 'Comment cannot be empty'}) 
-        book = get_object_or_404(Book, id=book_id) 
-        comment = Comment.objects.create(user=request.user, book=book, content=content) 
-        return JsonResponse({ 
-            'success': True, 
-            'comment': { 
-                'id': comment.id, 
-                'user': comment.user.username, 
-                'content': comment.content, 
+        else:
+            user = User.objects.create_user(
+                username=username, email=email, password=password,
+                first_name=first_name, last_name=last_name
+            )
+            Profile.objects.create(user=user, gender=gender)
+            auth_login(request, user)
+            return redirect('/')
+    return render(request, 'signup.html', {'error': error, 'success': success})
+
+
+# ========== التصنيفات ==========
+def categories_view(request):
+    categories = Category.objects.all()
+    icons_map = {
+        'روايات': '📖', 'رواية': '📖', 'fiction': '📖',
+        'romance': '💖', 'رومانس': '💖',
+        'default': '📚',
+    }
+    categories_with_books = []
+    total_books = 0
+    for category in categories:
+        books = category.book_set.all()[:6]
+        book_count = category.book_set.count()
+        total_books += book_count
+        name_lower = category.name.lower().strip()
+        categories_with_books.append({
+            'id': category.id,
+            'name': category.name,
+            'title': category.name.capitalize(),
+            'icon': icons_map.get(name_lower, '📚'),
+            'svg_icon': get_category_svg(category.name),
+            'books': books,
+            'book_count': book_count,
+        })
+    return render(request, 'categories.html', {
+        'categories_with_books': categories_with_books,
+        'total_books': total_books,
+        'user': request.user,
+    })
+
+
+def category_books(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    books = Book.objects.filter(category=category)
+    categories = Category.objects.all()
+    return render(request, 'category_books.html', {'category': category, 'books': books, 'categories': categories})
+
+
+def category_detail(request, name):
+    return render(request, "category_detail.html", {"name": name})
+
+
+# ========== تفاصيل الكتاب ==========
+def book_detail(request, slug):
+    book = get_object_or_404(Book, title__iexact=slug.replace('-', ' '))
+    avg_rating    = Evaluation.objects.filter(book=book).aggregate(avg=Avg('note'))['avg'] or 0
+    ratings_count = Evaluation.objects.filter(book=book).count()
+    comments      = book.comments.all().annotate(likes_count=Count('likes')).order_by('-created_at')
+    tags          = [book.category.name] if book.category else []
+    recommended_books = Book.objects.filter(category=book.category).exclude(id=book.id)[:6]
+    is_favorite   = False
+    user_rating   = 0
+
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, book=book).exists()
+        try:
+            user_rating = Evaluation.objects.get(user=request.user, book=book).note
+        except Evaluation.DoesNotExist:
+            pass
+
+    currently_reading_qs = ReadingStatus.objects.filter(book=book, status='reading').select_related('user')
+    already_read_qs      = ReadingStatus.objects.filter(book=book, status='read').select_related('user')
+    user_status = None
+    if request.user.is_authenticated:
+        try:
+            user_status = ReadingStatus.objects.get(user=request.user, book=book).status
+        except ReadingStatus.DoesNotExist:
+            pass
+
+    return render(request, 'book_detail.html', {
+        'book': book,
+        'avg_rating': round(avg_rating, 1),
+        'ratings_count': ratings_count,
+        'comments': comments,
+        'tags': tags,
+        'recommended_books': recommended_books,
+        'is_favorite': is_favorite,
+        'user_rating': user_rating,   # ✅ مهم: يُعرض في النجوم المحفوظة
+        'currently_reading_users': [r.user for r in currently_reading_qs],
+        'currently_reading_count': currently_reading_qs.count(),
+        'already_read_users':      [r.user for r in already_read_qs],
+        'already_read_count':      already_read_qs.count(),
+        'user_is_reading':         user_status == 'reading',
+        'user_has_read':           user_status == 'read',
+    })
+
+
+# ========== API التفاعلات ==========
+@login_required
+def rate_book(request, book_id):
+    if request.method == 'POST':
+        data   = json.loads(request.body)
+        book   = get_object_or_404(Book, id=book_id)
+        rating = data.get('rating')
+        Evaluation.objects.update_or_create(
+            user=request.user, book=book,
+            defaults={'note': rating}
+        )
+        new_avg       = Evaluation.objects.filter(book=book).aggregate(avg=Avg('note'))['avg'] or 0
+        ratings_count = Evaluation.objects.filter(book=book).count()
+        return JsonResponse({'success': True, 'avg_rating': round(new_avg, 1), 'ratings_count': ratings_count})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def add_to_favorite(request, book_id):
+    if request.method == 'POST':
+        book = get_object_or_404(Book, id=book_id)
+        favorite, created = Favorite.objects.get_or_create(user=request.user, book=book)
+        if not created:
+            favorite.delete()
+            return JsonResponse({'success': True, 'added': False, 'message': 'Removed from My List'})
+        return JsonResponse({'success': True, 'added': True, 'message': 'Added to My List'})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def add_comment(request, book_id):
+    if request.method == 'POST':
+        data    = json.loads(request.body)
+        content = data.get('content', '').strip()
+        if not content:
+            return JsonResponse({'success': False, 'error': 'Comment cannot be empty'})
+        book    = get_object_or_404(Book, id=book_id)
+        comment = Comment.objects.create(user=request.user, book=book, content=content)
+        return JsonResponse({
+            'success': True,
+            'comment': {
+                'id': comment.id,
+                'user': comment.user.username,
+                'content': comment.content,
                 'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M'),
-                'likes_count': 0, 
-            } 
-        }) 
-    return JsonResponse({'success': False}) 
- 
- 
-@login_required 
-def like_comment(request, comment_id): 
-    if request.method == 'POST': 
-        comment = get_object_or_404(Comment, id=comment_id) 
-        like, created = Like.objects.get_or_create(user=request.user, comment=comment) 
-        if not created: 
-            like.delete() 
-            return JsonResponse({'success': True, 'liked': False, 'likes_count': comment.likes.count()}) 
-        return JsonResponse({'success': True, 'liked': True, 'likes_count': comment.likes.count()}) 
-    return JsonResponse({'success': False}) 
-def my_list(request): 
-    if request.user.is_authenticated: 
-        favorites = Favorite.objects.filter(user=request.user).select_related('book') 
-        total_books = favorites.count() 
-    else: 
-        favorites = [] 
-        total_books = 0 
-    return render(request, 'my_list.html', { 
-        'favorites': favorites, 
-        'total_books': total_books, 
-    }) 
- 
- 
-# ========== Profile ========== 
-@login_required 
-def profile_view(request): 
-    user = request.user 
-    profile, _ = Profile.objects.get_or_create(user=user) 
- 
-    # avatar upload 
-    if request.method == 'POST' and request.FILES.get('image'): 
-        profile.image = request.FILES['image'] 
-        profile.save() 
-        return redirect('profile') 
- 
-    favorites      = Favorite.objects.filter(user=user).select_related('book') 
-    total_favorites = favorites.count() 
-    total_comments  = Comment.objects.filter(user=user).count() 
-    total_ratings   = Evaluation.objects.filter(user=user).count() 
-    reading_count   = ReadingStatus.objects.filter(user=user, status='reading').count() 
-    read_count      = ReadingStatus.objects.filter(user=user, status='read').count() 
- 
-    return render(request, 'profile.html', { 
-        'user'           : user, 
-        'profile'        : profile, 
-        'favorites'      : favorites, 
-        'latest_favorites': favorites.order_by('-added_date')[:8], 
-        'total_favorites': total_favorites, 
-        'favorites_count': total_favorites, 
-        'total_comments' : total_comments, 
-        'comments_count' : total_comments, 
-        'total_ratings'  : total_ratings, 
-        'ratings_count'  : total_ratings, 
-        'reading_count'  : reading_count, 
-        'read_count'     : read_count, 
-        'activity_score' : total_favorites + total_comments + total_ratings, 
-    }) 
- 
+                'likes_count': 0,
+            }
+        })
+    return JsonResponse({'success': False})
+@login_required
+def like_comment(request, comment_id):
+    """
+    ✅ Like أو Unlike للكومنت + إنشاء Notification للصاحب الكومنت
+    """
+    if request.method == 'POST':
+        comment = get_object_or_404(Comment, id=comment_id)
+        like, created = Like.objects.get_or_create(user=request.user, comment=comment)
+        if not created:
+            # إلغاء الـ like
+            like.delete()
+            return JsonResponse({'success': True, 'liked': False, 'likes_count': comment.likes.count()})
+
+        # ✅ إنشاء Notification للصاحب الكومنت (ليس للمستخدم نفسه)
+        if comment.user != request.user:
+            Notification.objects.create(
+                user       = comment.user,
+                massage    = f'{request.user.username} liked your comment on "{comment.book.title}".',
+                notif_type = 'like',
+                
+                url=f'/book/{slugify(comment.book.title)}/#comment-{comment.id}'
+
+            )
+
+        return JsonResponse({'success': True, 'liked': True, 'likes_count': comment.likes.count()})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def reply_comment(request, comment_id):
+    """
+    ✅ الرد على كومنت + إنشاء Notification للصاحب الكومنت
+    """
+    if request.method == 'POST':
+        data    = json.loads(request.body)
+        content = data.get('content', '').strip()
+        if not content:
+            return JsonResponse({'success': False, 'error': 'Reply cannot be empty'})
+
+        comment = get_object_or_404(Comment, id=comment_id)
+
+        # ✅ نحتاج موديل CommentReply في models.py - انظر التعليق في الأسفل
+        reply = CommentReply.objects.create(
+            user    = request.user,
+            comment = comment,
+            content = content,
+        )
+
+        # ✅ إنشاء Notification للصاحب الكومنت
+        if comment.user != request.user:
+            Notification.objects.create(
+                user       = comment.user,
+                massage    = f'{request.user.username} replied to your comment on "{comment.book.title}".',
+                notif_type = 'reply',
+               
+                url=f'/book/{slugify(comment.book.title)}/#comment-{comment.id}'
+
+            )
+
+        return JsonResponse({
+            'success': True,
+            'reply': {
+                'id'      : reply.id,
+                'user'    : reply.user.username,
+                'initial' : reply.user.username[0].upper(),
+                'content' : reply.content,
+                'created_at': reply.created_at.strftime('%Y-%m-%d %H:%M'),
+            }
+        })
+    return JsonResponse({'success': False})
+
+
+def my_list(request):
+    if request.user.is_authenticated:
+        favorites  = Favorite.objects.filter(user=request.user).select_related('book')
+        total_books = favorites.count()
+    else:
+        favorites   = []
+        total_books = 0
+    return render(request, 'my_list.html', {'favorites': favorites, 'total_books': total_books})
+
+
+# ========== Profile ==========
+@login_required
+def profile_view(request):
+    user = request.user
+    profile, _ = Profile.objects.get_or_create(user=user)
+    if request.method == 'POST' and request.FILES.get('image'):
+        profile.image = request.FILES['image']
+        profile.save()
+        return redirect('profile')
+
+    favorites       = Favorite.objects.filter(user=user).select_related('book')
+    total_favorites = favorites.count()
+    total_comments  = Comment.objects.filter(user=user).count()
+    total_ratings   = Evaluation.objects.filter(user=user).count()
+    reading_count   = ReadingStatus.objects.filter(user=user, status='reading').count()
+    read_count      = ReadingStatus.objects.filter(user=user, status='read').count()
+
+    return render(request, 'profile.html', {
+        'user'            : user,
+        'profile'         : profile,
+        'favorites'       : favorites,
+        'latest_favorites': favorites.order_by('-added_date')[:8],
+        'total_favorites' : total_favorites,
+        'favorites_count' : total_favorites,
+        'total_comments'  : total_comments,
+        'comments_count'  : total_comments,
+        'total_ratings'   : total_ratings,
+        'ratings_count'   : total_ratings,
+        'reading_count'   : reading_count,
+        'read_count'      : read_count,
+        'activity_score'  : total_favorites + total_comments + total_ratings,
+    })
+
 
 @login_required
 def update_profile(request):
@@ -507,22 +489,17 @@ def update_profile(request):
         user.last_name  = request.POST.get('last_name', '')
         new_username    = request.POST.get('username', user.username).strip()
         user.email      = request.POST.get('email', user.email)
-
-        # تحقق من username فريد
         if new_username != user.username and User.objects.filter(username=new_username).exists():
             messages.error(request, 'Username already taken.')
         else:
             user.username = new_username
             user.save()
-
-            # gender
             profile, _ = Profile.objects.get_or_create(user=user)
             profile.gender = request.POST.get('gender', profile.gender)
             profile.save()
-
             messages.success(request, 'Profile updated successfully!')
-
     return redirect('profile')
+
 
 @login_required
 def change_password(request):
@@ -532,146 +509,144 @@ def change_password(request):
             update_session_auth_hash(request, form.save())
             messages.success(request, 'Password changed successfully!')
         else:
-            # أرسل الأخطاء
             for error in form.errors.values():
                 messages.error(request, error[0])
     return redirect('profile')
 
 
- 
- 
-@login_required 
-def delete_account(request): 
-    request.user.delete() 
-    return redirect('login') 
- 
- 
-# ========== Notifications ========== 
-@login_required 
-def notifications_view(request): 
-    notifications = Notification.objects.filter(user=request.user).order_by('-date') 
-    unread_count = notifications.filter(is_read=False).count() 
+@login_required
+def delete_account(request):
+    request.user.delete()
+    return redirect('login')
+
+
+# ========== ✅ Notifications ==========
+@login_required
+def notifications_view(request):
+    notifications = Notification.objects.filter(user=request.user).order_by('-date')
+    unread_count  = notifications.filter(is_read=False).count()
+    # ✅ تحديد التلقائي كـ "مقروء" عند فتح الصفحة (اختياري - يمكن حذفه إذا لا تريده)
     return render(request, 'notifications.html', {
-       'notifications': notifications, 
-        'unread_count': unread_count, 
-    }) 
- 
- 
-@login_required 
-def mark_notification_read(request, notif_id): 
-    if request.method == 'POST': 
-        try: 
-            notif = Notification.objects.get(id=notif_id, user=request.user) 
-            notif.is_read = True 
-            notif.save() 
-            return JsonResponse({'success': True}) 
-        except Notification.DoesNotExist: 
-            return JsonResponse({'error': 'Not found'}, status=404) 
- 
- 
-@login_required 
-def mark_all_read(request): 
-    if request.method == 'POST': 
-        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True) 
-        return JsonResponse({'success': True}) 
- 
- 
-@login_required 
-def clear_all_notifications(request): 
-    if request.method == 'POST': 
-        Notification.objects.filter(user=request.user).delete() 
-        return JsonResponse({'success': True}) 
- 
- 
-# ========== Admin Dashboard ========== 
-@staff_member_required 
-def admin_dashboard(request): 
-    return render(request, 'admin_dashboard.html', { 
-        'total_books':      Book.objects.count(), 
-        'total_users':      User.objects.count(), 
-        'total_comments':   Comment.objects.count(), 
-        'total_categories': Category.objects.count(), 
-        'recent_users':     User.objects.order_by('-date_joined')[:5], 
-        'recent_books':     Book.objects.order_by('-id')[:5], 
-        'recent_comments':  Comment.objects.order_by('-created_at')[:5], 
-        'categories':       Category.objects.all(), 
-    }) 
-@staff_member_required 
-def ban_user(request, user_id): 
-    if request.method == 'POST': 
-        try: 
-            user = User.objects.get(id=user_id) 
-            user.is_active = not user.is_active 
-            user.save() 
-            return JsonResponse({'banned': not user.is_active}) 
-        except User.DoesNotExist: 
-            return JsonResponse({'error': 'Not found'}, status=404) 
- 
- 
-@staff_member_required 
-def delete_user(request, user_id): 
-    if request.method == 'POST': 
-        try: 
-            User.objects.get(id=user_id).delete() 
-            return JsonResponse({'success': True}) 
-        except User.DoesNotExist: 
-            return JsonResponse({'error': 'Not found'}, status=404) 
- 
- 
-@staff_member_required 
-def admin_delete_book(request, book_id): 
-    if request.method == 'POST': 
-        try: 
-            Book.objects.get(id=book_id).delete() 
-            return JsonResponse({'success': True}) 
-        except Book.DoesNotExist: 
-            return JsonResponse({'error': 'Not found'}, status=404) 
- 
- 
-@staff_member_required 
-def publish_book(request): 
-    if request.method == 'POST': 
-        book = Book( 
-            title       = request.POST.get('title'), 
-            author      = request.POST.get('author'), 
-            description = request.POST.get('description', ''), 
-        ) 
-        if request.FILES.get('image'): 
-            book.image = request.FILES['image'] 
-        cat_id = request.POST.get('category') 
-        if cat_id: 
-            try: 
-                book.category = Category.objects.get(id=cat_id) 
-            except Category.DoesNotExist: 
-                pass 
-        book.save() 
-        messages.success(request, 'Book published successfully!') 
-    return redirect('admin_dashboard') 
- 
- 
- 
-def search_books(request): 
-    """API للبحث عن الكتب""" 
-    query = request.GET.get('q', '') 
-    books = [] 
-     
-    if query and len(query) >= 2: 
-        books_list = Book.objects.filter( 
-            models.Q(title__icontains=query) | 
-            models.Q(author__icontains=query) 
-        )[:10] 
-         
-        for book in books_list: 
-            books.append({ 
-                'id': book.id, 
-                'title': book.title, 
-                'author': book.author, 
-                'slug': slugify(book.title), 
-                'image': book.image.url if book.image else None, 
-            }) 
-     
+        'notifications': notifications,
+        'unread_count': unread_count,
+    })
+
+
+@login_required
+def mark_notification_read(request, notif_id):
+    """✅ يُستخدم لتحديد notification كمقروء أو لحذفه من الـ UI"""
+    if request.method == 'POST':
+        try:
+            notif = Notification.objects.get(id=notif_id, user=request.user)
+            
+            notif.is_read = True
+            notif.save()
+            return JsonResponse({'success': True})
+        except Notification.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+
+@login_required
+def mark_all_read(request):
+    if request.method == 'POST':
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'success': True})
+
+
+@login_required
+def clear_all_notifications(request):
+    if request.method == 'POST':
+        Notification.objects.filter(user=request.user).delete()
+        return JsonResponse({'success': True})
+
+
+# ========== Admin Dashboard ==========
+@staff_member_required
+def admin_dashboard(request):
+    return render(request, 'admin_dashboard.html', {
+        'total_books'     : Book.objects.count(),
+        'total_users'     : User.objects.count(),
+        'total_comments'  : Comment.objects.count(),
+        'total_categories': Category.objects.count(),
+        'recent_users'    : User.objects.order_by('-date_joined')[:5],
+        'recent_books'    : Book.objects.order_by('-id')[:5],
+        'recent_comments' : Comment.objects.order_by('-created_at')[:5],
+        'categories'      : Category.objects.all(),
+    })
+
+
+@staff_member_required
+def ban_user(request, user_id):
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(id=user_id)
+            user.is_active = not user.is_active
+            user.save()
+            return JsonResponse({'banned': not user.is_active})
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+
+@staff_member_required
+def delete_user(request, user_id):
+    if request.method == 'POST':
+        try:
+            User.objects.get(id=user_id).delete()
+            return JsonResponse({'success': True})
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+
+@staff_member_required
+def admin_delete_book(request, book_id):
+    if request.method == 'POST':
+        try:
+            Book.objects.get(id=book_id).delete()
+            return JsonResponse({'success': True})
+        except Book.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+
+@staff_member_required
+def publish_book(request):
+    if request.method == 'POST':
+        book = Book(
+            title       = request.POST.get('title'),
+            author      = request.POST.get('author'),
+            description = request.POST.get('description', ''),
+        )
+        if request.FILES.get('image'):
+            book.image = request.FILES['image']
+        cat_id = request.POST.get('category')
+        if cat_id:
+            try:
+                book.category = Category.objects.get(id=cat_id)
+            except Category.DoesNotExist:
+                pass
+        book.save()
+        messages.success(request, 'Book published successfully!')
+    return redirect('admin_dashboard')
+
+
+def search_books(request):
+    query = request.GET.get('q', '')
+    books = []
+    if query and len(query) >= 2:
+        books_list = Book.objects.filter(
+            models.Q(titleicontains=query) | models.Q(authoricontains=query)
+        )[:10]
+        for book in books_list:
+            books.append({
+                'id'    : book.id,
+                'title' : book.title,
+                'author': book.author,
+                'slug'  : slugify(book.title),
+                'image' : book.image.url if book.image else None,
+            })
     return JsonResponse({'books': books})
- # ========== Discussion Groups ==========
+
+
+# ========== Discussion Groups ==========
 @login_required
 def join_group(request, book_id, group_type):
     if request.method == 'POST':
@@ -679,8 +654,7 @@ def join_group(request, book_id, group_type):
             return JsonResponse({'success': False}, status=400)
         book = get_object_or_404(Book, id=book_id)
         obj, created = ReadingStatus.objects.get_or_create(
-            user=request.user,
-            book=book,
+            user=request.user, book=book,
             defaults={'status': group_type}
         )
         if not created:
@@ -690,60 +664,37 @@ def join_group(request, book_id, group_type):
     return JsonResponse({'success': False})
 
 
-# ================================================================
-#  أضف هذا في views.py
-# ================================================================
-
 @login_required
 def group_chat(request, book_id, group_type):
-    """صفحة chat الـ group — تفتح عند النقر على Join Group"""
     if group_type not in ('reading', 'read'):
         return redirect('home')
-
     book = get_object_or_404(Book, id=book_id)
-
-    # تأكد أن المستخدم عضو في الـ group
-    is_member = ReadingStatus.objects.filter(
-        user=request.user, book=book, status=group_type
-    ).exists()
+    is_member = ReadingStatus.objects.filter(user=request.user, book=book, status=group_type).exists()
     if not is_member:
         return redirect(f'/book/{slugify(book.title)}/')
-
-    # كل الأعضاء
-    members_qs = ReadingStatus.objects.filter(
-        book=book, status=group_type
-    ).select_related('user', 'user__profile')
+    members_qs = ReadingStatus.objects.filter(book=book, status=group_type).select_related('user', 'user__profile')
     members = [rs.user for rs in members_qs]
-
-    # الرسائل
-    messages_list = GroupMessage.objects.filter(
-        book=book, group_type=group_type
-    ).select_related('user', 'user__profile')
-
-    # أضف show_date لكل رسالة (لعرض فاصل التاريخ)
+    messages_list = GroupMessage.objects.filter(book=book, group_type=group_type).select_related('user', 'user__profile')
     prev_date = None
     for msg in messages_list:
         msg_date = msg.created_at.date()
         msg.show_date = (msg_date != prev_date)
         prev_date = msg_date
-
     last_msg = messages_list.last()
-
     return render(request, 'group_chat.html', {
-        'book'             : book,
-        'group_type'       : group_type,
+        'book'              : book,
+        'group_type'        : group_type,
         'group_type_display': 'Currently Reading' if group_type == 'reading' else 'Already Read',
-        'members'          : members,
-        'members_count'    : len(members),
-        'messages_list'    : messages_list,
-        'last_message_id'  : last_msg.id if last_msg else 0,
+        'members'           : members,
+        'members_count'     : len(members),
+        'messages_list'     : messages_list,
+        'last_message_id'   : last_msg.id if last_msg else 0,
     })
 
 
 @login_required
 @require_POST
 def send_group_message(request):
-    """إرسال رسالة جديدة في الـ group"""
     data       = json.loads(request.body)
     book_id    = data.get('book_id')
     group_type = data.get('group_type')
@@ -753,8 +704,6 @@ def send_group_message(request):
         return JsonResponse({'success': False})
 
     book = get_object_or_404(Book, id=book_id)
-
-    # تأكد أن المستخدم عضو
     if not ReadingStatus.objects.filter(user=request.user, book=book, status=group_type).exists():
         return JsonResponse({'success': False, 'error': 'Not a member'})
 
@@ -763,16 +712,18 @@ def send_group_message(request):
         group_type=group_type, content=content
     )
 
-    # إرسال notification لبقية الأعضاء
+    # ✅ إرسال notification لبقية الأعضاء
     members = ReadingStatus.objects.filter(
         book=book, status=group_type
     ).exclude(user=request.user).select_related('user')
 
     for rs in members:
         Notification.objects.create(
-            user      = rs.user,
-            massage   = f'{request.user.username} sent a message in "{book.title}" group.',
-            notif_type= 'group',
+            user       = rs.user,
+            massage    = f'{request.user.username} sent a message in "{book.title}" group.',
+            notif_type = 'group',
+            
+            url=f'/group-chat/{book.id}/{group_type}/'
         )
 
     return JsonResponse({
@@ -785,35 +736,28 @@ def send_group_message(request):
             'time'    : msg.created_at.strftime('%H:%M'),
         }
     })
+
+
 @login_required
 def get_new_group_messages(request):
-    """polling — جلب الرسائل الجديدة كل 8 ثوانٍ"""
     book_id    = request.GET.get('book_id')
     group_type = request.GET.get('group_type')
     last_id    = int(request.GET.get('last_id', 0))
-
     if not book_id or group_type not in ('reading', 'read'):
         return JsonResponse({'messages': []})
-
     new_msgs = GroupMessage.objects.filter(
         book_id=book_id, group_type=group_type, id__gt=last_id
     ).exclude(user=request.user).select_related('user')
+    return JsonResponse({'messages': [
+        {'id': m.id, 'content': m.content, 'username': m.user.username,
+         'initial': m.user.username[0].upper(), 'time': m.created_at.strftime('%H:%M')}
+        for m in new_msgs
+    ]})
 
-    return JsonResponse({
-        'messages': [
-            {
-                'id'      : m.id,
-                'content' : m.content,
-                'username': m.user.username,
-                'initial' : m.user.username[0].upper(),
-                'time'    : m.created_at.strftime('%H:%M'),
-            }
-            for m in new_msgs
-        ]
-    })
 
-def logout(request):
-    logout(request)
+@require_POST
+def logout_view(request):
+    auth_logout(request)
     return redirect('/')
 
 
@@ -822,15 +766,11 @@ def my_groups(request):
     group_type = request.GET.get('type', 'reading')
     if group_type not in ('reading', 'read'):
         group_type = 'reading'
-
     statuses = ReadingStatus.objects.filter(
-        user=request.user,
-        status=group_type
+        user=request.user, status=group_type
     ).select_related('book', 'book__category')
-
     reading_count = ReadingStatus.objects.filter(user=request.user, status='reading').count()
     read_count    = ReadingStatus.objects.filter(user=request.user, status='read').count()
-
     return render(request, 'my_groups.html', {
         'statuses'     : statuses,
         'group_type'   : group_type,
@@ -838,3 +778,24 @@ def my_groups(request):
         'read_count'   : read_count,
     })
 
+@login_required
+def delete_notification(request, notif_id):
+
+    if request.method == 'POST':
+
+        try:
+            notif = Notification.objects.get(
+                id=notif_id,
+                user=request.user
+            )
+
+            notif.delete()
+
+            return JsonResponse({'success': True})
+
+        except Notification.DoesNotExist:
+
+            return JsonResponse(
+                {'error':'Not found'},
+                status=404
+            )

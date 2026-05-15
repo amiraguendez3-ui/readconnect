@@ -9,5 +9,5 @@ admin.site.register(Comment)
 admin.site.register(Evaluation)
 admin.site.register(Favorite)
 admin.site.register(Like)
-admin.site.register(Notification)
+
 admin.site.register(Resume)

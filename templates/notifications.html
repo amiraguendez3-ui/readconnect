@@ -55,6 +55,36 @@
         .empty-ring i { font-size:30px; color:var(--light); }
         .empty h3 { font-size:17px; font-weight:700; color:var(--deep); margin-bottom:7px; }
         .empty p  { font-size:13px; color:#aaa; }
+        .notif-item{
+          text-decoration:none;
+         color:inherit;
+        }
+        .notif-wrapper{
+          position:relative;
+        }
+
+       .notif-item{
+         text-decoration:none;
+         color:inherit;
+         display:flex;
+         align-items:center;
+         gap:15px;
+        }
+
+        .notif-delete{
+          position:absolute;
+          top:14px;
+          right:14px;
+          background:none;
+          border:none;
+          cursor:pointer;
+          color:#ccc;
+          font-size:14px;
+        }
+
+        .notif-delete:hover{
+          color:red;
+        }
     </style>
 </head>
 <body>
@@ -67,16 +97,7 @@
             {% if unread_count %}<span class="badge">{{ unread_count }} new</span>{% endif %}
         </h1>
         {% if notifications %}
-        <div class="head-actions">
-            <form method="POST" action="{% url 'mark_all_read' %}" style="display:inline">
-                {% csrf_token %}
-                <button type="submit" class="btn-sm btn-outline"><i class="fa-solid fa-check-double"></i> Mark all read</button>
-            </form>
-            <form method="POST" action="{% url 'clear_all_notifs' %}" style="display:inline">
-                {% csrf_token %}
-                <button type="submit" class="btn-sm btn-red"><i class="fa-solid fa-trash"></i> Clear all</button>
-            </form>
-        </div>
+        
         {% endif %}
     </div>
 
@@ -89,32 +110,61 @@
         <div class="tab" onclick="filter('new_book',this)"><i class="fa-solid fa-book"></i> New Books</div>
     </div>
 
-    <div class="notif-list" id="notifList">
+ <div class="notif-list" id="notifList">
         {% for notif in notifications %}
-        <div class="notif-item {% if not notif.is_read %}unread{% endif %}"
-             id="notif-{{ notif.id }}" data-type="{{ notif.notif_type|default:'system' }}">
+    <div class="notif-wrapper">
 
-            <div class="notif-icon icon-{{ notif.notif_type|default:'system' }}">
-                {% if notif.notif_type == 'like' %}<i class="fa-solid fa-heart"></i>
-                {% elif notif.notif_type == 'reply' %}<i class="fa-solid fa-reply"></i>
-                {% elif notif.notif_type == 'group' %}<i class="fa-solid fa-users"></i>
-                {% elif notif.notif_type == 'new_book' %}<i class="fa-solid fa-book"></i>
-                {% else %}<i class="fa-solid fa-bell"></i>{% endif %}
-            </div>
+     <a href="{{ notif.url|default:'#' }}"
+       class="notif-item {% if not notif.is_read %}unread{% endif %}"
+       id="notif-{{ notif.id }}"
+       data-type="{{ notif.notif_type|default:'system' }}"
+       onclick="markRead('{{ notif.id }}')">
 
-            <div class="notif-body">
-                <div class="notif-text">{{ notif.massage }}</div>
-                <div class="notif-time"><i class="fa-regular fa-clock"></i> {{ notif.date|timesince }} ago</div>
-            </div>
+        <div class="notif-icon icon-{{ notif.notif_type|default:'system' }}">
+            {% if notif.notif_type == 'like' %}
+                <i class="fa-solid fa-heart"></i>
 
-            {% if not notif.is_read %}<div class="unread-dot"></div>{% endif %}
+            {% elif notif.notif_type == 'reply' %}
+                <i class="fa-solid fa-reply"></i>
 
-            <button class="notif-delete" onclick="deleteNotif('{{ notif.id }}')">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            {% elif notif.notif_type == 'group' %}
+                <i class="fa-solid fa-users"></i>
+
+            {% elif notif.notif_type == 'new_book' %}
+                <i class="fa-solid fa-book"></i>
+
+            {% else %}
+                <i class="fa-solid fa-bell"></i>
+            {% endif %}
         </div>
-        {% endfor %}
+
+        <div class="notif-body">
+            <div class="notif-text">
+                {{ notif.massage }}
+            </div>
+
+            <div class="notif-time">
+                <i class="fa-regular fa-clock"></i>
+                {{ notif.date|timesince }} ago
+            </div>
+        </div>
+
+        {% if not notif.is_read %}
+            <div class="unread-dot"></div>
+        {% endif %}
+
+      </a>
+
+    <!-- زر الحذف -->
+         <button class="notif-delete"
+            onclick="event.stopPropagation(); deleteNotif('{{ notif.id }}')">
+
+          <i class="fa-solid fa-xmark"></i>
+         </button>
+
     </div>
+      {% endfor %}
+ </div>
 
     {% else %}
     <div class="empty">
@@ -126,10 +176,103 @@
 
 </main>
 <script>
-function getCookie(n){let v=null;document.cookie.split(';').forEach(c=>{c=c.trim();if(c.startsWith(n+'='))v=decodeURIComponent(c.slice(n.length+1));});return v;}
-function filter(type,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.notif-item').forEach(i=>{i.classList.toggle('hidden',type!=='all'&&i.dataset.type!==type);});}
-function deleteNotif(id){fetch('/notifications/mark-read/'+id+'/',{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')}}).then(()=>{const
-  el=document.getElementById('notif-'+id);if(el){el.style.transition='0.3s';el.style.opacity='0';el.style.transform='translateX(20px)';setTimeout(()=>{el.remove();if(!document.querySelector('.notif-item:not(.hidden)'))location.reload();},320);}});}
+function openNotif(notifId, type, bookId, commentId, groupType){
+
+    fetch('/notifications/mark-read/' + notifId + '/',{
+        method:'POST',
+
+        headers:{
+            'X-CSRFToken':getCookie('csrftoken')
+        }
+    });
+
+    if(type === 'like' || type === 'reply'){
+
+        window.location.href =
+            '/book/' + bookId + '/#comment-' + commentId;
+    }
+
+    else if(type === 'group'){
+
+        window.location.href =
+            '/group-chat/' + bookId + '/' + groupType + '/';
+    }
+
+    else if(type === 'new_book'){
+
+        window.location.href = '/';
+    }
+}  
+function getCookie(name){
+    let cookieValue = null;
+
+    document.cookie.split(';').forEach(cookie => {
+        cookie = cookie.trim();
+
+        if(cookie.startsWith(name + '=')){
+            cookieValue = decodeURIComponent(
+                cookie.slice(name.length + 1)
+            );
+        }
+    });
+
+    return cookieValue;
+}
+
+
+function markRead(id){
+
+    fetch('/notifications/mark-read/' + id + '/',{
+        method:'POST',
+        headers:{
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    });
+
+}
+function deleteNotif(id){
+
+    fetch('/notifications/delete/' + id + '/',{
+
+        method:'POST',
+
+        headers:{
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+
+    })
+    .then(() => {
+
+        const el = document.getElementById('notif-' + id);
+
+        if(el){
+            el.parentElement.remove();
+        }
+
+    });
+
+}
+
+function filter(type, el){
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    const items = document.querySelectorAll('.notif-item');
+
+    items.forEach(item => {
+        const itemType = item.dataset.type;
+
+        if(type === 'all'){
+            item.style.display = 'flex';
+        }
+        else if(itemType === type){
+            item.style.display = 'flex';
+        }
+        else{
+            item.style.display = 'none';
+        }
+    });
+}
 </script>
 </body>
 </html>
