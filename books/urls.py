@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
 
 urlpatterns = [
     # ── Home ──────────────────────────────────────────
@@ -41,12 +44,7 @@ urlpatterns = [
     # ── Search ────────────────────────────────────────
     path('search-books/', views.search_books, name='search_books'),
 
-    # ── Admin ─────────────────────────────────────────
-    path('admin-dashboard/',                 views.admin_dashboard,    name='admin_dashboard'),
-    path('admin/ban-user/<int:user_id>/',    views.ban_user,           name='ban_user'),
-    path('admin/delete-user/<int:user_id>/', views.delete_user,        name='delete_user'),
-    path('admin/delete-book/<int:book_id>/', views.admin_delete_book,  name='admin_delete_book'),
-    path('admin/publish-book/',              views.publish_book,        name='publish_book'),
+   
 
 
 
@@ -61,5 +59,13 @@ urlpatterns = [
     views.delete_notification,
     name='delete_notification'
   ),
-  
+  path('admin-dashboard/book/delete/<int:book_id>/', views.admin_delete_book, name='admin_delete_book'),
+  path('admin-dashboard/comment/delete/<int:comment_id>/', views.admin_delete_comment, name='admin_delete_comment'),
+  path('admin-dashboard/user/delete/<int:user_id>/', views.delete_user, name='admin_delete_user'),
+  path('admin-dashboard/user/ban/<int:user_id>/', views.ban_user, name='ban_user'),
+  path('admin-dashboard/book/publish/', views.publish_book, name='publish_book'),
+          # Django Admin الافتراضي
+        # URLs التطبيق
+  path('', include('books.admin_urls')),   # URLs لوحة التحكم 
+  path('like-reply/<int:reply_id>/', views.like_reply, name='like_reply'),
 ]

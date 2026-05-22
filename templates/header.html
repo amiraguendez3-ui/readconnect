@@ -14,18 +14,19 @@
         <li><a href="/categories/">Categories</a></li>
         <!-- My List و Notifications يظهران فقط للمستخدم المسجل -->
         {% if user.is_authenticated %}
-  <li>
-    <a href="/notifications/" class="notif-link">
-        <i class="fa-solid fa-bell"></i>
-
-        {% if unread_notifications_count > 0 %}
-            <span class="notif-badge">{{ unread_notifications_count}}</span>
-        {% endif %}
-
-        Notifications
-        
-    </a>
-      </li>
+        <li>
+            <a href="/notifications/" class="notif-link">
+                <span style="position:relative; display:inline-block;">
+                    {% if unread_notifications_count > 0 %}
+                       <i class="fa-solid fa-bell" style="color:var(--mid);"></i>
+                       <span class="notif-badge">{{ unread_notifications_count }}</span>
+                    {% else %}
+                      <i class="fa-solid fa-bell"></i>
+                    {% endif %}
+                 </span>
+                  Notifications
+            </a>
+ </li>
 
        <li><a href="/my-list/">My List</a></li>
       {% endif %}
@@ -169,7 +170,7 @@
   }
 
    .notif-link .fa-bell{
-    color: #666;
+    color: var(--mid);
     transition: 0.3s;
   }
    .notif-dot{
@@ -180,20 +181,23 @@
     display: inline-block;
     margin-left: 4px;
 }
-   .notif-badge{
-   
-    right: -6px;
-    background: red;
+   .notif-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--deep);
     color: white;
     font-size: 10px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-  }
+    
+}
 
  @keyframes pulse{
     0%{ transform: scale(1); opacity:1; }

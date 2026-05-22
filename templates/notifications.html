@@ -1,4 +1,4 @@
-{% load static %}
+ {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,12 +16,6 @@
         .page-head h1 { font-size:24px; font-weight:800; color:var(--deep); display:flex; align-items:center; gap:10px; }
         .page-head h1 i { color:var(--mid); }
         .badge { background:linear-gradient(135deg,var(--deep),var(--mid)); color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
-        .head-actions { display:flex; gap:8px; }
-        .btn-sm { padding:8px 16px; border-radius:30px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; border:none; }
-        .btn-outline { background:white; color:var(--deep); border:1.5px solid #e5dded; }
-        .btn-outline:hover { border-color:var(--light); }
-        .btn-red { background:white; color:#e74c3c; border:1.5px solid #fde8e8; }
-        .btn-red:hover { background:#fde8e8; }
 
         .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
         .tab { padding:7px 16px; border-radius:30px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; border:1.5px solid #e5dded; background:white; color:#888; }
@@ -29,10 +23,20 @@
         .tab:hover:not(.active) { border-color:var(--light); color:var(--deep); }
 
         .notif-list { display:flex; flex-direction:column; gap:10px; }
-        .notif-item { background:white; border-radius:16px; padding:15px 18px; display:flex; align-items:center; gap:15px; box-shadow:0 3px 12px rgba(86,29,70,0.06); transition:all 0.3s; border-left:4px solid transparent; }
+
+        /* ✅ الـ hidden على الـ wrapper مباشرة */
+        .notif-wrapper { position:relative; }
+        .notif-wrapper.hidden { display:none; }
+
+        .notif-item {
+            background:white; border-radius:16px; padding:15px 18px;
+            display:flex; align-items:center; gap:15px;
+            box-shadow:0 3px 12px rgba(86,29,70,0.06);
+            transition:all 0.3s; border-left:4px solid transparent;
+            text-decoration:none; color:inherit; cursor:pointer;
+        }
         .notif-item.unread { border-left-color:var(--mid); background:#fdf8fd; }
-        .notif-item:hover { transform:translateX(3px); }
-        .notif-item.hidden { display:none; }
+        .notif-item:hover { transform:translateX(3px); box-shadow:0 6px 18px rgba(86,29,70,0.12); }
 
         .notif-icon { width:44px; height:44px; border-radius:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:17px; }
         .icon-like     { background:#fde8f0; color:#c45c7c; }
@@ -43,11 +47,16 @@
 
         .notif-body { flex:1; }
         .notif-text { font-size:13.5px; color:#333; line-height:1.5; }
-        .notif-text strong { color:var(--deep); }
         .notif-time { font-size:11px; color:#bbb; margin-top:4px; display:flex; align-items:center; gap:4px; }
 
         .unread-dot { width:9px; height:9px; border-radius:50%; background:var(--mid); flex-shrink:0; }
-        .notif-delete { background:none; border:none; color:#ddd; cursor:pointer; font-size:14px; transition:0.2s; padding:6px; border-radius:50%; flex-shrink:0; }
+
+        .notif-delete {
+            position:absolute; top:14px; right:14px;
+            background:none; border:none; cursor:pointer;
+            color:#ccc; font-size:14px; padding:4px 6px; border-radius:6px;
+            transition:0.2s; z-index:2;
+        }
         .notif-delete:hover { color:#e74c3c; background:#fde8e8; }
 
         .empty { background:white; border-radius:20px; padding:55px 40px; text-align:center; box-shadow:0 4px 14px rgba(86,29,70,0.05); }
@@ -55,116 +64,72 @@
         .empty-ring i { font-size:30px; color:var(--light); }
         .empty h3 { font-size:17px; font-weight:700; color:var(--deep); margin-bottom:7px; }
         .empty p  { font-size:13px; color:#aaa; }
-        .notif-item{
-          text-decoration:none;
-         color:inherit;
-        }
-        .notif-wrapper{
-          position:relative;
-        }
-
-       .notif-item{
-         text-decoration:none;
-         color:inherit;
-         display:flex;
-         align-items:center;
-         gap:15px;
-        }
-
-        .notif-delete{
-          position:absolute;
-          top:14px;
-          right:14px;
-          background:none;
-          border:none;
-          cursor:pointer;
-          color:#ccc;
-          font-size:14px;
-        }
-
-        .notif-delete:hover{
-          color:red;
-        }
     </style>
 </head>
 <body>
 {% include 'header.html' %}
 <main class="main">
-
     <div class="page-head">
         <h1>
             <i class="fa-solid fa-bell"></i> Notifications
             {% if unread_count %}<span class="badge">{{ unread_count }} new</span>{% endif %}
         </h1>
-        {% if notifications %}
-        
-        {% endif %}
     </div>
 
     {% if notifications %}
     <div class="filter-tabs">
-        <div class="tab active" onclick="filter('all',this)"><i class="fa-solid fa-border-all"></i> All</div>
-        <div class="tab" onclick="filter('like',this)"><i class="fa-solid fa-heart"></i> Likes</div>
-        <div class="tab" onclick="filter('reply',this)"><i class="fa-solid fa-reply"></i> Replies</div>
-        <div class="tab" onclick="filter('group',this)"><i class="fa-solid fa-users"></i> Groups</div>
-        <div class="tab" onclick="filter('new_book',this)"><i class="fa-solid fa-book"></i> New Books</div>
+        <div class="tab active" onclick="filterNotifs('all',this)"><i class="fa-solid fa-border-all"></i> All</div>
+        <div class="tab" onclick="filterNotifs('like',this)"><i class="fa-solid fa-heart"></i> Likes</div>
+        <div class="tab" onclick="filterNotifs('reply',this)"><i class="fa-solid fa-reply"></i> Replies</div>
+        <div class="tab" onclick="filterNotifs('group',this)"><i class="fa-solid fa-users"></i> Groups</div>
+        <div class="tab" onclick="filterNotifs('new_book',this)"><i class="fa-solid fa-book"></i> New Books</div>
     </div>
 
- <div class="notif-list" id="notifList">
+    <div class="notif-list" id="notifList">
         {% for notif in notifications %}
-    <div class="notif-wrapper">
 
-     <a href="{{ notif.url|default:'#' }}"
-       class="notif-item {% if not notif.is_read %}unread{% endif %}"
-       id="notif-{{ notif.id }}"
-       data-type="{{ notif.notif_type|default:'system' }}"
-       onclick="markRead('{{ notif.id }}')">
+        {# ✅ data-type على الـ wrapper مباشرة #}
+        <div class="notif-wrapper" data-type="{{ notif.notif_type|default:'system' }}">
 
-        <div class="notif-icon icon-{{ notif.notif_type|default:'system' }}">
-            {% if notif.notif_type == 'like' %}
-                <i class="fa-solid fa-heart"></i>
+            {# ✅ نستخدم div بدل a حتى نتحكم في التنقل بالكامل عبر JS #}
+            <div class="notif-item {% if not notif.is_read %}unread{% endif %}"
+                 id="notif-{{ notif.id }}"
+                 onclick="goToNotif('{{ notif.id }}', '{% if notif.url %}{{ notif.url }}{% endif %}')">
 
-            {% elif notif.notif_type == 'reply' %}
-                <i class="fa-solid fa-reply"></i>
+                <div class="notif-icon icon-{{ notif.notif_type|default:'system' }}">
+                    {% if notif.notif_type == 'like' %}
+                        <i class="fa-solid fa-heart"></i>
+                    {% elif notif.notif_type == 'reply' %}
+                        <i class="fa-solid fa-reply"></i>
+                    {% elif notif.notif_type == 'group' %}
+                        <i class="fa-solid fa-users"></i>
+                    {% elif notif.notif_type == 'new_book' %}
+                        <i class="fa-solid fa-book"></i>
+                    {% else %}
+                        <i class="fa-solid fa-bell"></i>
+                    {% endif %}
+                </div>
 
-            {% elif notif.notif_type == 'group' %}
-                <i class="fa-solid fa-users"></i>
+                <div class="notif-body">
+                    <div class="notif-text">{{ notif.massage }}</div>
+                    <div class="notif-time">
+                        <i class="fa-regular fa-clock"></i>
+                        {{ notif.date|timesince }} ago
+                    </div>
+                </div>
 
-            {% elif notif.notif_type == 'new_book' %}
-                <i class="fa-solid fa-book"></i>
-
-            {% else %}
-                <i class="fa-solid fa-bell"></i>
-            {% endif %}
-        </div>
-
-        <div class="notif-body">
-            <div class="notif-text">
-                {{ notif.massage }}
+                {% if not notif.is_read %}
+                    <div class="unread-dot"></div>
+                {% endif %}
             </div>
 
-            <div class="notif-time">
-                <i class="fa-regular fa-clock"></i>
-                {{ notif.date|timesince }} ago
-            </div>
+            <button class="notif-delete" onclick="deleteNotif('{{ notif.id }}')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
         </div>
-
-        {% if not notif.is_read %}
-            <div class="unread-dot"></div>
-        {% endif %}
-
-      </a>
-
-    <!-- زر الحذف -->
-         <button class="notif-delete"
-            onclick="event.stopPropagation(); deleteNotif('{{ notif.id }}')">
-
-          <i class="fa-solid fa-xmark"></i>
-         </button>
-
+        {% endfor %}
     </div>
-      {% endfor %}
- </div>
 
     {% else %}
     <div class="empty">
@@ -175,101 +140,55 @@
     {% endif %}
 
 </main>
+
 <script>
-function openNotif(notifId, type, bookId, commentId, groupType){
-
-    fetch('/notifications/mark-read/' + notifId + '/',{
-        method:'POST',
-
-        headers:{
-            'X-CSRFToken':getCookie('csrftoken')
-        }
+function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '='))
+            val = decodeURIComponent(c.slice(name.length + 1));
     });
-
-    if(type === 'like' || type === 'reply'){
-
-        window.location.href =
-            '/book/' + bookId + '/#comment-' + commentId;
-    }
-
-    else if(type === 'group'){
-
-        window.location.href =
-            '/group-chat/' + bookId + '/' + groupType + '/';
-    }
-
-    else if(type === 'new_book'){
-
-        window.location.href = '/';
-    }
-}  
-function getCookie(name){
-    let cookieValue = null;
-
-    document.cookie.split(';').forEach(cookie => {
-        cookie = cookie.trim();
-
-        if(cookie.startsWith(name + '=')){
-            cookieValue = decodeURIComponent(
-                cookie.slice(name.length + 1)
-            );
-        }
-    });
-
-    return cookieValue;
+    return val;
 }
 
-
-function markRead(id){
-
-    fetch('/notifications/mark-read/' + id + '/',{
-        method:'POST',
-        headers:{
-            'X-CSRFToken': getCookie('csrftoken')
-        }
+// ✅ الضغط على notification: mark read + انتقل فوراً
+function goToNotif(id, url) {
+    // 1) mark read في الخلفية (لا ننتظرها)
+    fetch('/notifications/mark-read/' + id + '/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
     });
 
+    // 2) انتقل فوراً بدون انتظار الـ fetch
+    if (url && url.trim() !== '' && url.trim() !== '#') {
+        window.location.href = url;
+    }
 }
-function deleteNotif(id){
 
-    fetch('/notifications/delete/' + id + '/',{
-
-        method:'POST',
-
-        headers:{
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-
-    })
-    .then(() => {
-
+// ✅ حذف notification
+function deleteNotif(id) {
+    event.stopPropagation();
+    fetch('/notifications/delete/' + id + '/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    }).then(() => {
         const el = document.getElementById('notif-' + id);
-
-        if(el){
-            el.parentElement.remove();
-        }
-
+        if (el) el.parentElement.remove();
     });
-
 }
-
-function filter(type, el){
+ // ✅ Filter - يعمل على data-type في الـ .notif-wrapper
+function filterNotifs(type, clickedTab) {
+    // تحديث الـ tabs
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+    clickedTab.classList.add('active');
 
-    const items = document.querySelectorAll('.notif-item');
-
-    items.forEach(item => {
-        const itemType = item.dataset.type;
-
-        if(type === 'all'){
-            item.style.display = 'flex';
-        }
-        else if(itemType === type){
-            item.style.display = 'flex';
-        }
-        else{
-            item.style.display = 'none';
+    // إظهار/إخفاء الـ wrappers
+    document.querySelectorAll('.notif-wrapper').forEach(wrapper => {
+        if (type === 'all' || wrapper.dataset.type === type) {
+            wrapper.classList.remove('hidden');
+        } else {
+            wrapper.classList.add('hidden');
         }
     });
 }

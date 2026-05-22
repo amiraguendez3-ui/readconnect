@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --deep:   #561d46;
+            --mid:    #ae6a97;
+            --light:  #eca8bb;
+            --cream:  #ffffff;
+            --space:  20px;
+            --shadow: 0 8px 32px rgba(86, 29, 70, 0.15);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f1ee 0%, #f0e6f0 100%);
+            padding: var(--space);
+        }
+
+        .container {
+            width: min(1200px, 100%);
+            min-height: 720px;
+            margin: 0 auto;
+            display: flex;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background: var(--cream);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(170deg, var(--deep), var(--mid));
+            color: white;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 i {
+            font-size: 32px;
+            color: var(--light);
+        }
+
+        .brand p {
+            font-size: 13px;
+            opacity: 0.85;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .stats {
+            display: grid;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: var(--radius);
+            padding: 16px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stat-card:hover {
+            background: rgba(255,255,255,0.18);
+            transform: translateX(4px);
+        }
+
+        .stat-card i {
+            font-size: 22px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: var(--light);
+        }
+
+        .stat-card .info span {
+            display: block;
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .info strong {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .menu {
+            display: grid;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .menu a i {
+            font-size: 18px;
+            width: 28px;
+            text-align: center;
+            color: var(--light);
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.25);
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .menu a.active {
+            background: rgba(255,255,255,0.25);
+            border-left: 3px solid var(--light);
+        }
+
+        /* ===== Main Content ===== */
+        .main {
+            flex: 1;
+            background: #faf8fb;
+            padding: 36px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ede4f1;
+        }
+
+        .header .title h2 {
+            font-size: 28px;
+            color: var(--deep);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .header .title p {
+            color: var(--mid);
+            font-size: 14px;
+        }
+
+        .header .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid #d9cfdf;
+            background: white;
+            color: var(--mid);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--deep);
+            color: white;
+            border-color: var(--deep);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Messages ===== */
+        .messages {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .msg {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg.success {
+            background: linear-gradient(135deg, #effaf3, #e0f5e9);
+            color: #1a7a3e;
+            border: 1px solid #bce6c8;
+        }
+
+        .msg.error {
+            background: linear-gradient(135deg, #fff1f1, #ffe0e0);
+            color: #c41e3a;
+            border: 1px solid #f3c0c0;
+        }
+
+        .msg.warning {
+            background: linear-gradient(135deg, #fff8e8, #fff3d6);
+            color: #9a6b00;
+            border: 1px solid #edd79a;
+        }
+
+        .msg i {
+            font-size: 18px;
+        }
+
+        /* ===== Panel ===== */
+        .panel {
+            background: white;
+            border: 1px solid #efe7f3;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(86, 29, 70, 0.04);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .panel h3 {
+            color: var(--deep);
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel h3 i {
+            color: var(--mid);
+            font-size: 22px;
+        }
+
+        .panel p.sub {
+            color: #7f6d88;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== Form ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--deep);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input, textarea, select, button {
+            width: 100%;
+            border-radius: 12px;
+            border: 1.5px solid #e0d5e6;
+            padding: 14px 16px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #faf8fb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--mid);
+            box-shadow: 0 0 0 4px rgba(174, 106, 151, 0.12);
+            background: white;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23561d46' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 15px;
+            box-shadow: 0 4px 16px rgba(86, 29, 70, 0.25);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(86, 29, 70, 0.35);
+        }
+
+        .primary-btn i {
+            font-size: 16px;
+        }
+
+        /* ===== List ===== */
+        .list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .item {
+            background: white;
+            border: 1.5px solid #f0e8f4;
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .item:hover {
+            border-color: var(--light);
+            box-shadow: 0 4px 16px rgba(86, 29, 70, 0.08);
+            transform: translateX(4px);
+        }
+
+        .item-main {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .item-main strong {
+            color: var(--deep);
+            display: block;
+            margin-bottom: 6px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .item-main small {
+            display: block;
+            color: #8a7d94;
+            line-height: 1.6;
+            word-break: break-word;
+            font-size: 13px;
+        }
+
+        .item-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+        .item-badge.admin {
+            background: linear-gradient(135deg, var(--light), #f5d0e0);
+            color: var(--deep);
+        }
+
+        .delete-form {
+            min-width: auto;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #df3c5f, #c92f51);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(201, 47, 81, 0.3);
+        }
+
+        .delete-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .empty {
+            background: linear-gradient(135deg, white, #faf8fb);
+            border: 2px dashed #e0d5e6;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #9a8da6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empty i {
+            font-size: 40px;
+            color: #d0c4d8;
+        }
+
+        .empty p {
+            font-size: 15px;
+        }
+
+        /* ===== Welcome Cards ===== */
+        .welcome-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .welcome-card {
+            background: white;
+            border: 1.5px solid #f0e8f4;
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .welcome-card:hover {
+            border-color: var(--light);
+            box-shadow: 0 8px 24px rgba(86, 29, 70, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .welcome-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--deep), var(--mid));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .welcome-card .content strong {
+            display: block;
+            color: var(--deep);
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .welcome-card .content small {
+            color: #8a7d94;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 980px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 24px;
+            }
+
+            .form-grid,
+            .welcome-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .main { padding: 20px; }
+            .panel { padding: 20px; }
+            .item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <div class="brand">
+            <h1><i class="fas fa-shield-halved"></i> Admin</h1>
+            <p>Management panel for administering books, comments, and users on the BooksSphere platform.</p>
+        </div>
+            <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-book"></i>
+                <div class="info">
+                    <span>Total Books</span>
+                    <strong>{{ total_books }}</strong>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div class="info">
+                    <span>Total Users</span>
+                    <strong>{{ total_users }}</strong>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-comments"></i>
+                <div class="info">
+                    <span>Total Comments</span>
+                    <strong>{{ total_comments }}</strong>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-tags"></i>
+                <div class="info">
+                    <span>Total Categories</span>
+                    <strong>{{ total_categories }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <a href="?action=add" class="{% if action == 'add' %}active{% endif %}">
+                <i class="fas fa-plus-circle"></i> Add Book
+            </a>
+            <a href="?action=delete_book" class="{% if action == 'delete_book' %}active{% endif %}">
+                <i class="fas fa-trash-can"></i> Delete Book
+            </a>
+            <a href="?action=delete_comment" class="{% if action == 'delete_comment' %}active{% endif %}">
+                <i class="fas fa-comment-slash"></i> Delete Comment
+            </a>
+            <a href="?action=delete_user" class="{% if action == 'delete_user' %}active{% endif %}">
+                <i class="fas fa-user-xmark"></i> Delete Account
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="header">
+            <div class="title">
+                <h2>Dashboard</h2>
+                <p>Direct management of content and users.</p>
+            </div>
+            <div class="actions">
+                
+                <button class="btn-icon" title="Logout" onclick="location.href='/'"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="msg {{ message.tags|default:'success' }}">
+                        <i class="fas fa-check-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if action == 'add' %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-book-medical"></i> Add New Book</h3>
+                </div>
+                <p class="sub">Enter the essential book information then click the add button.</p>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Book Title</label>
+                            <input type="text" name="title" placeholder="e.g. The Little Prince" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Author Name</label>
+                            <input type="text" name="author" placeholder="e.g. Antoine de Saint-Exupéry" required>
+                        </div>
+                        <div class="form-group">
+                             <label>Category</label>
+                            <select name="category">
+                                <option value="">Select a category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cover Image</label>
+                            <input type="file" name="image" accept="image/*">
+                        </div>
+                        <div class="form-group full">
+                            <label>Description</label>
+                            <textarea name="description" placeholder="Brief description of the book..."></textarea>
+                        </div>
+                        <button type="submit" class="primary-btn full">
+                            <i class="fas fa-plus"></i> Add Book
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+        {% elif action == 'delete_book' %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-trash-can"></i> Delete Book</h3>
+                </div>
+                <p class="sub">List of all registered books with deletion option.</p>
+                <div class="list">
+                    {% for book in books %}
+                        <div class="item">
+                            <div class="item-main">
+                                <strong>{{ book.title }}</strong>
+                                <small>Author: {{ book.author }}{% if book.category %} | Category: {{ book.category.name }}{% endif %}</small>
+                            </div>
+                            <form method="POST" class="delete-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ book.id }}">
+                                <button type="submit" class="delete-btn">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <div class="empty">
+                            <i class="fas fa-book-open"></i>
+                            <p>No books available currently.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        {% elif action == 'delete_comment' %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-comment-slash"></i> Delete Comment</h3>
+                </div>
+                <p class="sub">You can delete inappropriate comments here.</p>
+                <div class="list">
+                    {% for c in comments %}
+                        <div class="item">
+                            <div class="item-main">
+                                <strong>{{ c.user.username }} — {{ c.book.title }}</strong>
+                                <small>{{ c.content|truncatechars:120 }}</small>
+                            </div>
+                            <form method="POST" class="delete-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ c.id }}">
+                                <button type="submit" class="delete-btn">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <div class="empty">
+                            <i class="fas fa-comments"></i>
+                            <p>No comments available currently.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        {% elif action == 'delete_user' %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-user-xmark"></i> Delete User Account</h3>
+                </div>
+                <p class="sub">Delete unwanted users with protection for the current admin account.</p>
+                <div class="list">
+                    {% for u in users %}
+                        <div class="item">
+                            <div class="item-main">
+                                <strong>
+                                    {{ u.username }}
+                                    {% if u.is_superuser %}
+                                        <span class="item-badge admin"><i class="fas fa-shield"></i> Admin</span>
+                                    {% endif %}
+                                </strong>
+                                <small>{{ u.email|default:'No email address' }}</small>
+                            </div>
+                            <form method="POST" class="delete-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" value="{{ u.id }}">
+                                <button type="submit" class="delete-btn" {% if u.is_superuser or u.id == request.user.id %}disabled{% endif %}>
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        <div class="empty">
+                            <i class="fas fa-users-slash"></i>
+                            <p>No users available currently.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        {% else %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-hand-sparkles"></i> Welcome to the Administration Panel</h3>
+                </div>
+                <p class="sub">Choose the operation you want to perform from the sidebar menu.</p>
+                <div class="welcome-grid">
+                    <div class="welcome-card" onclick="location.href='?action=add'">
+                        <div class="icon"><i class="fas fa-plus"></i></div>
+                        <div class="content">
+                            <strong>Add Book</strong>
+                            <small>Add a new title with author, description, and category.</small>
+                        </div>
+                    </div>
+                    <div class="welcome-card" onclick="location.href='?action=delete_book'">
+                        <div class="icon"><i class="fas fa-trash"></i></div>
+                        <div class="content">
+                            <strong>Delete Book</strong>
+                            <small>Delete any invalid or duplicate book.</small>
+                        </div>
+                    </div>
+                    <div class="welcome-card" onclick="location.href='?action=delete_comment'">
+                        <div class="icon"><i class="fas fa-comment-slash"></i></div>
+                        <div class="content">
+                            <strong>Delete Comment</strong>
+                            <small>Remove offensive or inappropriate comments.</small>
+                        </div>
+                    </div>
+                    <div class="welcome-card" onclick="location.href='?action=delete_user'">
+                        <div class="icon"><i class="fas fa-user-xmark"></i></div>
+                        <div class="content">
+                            <strong>Delete Account</strong>
+                            <small>Manage users and delete unwanted accounts.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>

@@ -21,6 +21,8 @@ from books import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
+from django.contrib import admin
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),  # هذا أهم سطر
@@ -33,5 +35,13 @@ urlpatterns = [
     path('my-list/',views.my_list,name='my_list'),
     path('logout/',                                    views.logout,                 name='logout'),
     path('my-groups/', views.my_groups, name='my_groups'),
+    # readconnect/urls.py
+
+
+
+    path('admin/', admin.site.urls),
+    path('', include('books.urls')),         # URLs التطبيق
+    path('', include('books.admin_urls')),   # ✅ لوحة التحكم
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

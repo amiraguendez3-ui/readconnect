@@ -77,6 +77,8 @@ class CommentReply(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    likes = models.ManyToManyField(User, related_name='reply_likes', blank=True)
+
     class Meta:
         ordering = ['created_at']
 

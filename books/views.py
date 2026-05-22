@@ -27,6 +27,8 @@ from django.shortcuts import render, redirect
 from .models import Profile
 from .models import GroupMessage
 from .models import Notification
+from django.conf import settings
+from django.contrib.auth.models import User
 
 
  # ================================================================
@@ -181,19 +183,29 @@ def home(request):
 
 
 # ========== تسجيل / دخول ==========
+
 def login_views(request):
     if request.user.is_authenticated:
         return redirect('/')
+    
     error = None
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             auth_login(request, user)
+            
+            # ✅ التوجيه الاحترافي: التحقق من email + is_staff
+            admin_email = getattr(settings, 'ADMIN_EMAIL', 'adminaa1@gmail.com')
+            if user.is_staff and user.email == admin_email:
+                return redirect('admin_dashboard')
+            
             return redirect('/')
         else:
             error = 'Invalid username or password. Please try again.'
+    
     return render(request, 'login.html', {'error': error})
 
 
@@ -392,6 +404,24 @@ def like_comment(request, comment_id):
         return JsonResponse({'success': True, 'liked': True, 'likes_count': comment.likes.count()})
     return JsonResponse({'success': False})
 
+# ✅ في views.py - أضف هذه الدالة بعد like_comment
+
+@login_required
+def like_reply(request, reply_id):
+    if request.method == 'POST':
+        reply = get_object_or_404(CommentReply, id=reply_id)
+        if request.user in reply.likes.all():
+            reply.likes.remove(request.user)
+            liked = False
+        else:
+            reply.likes.add(request.user)
+            liked = True
+        return JsonResponse({
+            'success': True,
+            'liked': liked,
+            'likes_count': reply.likes.count()
+        })
+    return JsonResponse({'success': False})
 
 @login_required
 def reply_comment(request, comment_id):
@@ -563,16 +593,89 @@ def clear_all_notifications(request):
 # ========== Admin Dashboard ==========
 @staff_member_required
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html', {
-        'total_books'     : Book.objects.count(),
-        'total_users'     : User.objects.count(),
-        'total_comments'  : Comment.objects.count(),
+    action = request.GET.get('action', '').strip()
+
+    if request.method == 'POST':
+        if action == 'add':
+            title = (request.POST.get('title') or request.POST.get('titre') or '').strip()
+            author = (request.POST.get('author') or request.POST.get('auteur') or '').strip()
+            description = (request.POST.get('description') or '').strip()
+            category_id = request.POST.get('category')
+
+            if not title or not author:
+                messages.error(request, 'Le titre et l’auteur sont obligatoires.')
+            else:
+                book = Book.objects.create(
+                    title=title,
+                    author=author,
+                    description=description,
+                )
+                if request.FILES.get('image'):
+                    book.image = request.FILES['image']
+                if category_id:
+                    try:
+                        book.category = Category.objects.get(id=category_id)
+                    except Category.DoesNotExist:
+                        messages.warning(request, 'La catégorie sélectionnée est introuvable.')
+                book.save()
+                for user in User.objects.filter(is_active=True):
+                  Notification.objects.create(
+                      user       = user,
+                     massage    = f'New book: "{book.title}" by {book.author} has been added!',
+                     notif_type = 'new_book',
+                     url        = f'/book/{slugify(book.title)}/'
+                   )
+                messages.success(request, 'Le livre a été ajouté avec succès.')
+            return redirect(f'{request.path}?action=add')
+
+        if action == 'delete_book':
+            book_id = request.POST.get('id')
+            if book_id:
+                deleted, _ = Book.objects.filter(id=book_id).delete()
+                if deleted:
+                    messages.success(request, 'Le livre a été supprimé avec succès.')
+                else:
+                    messages.error(request, 'Livre introuvable.')
+            return redirect(f'{request.path}?action=delete_book')
+
+        if action == 'delete_comment':
+            comment_id = request.POST.get('id')
+            if comment_id:
+                deleted, _ = Comment.objects.filter(id=comment_id).delete()
+                if deleted:
+                    messages.success(request, 'Le commentaire a été supprimé avec succès.')
+                else:
+                    messages.error(request, 'Commentaire introuvable.')
+            return redirect(f'{request.path}?action=delete_comment')
+
+        if action == 'delete_user':
+            user_id = request.POST.get('id')
+            if user_id:
+                if str(request.user.id) == str(user_id):
+                    messages.error(request, 'Vous ne pouvez pas supprimer votre propre compte depuis le panneau admin.')
+                else:
+                    target_user = User.objects.filter(id=user_id).first()
+                    if not target_user:
+                        messages.error(request, 'Utilisateur introuvable.')
+                    elif target_user.is_superuser:
+                        messages.error(request, 'La suppression d’un superutilisateur est bloquée.')
+                    else:
+                        target_user.delete()
+                        messages.success(request, 'Le compte utilisateur a été supprimé avec succès.')
+            return redirect(f'{request.path}?action=delete_user')
+
+    context = {
+        'action': action,
+        'books': Book.objects.select_related('category').order_by('-created_at'),
+        'comments': Comment.objects.select_related('user', 'book').order_by('-created_at'),
+        'users': User.objects.order_by('-date_joined'),
+        'categories': Category.objects.all().order_by('name'),
+        'total_books': Book.objects.count(),
+        'total_users': User.objects.count(),
+        'total_comments': Comment.objects.count(),
         'total_categories': Category.objects.count(),
-        'recent_users'    : User.objects.order_by('-date_joined')[:5],
-        'recent_books'    : Book.objects.order_by('-id')[:5],
-        'recent_comments' : Comment.objects.order_by('-created_at')[:5],
-        'categories'      : Category.objects.all(),
-    })
+    }
+    return render(request, 'admin_dashboard.html', context)
 
 
 @staff_member_required
@@ -591,7 +694,10 @@ def ban_user(request, user_id):
 def delete_user(request, user_id):
     if request.method == 'POST':
         try:
-            User.objects.get(id=user_id).delete()
+            target_user = User.objects.get(id=user_id)
+            if target_user.is_superuser:
+                return JsonResponse({'error': 'Superuser deletion is blocked'}, status=403)
+            target_user.delete()
             return JsonResponse({'success': True})
         except User.DoesNotExist:
             return JsonResponse({'error': 'Not found'}, status=404)
@@ -608,12 +714,29 @@ def admin_delete_book(request, book_id):
 
 
 @staff_member_required
+def admin_delete_comment(request, comment_id):
+    if request.method == 'POST':
+        try:
+            Comment.objects.get(id=comment_id).delete()
+            return JsonResponse({'success': True})
+        except Comment.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+
+@staff_member_required
 def publish_book(request):
     if request.method == 'POST':
+        title = (request.POST.get('title') or request.POST.get('titre') or '').strip()
+        author = (request.POST.get('author') or request.POST.get('auteur') or '').strip()
+
+        if not title or not author:
+            messages.error(request, 'Le titre et l’auteur sont obligatoires.')
+            return redirect('admin_dashboard')
+
         book = Book(
-            title       = request.POST.get('title'),
-            author      = request.POST.get('author'),
-            description = request.POST.get('description', ''),
+            title=title,
+            author=author,
+            description=request.POST.get('description', ''),
         )
         if request.FILES.get('image'):
             book.image = request.FILES['image']
@@ -624,7 +747,10 @@ def publish_book(request):
             except Category.DoesNotExist:
                 pass
         book.save()
-        messages.success(request, 'Book published successfully!')
+        
+          
+
+        messages.success(request, 'Le livre a été publié avec succès.')
     return redirect('admin_dashboard')
 
 
